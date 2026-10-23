@@ -1,0 +1,16 @@
+node_modules/
+lib/
+dist/
+build/
+_output/
+.jupyterlite.doit.db
+.coverage/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
