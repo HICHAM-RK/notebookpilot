@@ -1,0 +1,318 @@
+{
+  "version": "0.1.0",
+  "status": "planned-contract",
+  "schemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "tools": [
+    {
+      "name": "notebook_get_context",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_get_cells",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        },
+        "required": [
+          "notebookId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_propose_update",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cellId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedSourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 262144,
+            "x-maxUtf8Bytes": 262144
+          }
+        },
+        "required": [
+          "notebookId",
+          "cellId",
+          "expectedSourceHash",
+          "source"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_propose_insert",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "afterCellId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cellType": {
+            "enum": [
+              "code",
+              "markdown"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 262144,
+            "x-maxUtf8Bytes": 262144
+          }
+        },
+        "required": [
+          "notebookId",
+          "afterCellId",
+          "cellType",
+          "source"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_get_proposal",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "proposalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "proposalId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_run_cells",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cellId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "cellId",
+                "expectedSourceHash"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "notebookId",
+          "cells"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_get_execution",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "requestId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "dataset_profile",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "datasetId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "notebookId",
+          "datasetId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "experiment_record",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "executionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "notebookId",
+          "executionId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "experiment_compare",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "runIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 2,
+            "maxItems": 10,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "runIds"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "notebook_audit",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "notebookId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "report_generate",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "runIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "minItems": 0,
+            "maxItems": 10,
+            "uniqueItems": true
+          },
+          "format": {
+            "enum": [
+              "html",
+              "markdown"
+            ]
+          }
+        },
+        "required": [
+          "notebookId",
+          "format"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

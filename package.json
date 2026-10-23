@@ -1,0 +1,23 @@
+{
+  "name": "notebookpilot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build": "uv run jupyter lite build --contents content --output-dir _output",
+    "test": "uv run python -m unittest discover -s tests -v",
+    "typecheck": "tsc --noEmit",
+    "lint:check": "prettier --check package.json tsconfig.json playwright.config.ts e2e/*.ts",
+    "test:e2e": "playwright test",
+    "serve": "uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2"
+  }
+}
