@@ -8,5 +8,5 @@ The project is currently in the specification phase. Start with:
 - [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 
-No implementation has been started. Module specifications are written and approved in dependency order, beginning with `SPEC-foundation.md`.
+Runtime implementation has not started. Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md).
 

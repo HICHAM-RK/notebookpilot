@@ -10,7 +10,7 @@ The project is inspired by `alliecatowo/jupyterlite-web-mcp`, but it must have i
 
 Read these documents before changing code:
 
-1. `CAPABILITY_MAP.md` for module boundaries and build order.
+1. `SPEC.md` for requirements and `CAPABILITY_MAP.md` for module boundaries.
 2. The applicable `SPEC-<module>.md` for requirements and acceptance criteria.
 3. `tasks/plan.md` and `tasks/todo.md` for approved implementation work.
 4. `THIRD_PARTY_NOTICES.md` before copying or adapting external code.
