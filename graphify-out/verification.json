@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-23",
+  "html_browser_check": {
+    "engine": "Playwright Chromium",
+    "rendered_nodes": 83,
+    "page_errors": []
+  },
+  "extraction_invariants": {
+    "unique_node_ids": true,
+    "source_files_in_snapshot": true,
+    "extracted_confidence_is_one": true,
+    "external_import_edges_pruned": 8
+  },
+  "vault_markdown_files": 93,
+  "scope": "Recorded snapshot only; not live source or implemented feature verification"
+}

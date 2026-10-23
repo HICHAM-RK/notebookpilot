@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-23T14:09:28.902131+00:00",
+  "scope": "Source and specification snapshot; planned features are not implemented",
+  "files": {
+    "AGENTS.md": "c995a842b8c1e20cc1fbb5593e0a328155ae75925a844f16d792ad3b7e08d925",
+    "CAPABILITY_MAP.md": "c7d702e730d22e37f377fdd31c12440f4fa79654bff29480d68094590ef5ccb1",
+    "README.md": "70f78162ffbbc56a08217e7082274428ebf260346381ad5975f96656b4f9d81f",
+    "SPEC-dataset-intelligence.md": "3d92b910785f05f38df81b265a7a316962ebaa04d9e98a2d4e86bdc365bfefaf",
+    "SPEC-evaluation.md": "e13e25a372dc391a6eb71572243a64d19e63dc588ee85552067e1ae7e620c2cf",
+    "SPEC-experiment-lab.md": "a7abed93c526ed01a64820687e91bd86b5ace2e184e8210ae0f16f1e373eab5c",
+    "SPEC-foundation.md": "29c1b837750bcbb3aa67a8bb262ee5f45e51a97a7eae04f8b60b1ef927be0f64",
+    "SPEC-human-control.md": "fdcf97aa9b5eec6a580884ab8eece2f3249d765bf26afcd5cde92895a9f0e3ae",
+    "SPEC-notebook-audit.md": "3a60eb6b509e750f9b43bdce7e4e81d8240afce690bc951daa557e9b59953e85",
+    "SPEC-notebook-core.md": "2ba733ea670b2ed8236bc295e44134f1cf887b8ab4873a8ae77184ea69e0df18",
+    "SPEC-reporting.md": "1c1d5f03faca155f3a464359ae0461e2ed73fb037326276f3c464d6f89deea20",
+    "SPEC-webmcp-surface.md": "eeb6550a3e4875e201f50edd6af84c52c1278cf31a9e00ef0711497501aafa85",
+    "SPEC.md": "44ace6b9947b087f6abcb36868e5ee5aac2ef0b903f9d37f29bbd08201aa2710",
+    "THIRD_PARTY_NOTICES.md": "6118ee6c54a07133e0911987716f4c1c9a759371db5c6b8ce4f5fcbca2b42f84",
+    "docs/REVIEW.md": "23b92dcb6b3daadcb6dc5671c058892c84285cf4b28b12798ea3678bca6be8a0",
+    "docs/SKILLS.md": "5e9630202ed1721d20cf06324b142196da4f90fd8c793044f6047de229b6b84f",
+    "docs/TOOL_CONTRACTS.md": "6a813cd54f9f0244b75d35a03ba7d6e2661845788e74e89e91ee764eead5065f",
+    "e2e/foundation.spec.ts": "eb25fe80c10b70b5e370929a2951ae8a64c575307388c2badd5555afd0b80797",
+    "playwright.config.ts": "c1291febd24fd845b71c91c285ff99d3b19de52a8b13f0e8fe3f10d817e47f58",
+    "tasks/plan.md": "9d7c8d65fe95fb95201561c0c89ee82534ff2c3c154126e9de28141d87253634",
+    "tasks/todo.md": "412faaa7e7f84add93a2981635073c3b4b057b2b52b26a0b9b6a1c687937dc82",
+    "tests/test_foundation.py": "e2caa0302282a43cd8091ceec8d8e265a1f6410a58a49f4e3153a2085d0cfbfe"
+  }
+}

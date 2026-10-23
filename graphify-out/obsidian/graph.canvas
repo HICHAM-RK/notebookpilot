@@ -1,0 +1,1423 @@
+{
+  "nodes": [
+    {
+      "id": "g0",
+      "type": "group",
+      "label": "Tool Contracts",
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "1"
+    },
+    {
+      "id": "n_contracts_results",
+      "type": "file",
+      "file": "graphify/obsidian/Bounded typed results and errors (planned).md",
+      "x": 20,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_proposals",
+      "type": "file",
+      "file": "graphify/obsidian/Proposal lifecycle state machine (planned).md",
+      "x": 220,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_tools",
+      "type": "file",
+      "file": "graphify/obsidian/WebMCP tool contract v0.1 (planned).md",
+      "x": 420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_dataset_profile",
+      "type": "file",
+      "file": "graphify/obsidian/dataset_profile tool (planned).md",
+      "x": 20,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_experiment_compare",
+      "type": "file",
+      "file": "graphify/obsidian/experiment_compare tool (planned).md",
+      "x": 220,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_experiment_record",
+      "type": "file",
+      "file": "graphify/obsidian/experiment_record tool (planned).md",
+      "x": 420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_audit",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_audit tool (planned).md",
+      "x": 20,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_get_cells",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_get_cells tool (planned).md",
+      "x": 220,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_get_context",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_get_context tool (planned).md",
+      "x": 420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_get_execution",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_get_execution tool (planned).md",
+      "x": 20,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_get_proposal",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_get_proposal tool (planned).md",
+      "x": 220,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_propose_insert",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_propose_insert tool (planned).md",
+      "x": 420,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_propose_update",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_propose_update tool (planned).md",
+      "x": 20,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_notebook_run_cells",
+      "type": "file",
+      "file": "graphify/obsidian/notebook_run_cells tool (planned).md",
+      "x": 220,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_report_generate",
+      "type": "file",
+      "file": "graphify/obsidian/report_generate tool (planned).md",
+      "x": 420,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g1",
+      "type": "group",
+      "label": "Notebook Foundation and Audit",
+      "x": 960,
+      "y": 0,
+      "width": 880,
+      "height": 620,
+      "color": "2"
+    },
+    {
+      "id": "n_spec_notebook_core_bounded_reads",
+      "type": "file",
+      "file": "graphify/obsidian/Bounded notebook snapshots (planned).md",
+      "x": 980,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_foundation_pyodide",
+      "type": "file",
+      "file": "graphify/obsidian/Browser-local Pyodide runtime (planned).md",
+      "x": 1180,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_audit_stale",
+      "type": "file",
+      "file": "graphify/obsidian/Changed-cell stale findings (planned).md",
+      "x": 1380,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_audit_score",
+      "type": "file",
+      "file": "graphify/obsidian/Documented penalty audit score (planned).md",
+      "x": 980,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_audit",
+      "type": "file",
+      "file": "graphify/obsidian/Evidence-based notebook audit (planned).md",
+      "x": 1180,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_notebook_audit",
+      "type": "file",
+      "file": "graphify/obsidian/Evidence-based notebook audit module (planned).md",
+      "x": 1380,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_foundation",
+      "type": "file",
+      "file": "graphify/obsidian/Foundation build and packaging (planned).md",
+      "x": 980,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_foundation",
+      "type": "file",
+      "file": "graphify/obsidian/Foundation build and packaging module (planned).md",
+      "x": 1180,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_audit_heuristics",
+      "type": "file",
+      "file": "graphify/obsidian/Heuristic findings with evidence spans (planned).md",
+      "x": 1380,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_core",
+      "type": "file",
+      "file": "graphify/obsidian/Live notebook operations (planned).md",
+      "x": 980,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_notebook_core",
+      "type": "file",
+      "file": "graphify/obsidian/Live notebook operations module (planned).md",
+      "x": 1180,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_core_live_cells",
+      "type": "file",
+      "file": "graphify/obsidian/Live unsaved cells (planned).md",
+      "x": 1380,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_foundation_static_build",
+      "type": "file",
+      "file": "graphify/obsidian/Reproducible static JupyterLite build (planned).md",
+      "x": 980,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_notebook_core_revision_hash",
+      "type": "file",
+      "file": "graphify/obsidian/SHA-256 source revision tokens (planned).md",
+      "x": 1180,
+      "y": 400,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g2",
+      "type": "group",
+      "label": "Experiments and Reports",
+      "x": 1920,
+      "y": 0,
+      "width": 880,
+      "height": 520,
+      "color": "3"
+    },
+    {
+      "id": "n_spec_reporting_escape",
+      "type": "file",
+      "file": "graphify/obsidian/Escaped script-free HTML and Markdown (planned).md",
+      "x": 1940,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_reporting_limit",
+      "type": "file",
+      "file": "graphify/obsidian/Five-MiB report cap (planned).md",
+      "x": 2140,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_experiment_lab_metrics",
+      "type": "file",
+      "file": "graphify/obsidian/Macro classification metrics (planned).md",
+      "x": 2340,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_experiment_lab_records",
+      "type": "file",
+      "file": "graphify/obsidian/Persisted experiment provenance (planned).md",
+      "x": 1940,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_reporting",
+      "type": "file",
+      "file": "graphify/obsidian/Portable analysis reports (planned).md",
+      "x": 2140,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_reporting",
+      "type": "file",
+      "file": "graphify/obsidian/Portable analysis reports module (planned).md",
+      "x": 2340,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_reporting_provenance",
+      "type": "file",
+      "file": "graphify/obsidian/Report dataset and experiment provenance (planned).md",
+      "x": 1940,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_experiment_lab",
+      "type": "file",
+      "file": "graphify/obsidian/Reproducible classification experiments (planned).md",
+      "x": 2140,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_experiment_lab",
+      "type": "file",
+      "file": "graphify/obsidian/Reproducible classification experiments module (planned).md",
+      "x": 2340,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_experiment_lab_split",
+      "type": "file",
+      "file": "graphify/obsidian/Stratified 8020 split and seed 42 (planned).md",
+      "x": 1940,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_experiment_lab_preprocessing",
+      "type": "file",
+      "file": "graphify/obsidian/Training-only preprocessing (planned).md",
+      "x": 2140,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g3",
+      "type": "group",
+      "label": "Agent Workflow and Provenance",
+      "x": 2880,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "4"
+    },
+    {
+      "id": "n_agents_workflow",
+      "type": "file",
+      "file": "graphify/obsidian/Agent development workflow.md",
+      "x": 2900,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_agents_boundaries",
+      "type": "file",
+      "file": "graphify/obsidian/Agent engineering boundaries.md",
+      "x": 3100,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_skills_portability",
+      "type": "file",
+      "file": "graphify/obsidian/External skills portability and fallback practices.md",
+      "x": 3300,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_skills_graphify",
+      "type": "file",
+      "file": "graphify/obsidian/Graphify extraction and provenance workflow.md",
+      "x": 2900,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_notices_mit",
+      "type": "file",
+      "file": "graphify/obsidian/MIT notice retention for copied source.md",
+      "x": 3100,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_start",
+      "type": "file",
+      "file": "graphify/obsidian/Project onboarding documents.md",
+      "x": 3300,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_agents_skills",
+      "type": "file",
+      "file": "graphify/obsidian/Required skill routing.md",
+      "x": 2900,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_notices_upstream",
+      "type": "file",
+      "file": "graphify/obsidian/alliecatowojupyterlite-web-mcp inspiration.md",
+      "x": 3100,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g4",
+      "type": "group",
+      "label": "Browser Integration and Release",
+      "x": 0,
+      "y": 700,
+      "width": 660,
+      "height": 420,
+      "color": "5"
+    },
+    {
+      "id": "n_spec_webmcp_surface",
+      "type": "file",
+      "file": "graphify/obsidian/Browser tool adapter (planned).md",
+      "x": 20,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_webmcp_surface",
+      "type": "file",
+      "file": "graphify/obsidian/Browser tool adapter module (planned).md",
+      "x": 220,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_webmcp_surface_native_api",
+      "type": "file",
+      "file": "graphify/obsidian/Native document.modelContext registration (planned).md",
+      "x": 420,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_review_native",
+      "type": "file",
+      "file": "graphify/obsidian/Native host release verification requirement.md",
+      "x": 20,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_review_rollback",
+      "type": "file",
+      "file": "graphify/obsidian/Preview deployment rollback verification.md",
+      "x": 220,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_webmcp_surface_native_evidence",
+      "type": "file",
+      "file": "graphify/obsidian/Real host discovery and invocation evidence (planned).md",
+      "x": 420,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_review_gate",
+      "type": "file",
+      "file": "graphify/obsidian/Review and release gate.md",
+      "x": 20,
+      "y": 940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_webmcp_surface_validation",
+      "type": "file",
+      "file": "graphify/obsidian/Runtime argument validation (planned).md",
+      "x": 220,
+      "y": 940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g5",
+      "type": "group",
+      "label": "Product Delivery Status",
+      "x": 960,
+      "y": 700,
+      "width": 660,
+      "height": 420,
+      "color": "6"
+    },
+    {
+      "id": "n_todo_tracker",
+      "type": "file",
+      "file": "graphify/obsidian/Implementation completion tracker.md",
+      "x": 980,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_product",
+      "type": "file",
+      "file": "graphify/obsidian/NotebookPilot browser-native data science product (planned).md",
+      "x": 1180,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_plan_phases",
+      "type": "file",
+      "file": "graphify/obsidian/Phased implementation roadmap (planned).md",
+      "x": 1380,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_todo_repo",
+      "type": "file",
+      "file": "graphify/obsidian/Private GitHub repository (documented complete).md",
+      "x": 980,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_foundation",
+      "type": "file",
+      "file": "graphify/obsidian/Static JupyterLite build and sample notebook (documented as implemented).md",
+      "x": 1180,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_boundaries",
+      "type": "file",
+      "file": "graphify/obsidian/Tool guards are not Python sandbox (design boundary).md",
+      "x": 1380,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_plan_milestone",
+      "type": "file",
+      "file": "graphify/obsidian/Upload-profile-propose-approve-execute milestone (planned).md",
+      "x": 980,
+      "y": 940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g6",
+      "type": "group",
+      "label": "Dataset and Colab Portability",
+      "x": 1920,
+      "y": 700,
+      "width": 660,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_spec_dataset_intelligence",
+      "type": "file",
+      "file": "graphify/obsidian/CSV profiling and notebook portability (planned).md",
+      "x": 1940,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_dataset_intelligence",
+      "type": "file",
+      "file": "graphify/obsidian/CSV profiling and notebook portability module (planned).md",
+      "x": 2140,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_colab",
+      "type": "file",
+      "file": "graphify/obsidian/Colab file portability without runtime transfer (planned).md",
+      "x": 2340,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_dataset_intelligence_colab",
+      "type": "file",
+      "file": "graphify/obsidian/Colab notebook metadata portability (planned).md",
+      "x": 1940,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_dataset_intelligence_sharing",
+      "type": "file",
+      "file": "graphify/obsidian/Explicit raw sample sharing (planned).md",
+      "x": 2140,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_dataset_intelligence_csv",
+      "type": "file",
+      "file": "graphify/obsidian/UTF-8 CSV upload limits and profiling (planned).md",
+      "x": 2340,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g7",
+      "type": "group",
+      "label": "Human Approval Boundaries",
+      "x": 2880,
+      "y": 700,
+      "width": 660,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_spec_human_control",
+      "type": "file",
+      "file": "graphify/obsidian/Human review and execution approval (planned).md",
+      "x": 2900,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_human_control",
+      "type": "file",
+      "file": "graphify/obsidian/Human review and execution approval module (planned).md",
+      "x": 3100,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_human_control_policy",
+      "type": "file",
+      "file": "graphify/obsidian/Read-only default and external permission policy (planned).md",
+      "x": 3300,
+      "y": 780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_human_control_approval",
+      "type": "file",
+      "file": "graphify/obsidian/Separate human execution approval (planned).md",
+      "x": 2900,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_human_control_expiry",
+      "type": "file",
+      "file": "graphify/obsidian/Ten-minute proposal expiration (planned).md",
+      "x": 3100,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_contracts_approval",
+      "type": "file",
+      "file": "graphify/obsidian/UI-only human approval boundary (planned).md",
+      "x": 3300,
+      "y": 860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g8",
+      "type": "group",
+      "label": "Reliability Evaluation",
+      "x": 0,
+      "y": 1200,
+      "width": 660,
+      "height": 400,
+      "color": "3"
+    },
+    {
+      "id": "n_spec_evaluation_evidence",
+      "type": "file",
+      "file": "graphify/obsidian/Actual task evidence and nativeshim labels (planned).md",
+      "x": 20,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_evaluation",
+      "type": "file",
+      "file": "graphify/obsidian/Agent reliability and release evidence (planned).md",
+      "x": 220,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_capability_evaluation",
+      "type": "file",
+      "file": "graphify/obsidian/Agent reliability and release evidence module (planned).md",
+      "x": 420,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_evaluation_cases",
+      "type": "file",
+      "file": "graphify/obsidian/Repeated fixed reliability cases (planned).md",
+      "x": 20,
+      "y": 1360,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_spec_evaluation_violations",
+      "type": "file",
+      "file": "graphify/obsidian/Zero successful security violations (planned).md",
+      "x": 220,
+      "y": 1360,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g9",
+      "type": "group",
+      "label": "Foundation Test Structure",
+      "x": 960,
+      "y": 1200,
+      "width": 600,
+      "height": 400,
+      "color": "4"
+    },
+    {
+      "id": "n_test_foundation_foundationtests_test_notebook_schema_and_fixture_analysis",
+      "type": "file",
+      "file": "graphify/obsidian/.test_notebook_schema_and_fixture_analysis().md",
+      "x": 980,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_test_foundation_foundationtests",
+      "type": "file",
+      "file": "graphify/obsidian/FoundationTests.md",
+      "x": 1180,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_test_foundation",
+      "type": "file",
+      "file": "graphify/obsidian/test_foundation.py.md",
+      "x": 1380,
+      "y": 1280,
+      "width": 180,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_test_foundation_test_foundation_foundationtests",
+      "fromNode": "n_test_foundation",
+      "toNode": "n_test_foundation_foundationtests",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_test_foundation_foundationtests_test_foundation_foundationtests_test_notebook_schema_and_fixture_analysis",
+      "fromNode": "n_test_foundation_foundationtests",
+      "toNode": "n_test_foundation_foundationtests_test_notebook_schema_and_fixture_analysis",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_foundation_capability_foundation",
+      "fromNode": "n_spec_foundation",
+      "toNode": "n_capability_foundation",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_foundation_spec_notebook_core",
+      "fromNode": "n_spec_foundation",
+      "toNode": "n_spec_notebook_core",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_foundation_spec_foundation_static_build",
+      "fromNode": "n_spec_foundation",
+      "toNode": "n_spec_foundation_static_build",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_foundation_spec_foundation_pyodide",
+      "fromNode": "n_spec_foundation",
+      "toNode": "n_spec_foundation_pyodide",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_capability_notebook_core",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_capability_notebook_core",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_webmcp_surface",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_webmcp_surface",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_human_control",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_human_control",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_notebook_audit",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_notebook_audit",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_notebook_core_live_cells",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_notebook_core_live_cells",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_notebook_core_revision_hash",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_notebook_core_revision_hash",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_spec_notebook_core_bounded_reads",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_spec_notebook_core_bounded_reads",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_contracts_tools",
+      "fromNode": "n_spec_notebook_core",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_capability_webmcp_surface",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_capability_webmcp_surface",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_human_control",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_human_control",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_dataset_intelligence",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_dataset_intelligence",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_evaluation",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_evaluation",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_webmcp_surface_native_api",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_webmcp_surface_native_api",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_webmcp_surface_validation",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_webmcp_surface_validation",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_spec_webmcp_surface_native_evidence",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_spec_webmcp_surface_native_evidence",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_contracts_tools",
+      "fromNode": "n_spec_webmcp_surface",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_human_control_capability_human_control",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_capability_human_control",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_human_control_spec_experiment_lab",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_spec_experiment_lab",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_human_control_spec_human_control_policy",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_spec_human_control_policy",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_human_control_spec_human_control_approval",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_spec_human_control_approval",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_human_control_spec_human_control_expiry",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_spec_human_control_expiry",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_human_control_contracts_tools",
+      "fromNode": "n_spec_human_control",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_capability_dataset_intelligence",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_capability_dataset_intelligence",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_spec_experiment_lab",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_spec_experiment_lab",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_spec_notebook_audit",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_spec_notebook_audit",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_spec_dataset_intelligence_csv",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_spec_dataset_intelligence_csv",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_spec_dataset_intelligence_colab",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_spec_dataset_intelligence_colab",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_spec_dataset_intelligence_sharing",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_spec_dataset_intelligence_sharing",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_contracts_tools",
+      "fromNode": "n_spec_dataset_intelligence",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_capability_experiment_lab",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_capability_experiment_lab",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_spec_reporting",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_spec_reporting",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_spec_experiment_lab_split",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_spec_experiment_lab_split",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_spec_experiment_lab_metrics",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_spec_experiment_lab_metrics",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_spec_experiment_lab_preprocessing",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_spec_experiment_lab_preprocessing",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_spec_experiment_lab_records",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_spec_experiment_lab_records",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_contracts_tools",
+      "fromNode": "n_spec_experiment_lab",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_capability_notebook_audit",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_capability_notebook_audit",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_spec_reporting",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_spec_reporting",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_spec_notebook_audit_heuristics",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_spec_notebook_audit_heuristics",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_spec_notebook_audit_score",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_spec_notebook_audit_score",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_spec_notebook_audit_stale",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_spec_notebook_audit_stale",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_audit_contracts_tools",
+      "fromNode": "n_spec_notebook_audit",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_reporting_capability_reporting",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_capability_reporting",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_reporting_spec_evaluation",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_spec_evaluation",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_reporting_spec_reporting_escape",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_spec_reporting_escape",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_reporting_spec_reporting_provenance",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_spec_reporting_provenance",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_reporting_spec_reporting_limit",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_spec_reporting_limit",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_reporting_contracts_tools",
+      "fromNode": "n_spec_reporting",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_evaluation_capability_evaluation",
+      "fromNode": "n_spec_evaluation",
+      "toNode": "n_capability_evaluation",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_evaluation_spec_evaluation_cases",
+      "fromNode": "n_spec_evaluation",
+      "toNode": "n_spec_evaluation_cases",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_evaluation_spec_evaluation_violations",
+      "fromNode": "n_spec_evaluation",
+      "toNode": "n_spec_evaluation_violations",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_evaluation_spec_evaluation_evidence",
+      "fromNode": "n_spec_evaluation",
+      "toNode": "n_spec_evaluation_evidence",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_evaluation_contracts_tools",
+      "fromNode": "n_spec_evaluation",
+      "toNode": "n_contracts_tools",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_notebook_core_revision_hash_spec_notebook_audit_stale",
+      "fromNode": "n_spec_notebook_core_revision_hash",
+      "toNode": "n_spec_notebook_audit_stale",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_webmcp_surface_native_evidence_review_native",
+      "fromNode": "n_spec_webmcp_surface_native_evidence",
+      "toNode": "n_review_native",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_human_control_approval_contracts_approval",
+      "fromNode": "n_spec_human_control_approval",
+      "toNode": "n_contracts_approval",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_dataset_intelligence_colab_spec_colab",
+      "fromNode": "n_spec_dataset_intelligence_colab",
+      "toNode": "n_spec_colab",
+      "label": "conceptually_related_to [INFERRED]"
+    },
+    {
+      "id": "e_spec_experiment_lab_records_spec_reporting_provenance",
+      "fromNode": "n_spec_experiment_lab_records",
+      "toNode": "n_spec_reporting_provenance",
+      "label": "shares_data_with [INFERRED]"
+    },
+    {
+      "id": "e_agents_workflow_agents_skills",
+      "fromNode": "n_agents_workflow",
+      "toNode": "n_agents_skills",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_agents_workflow_agents_boundaries",
+      "fromNode": "n_agents_workflow",
+      "toNode": "n_agents_boundaries",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_agents_workflow_readme_start",
+      "fromNode": "n_agents_workflow",
+      "toNode": "n_readme_start",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_agents_skills_skills_graphify",
+      "fromNode": "n_agents_skills",
+      "toNode": "n_skills_graphify",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_agents_skills_skills_portability",
+      "fromNode": "n_agents_skills",
+      "toNode": "n_skills_portability",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_review_gate_review_native",
+      "fromNode": "n_review_gate",
+      "toNode": "n_review_native",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_review_gate_review_rollback",
+      "fromNode": "n_review_gate",
+      "toNode": "n_review_rollback",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_results",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_results",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_approval",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_approval",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_proposals",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_proposals",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_get_context",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_get_context",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_get_cells",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_get_cells",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_propose_update",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_propose_update",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_propose_insert",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_propose_insert",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_get_proposal",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_get_proposal",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_run_cells",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_run_cells",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_get_execution",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_get_execution",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_dataset_profile",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_dataset_profile",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_experiment_record",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_experiment_record",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_experiment_compare",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_experiment_compare",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_notebook_audit",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_notebook_audit",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_contracts_tools_contracts_report_generate",
+      "fromNode": "n_contracts_tools",
+      "toNode": "n_contracts_report_generate",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_product_spec_colab",
+      "fromNode": "n_spec_product",
+      "toNode": "n_spec_colab",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_product_spec_boundaries",
+      "fromNode": "n_spec_product",
+      "toNode": "n_spec_boundaries",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_product_readme_foundation",
+      "fromNode": "n_spec_product",
+      "toNode": "n_readme_foundation",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_product_plan_phases",
+      "fromNode": "n_spec_product",
+      "toNode": "n_plan_phases",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_spec_product_todo_tracker",
+      "fromNode": "n_spec_product",
+      "toNode": "n_todo_tracker",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_start_notices_upstream",
+      "fromNode": "n_readme_start",
+      "toNode": "n_notices_upstream",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_notices_upstream_notices_mit",
+      "fromNode": "n_notices_upstream",
+      "toNode": "n_notices_mit",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_plan_phases_plan_milestone",
+      "fromNode": "n_plan_phases",
+      "toNode": "n_plan_milestone",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_todo_tracker_todo_repo",
+      "fromNode": "n_todo_tracker",
+      "toNode": "n_todo_repo",
+      "label": "references [EXTRACTED]"
+    }
+  ]
+}

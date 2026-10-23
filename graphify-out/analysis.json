@@ -1,0 +1,255 @@
+{
+  "communities": {
+    "0": [
+      "contracts_dataset_profile",
+      "contracts_experiment_compare",
+      "contracts_experiment_record",
+      "contracts_notebook_audit",
+      "contracts_notebook_get_cells",
+      "contracts_notebook_get_context",
+      "contracts_notebook_get_execution",
+      "contracts_notebook_get_proposal",
+      "contracts_notebook_propose_insert",
+      "contracts_notebook_propose_update",
+      "contracts_notebook_run_cells",
+      "contracts_proposals",
+      "contracts_report_generate",
+      "contracts_results",
+      "contracts_tools"
+    ],
+    "1": [
+      "capability_foundation",
+      "capability_notebook_audit",
+      "capability_notebook_core",
+      "spec_foundation",
+      "spec_foundation_pyodide",
+      "spec_foundation_static_build",
+      "spec_notebook_audit",
+      "spec_notebook_audit_heuristics",
+      "spec_notebook_audit_score",
+      "spec_notebook_audit_stale",
+      "spec_notebook_core",
+      "spec_notebook_core_bounded_reads",
+      "spec_notebook_core_live_cells",
+      "spec_notebook_core_revision_hash"
+    ],
+    "2": [
+      "capability_experiment_lab",
+      "capability_reporting",
+      "spec_experiment_lab",
+      "spec_experiment_lab_metrics",
+      "spec_experiment_lab_preprocessing",
+      "spec_experiment_lab_records",
+      "spec_experiment_lab_split",
+      "spec_reporting",
+      "spec_reporting_escape",
+      "spec_reporting_limit",
+      "spec_reporting_provenance"
+    ],
+    "3": [
+      "agents_boundaries",
+      "agents_skills",
+      "agents_workflow",
+      "notices_mit",
+      "notices_upstream",
+      "readme_start",
+      "skills_graphify",
+      "skills_portability"
+    ],
+    "4": [
+      "capability_webmcp_surface",
+      "review_gate",
+      "review_native",
+      "review_rollback",
+      "spec_webmcp_surface",
+      "spec_webmcp_surface_native_api",
+      "spec_webmcp_surface_native_evidence",
+      "spec_webmcp_surface_validation"
+    ],
+    "5": [
+      "plan_milestone",
+      "plan_phases",
+      "readme_foundation",
+      "spec_boundaries",
+      "spec_product",
+      "todo_repo",
+      "todo_tracker"
+    ],
+    "6": [
+      "capability_dataset_intelligence",
+      "spec_colab",
+      "spec_dataset_intelligence",
+      "spec_dataset_intelligence_colab",
+      "spec_dataset_intelligence_csv",
+      "spec_dataset_intelligence_sharing"
+    ],
+    "7": [
+      "capability_human_control",
+      "contracts_approval",
+      "spec_human_control",
+      "spec_human_control_approval",
+      "spec_human_control_expiry",
+      "spec_human_control_policy"
+    ],
+    "8": [
+      "capability_evaluation",
+      "spec_evaluation",
+      "spec_evaluation_cases",
+      "spec_evaluation_evidence",
+      "spec_evaluation_violations"
+    ],
+    "9": [
+      "test_foundation",
+      "test_foundation_foundationtests",
+      "test_foundation_foundationtests_test_notebook_schema_and_fixture_analysis"
+    ]
+  },
+  "cohesion": {
+    "0": 0.13,
+    "1": 0.15,
+    "2": 0.2,
+    "3": 0.25,
+    "4": 0.25,
+    "5": 0.29,
+    "6": 0.33,
+    "7": 0.33,
+    "8": 0.4,
+    "9": 0.67
+  },
+  "gods": [
+    {
+      "id": "contracts_tools",
+      "label": "WebMCP tool contract v0.1 (planned)",
+      "edges": 23
+    },
+    {
+      "id": "spec_notebook_core",
+      "label": "Live notebook operations (planned)",
+      "edges": 9
+    },
+    {
+      "id": "spec_webmcp_surface",
+      "label": "Browser tool adapter (planned)",
+      "edges": 9
+    },
+    {
+      "id": "spec_experiment_lab",
+      "label": "Reproducible classification experiments (planned)",
+      "edges": 9
+    },
+    {
+      "id": "spec_human_control",
+      "label": "Human review and execution approval (planned)",
+      "edges": 8
+    },
+    {
+      "id": "spec_dataset_intelligence",
+      "label": "CSV profiling and notebook portability (planned)",
+      "edges": 8
+    },
+    {
+      "id": "spec_notebook_audit",
+      "label": "Evidence-based notebook audit (planned)",
+      "edges": 8
+    },
+    {
+      "id": "spec_reporting",
+      "label": "Portable analysis reports (planned)",
+      "edges": 8
+    },
+    {
+      "id": "spec_evaluation",
+      "label": "Agent reliability and release evidence (planned)",
+      "edges": 7
+    },
+    {
+      "id": "spec_product",
+      "label": "NotebookPilot browser-native data science product (planned)",
+      "edges": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Live notebook operations module (planned)",
+      "target": "Live notebook operations (planned)",
+      "source_files": [
+        "CAPABILITY_MAP.md",
+        "SPEC-notebook-core.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Live notebook operations module (planned)` unexpectedly reaches hub `Live notebook operations (planned)`"
+    },
+    {
+      "source": "Browser tool adapter module (planned)",
+      "target": "Browser tool adapter (planned)",
+      "source_files": [
+        "CAPABILITY_MAP.md",
+        "SPEC-webmcp-surface.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Browser tool adapter module (planned)` unexpectedly reaches hub `Browser tool adapter (planned)`"
+    },
+    {
+      "source": "Human review and execution approval module (planned)",
+      "target": "Human review and execution approval (planned)",
+      "source_files": [
+        "CAPABILITY_MAP.md",
+        "SPEC-human-control.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Human review and execution approval module (planned)` unexpectedly reaches hub `Human review and execution approval (planned)`"
+    },
+    {
+      "source": "CSV profiling and notebook portability module (planned)",
+      "target": "CSV profiling and notebook portability (planned)",
+      "source_files": [
+        "CAPABILITY_MAP.md",
+        "SPEC-dataset-intelligence.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `CSV profiling and notebook portability module (planned)` unexpectedly reaches hub `CSV profiling and notebook portability (planned)`"
+    },
+    {
+      "source": "Reproducible classification experiments module (planned)",
+      "target": "Reproducible classification experiments (planned)",
+      "source_files": [
+        "CAPABILITY_MAP.md",
+        "SPEC-experiment-lab.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Reproducible classification experiments module (planned)` unexpectedly reaches hub `Reproducible classification experiments (planned)`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `WebMCP tool contract v0.1 (planned)` connect `Tool Contracts` to `Notebook Foundation and Audit`, `Experiments and Reports`, `Browser Integration and Release`, `Dataset and Colab Portability`, `Human Approval Boundaries`, `Reliability Evaluation`?",
+      "why": "High betweenness centrality (0.377) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `CSV profiling and notebook portability (planned)` connect `Dataset and Colab Portability` to `Tool Contracts`, `Notebook Foundation and Audit`, `Experiments and Reports`, `Browser Integration and Release`?",
+      "why": "High betweenness centrality (0.234) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Browser tool adapter (planned)` connect `Browser Integration and Release` to `Tool Contracts`, `Notebook Foundation and Audit`, `Dataset and Colab Portability`, `Human Approval Boundaries`, `Reliability Evaluation`?",
+      "why": "High betweenness centrality (0.177) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Foundation build and packaging module (planned)`, `Live notebook operations module (planned)`, `Browser tool adapter module (planned)` to the rest of the system?",
+      "why": "52 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Tool Contracts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

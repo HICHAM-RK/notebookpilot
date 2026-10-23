@@ -1,0 +1,28 @@
+{
+  "source": "locally installed Graphify skill package",
+  "dependency_packages": {
+    "graphifyy": "0.9.94",
+    "graspologic": "3.4.4"
+  },
+  "files": {
+    "__init__.py": "58606f1cb9efc7e9560bd2903f146421ac5ee8af172fbf0519a49062f1ae2c79",
+    "__main__.py": "4809e17578182b7c56b3b9cb50a9bb20caddfaa5c5e4798bf270d5d1ed41eb04",
+    "analyze.py": "c6c2407894080354621f6f874a9607204ee62930fe802298b887c6c2f4723915",
+    "benchmark.py": "70125776263b117dd0fd712b6e5a0b8c6acc076cb1afdc8bd2ade5578978f322",
+    "build.py": "dd5bd7029b6868f61f16b2ca046102f495289db457be264a9270821d93169645",
+    "cache.py": "42748f4cfb16e5698b738859523e8c6079574bdf0786803a4c042ce54fa3fbe4",
+    "cluster.py": "ccc939842931341527e98240d1499364137cbc93437b3369d4fdd9dccb65260a",
+    "detect.py": "e021c7850a6542827e205b4e80dd2b86367ab7b5b0e98b6bcd756303aac86d97",
+    "export.py": "c83fda03694f2f3f4603eb66ed8199dc04458013d3f43276ce53a9fea0f5c0ff",
+    "extract.py": "a4251af3ebfd6259d070fd2f071c2eb542ee59a7db36c5e9b6a69f2acfda1cbb",
+    "hooks.py": "4e53c7f74cd76edd01b135266e70574020fd242d88307bb0eb9fc501b4e297b1",
+    "ingest.py": "4150fe11ee42a85409f06deb8749ed10b649ba4940cd4151cfdf10e2a9050bad",
+    "manifest.py": "c865a2c577d4bf618d19d512d1f687ea0c961b8c09879b40d414536f184f7da2",
+    "report.py": "28fd1db62eab7395dc635431aaad945a7c1b8c34f8d46a4f2cf5a31b957a0c45",
+    "security.py": "056b6c33c4a0e47dd1dadeffb33a40e728f5e01a9ff3c99a43213ed7dad58c95",
+    "serve.py": "e718d834558f5a531526b06c6bf92f6dd3bcd7451580fe1ac76036314f4a31fd",
+    "validate.py": "62ab73fed07089cfc3a87702a1ff15f7652c551c1a5b716b3964d1d96319adfd",
+    "watch.py": "69946c3723791c817d748b7450fd892f774acda7730a71fb69d240515add52bf",
+    "wiki.py": "fc1292d1cf8e22c3b7298031e5e0b57be85cc7936858f5072990f25dc7b1845d"
+  }
+}
