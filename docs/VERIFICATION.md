@@ -47,7 +47,7 @@ The only Python `exec` in the foundation test runs the repository-owned fixture.
 
 ## Remote evidence
 
-GitHub API verified HICHAM-RK/notebookpilot remains private with default branch main. Current build-package branch is codex/agent-build-package. Remote commit/run evidence will be appended after push. No deployment or branch-protection configuration is claimed.
+GitHub API verified HICHAM-RK/notebookpilot remains private with default branch main. Build-package branch codex/agent-build-package was pushed and opened as [draft PR #1](https://github.com/HICHAM-RK/notebookpilot/pull/1). [Foundation checks run 39968654567](https://github.com/HICHAM-RK/notebookpilot/actions/runs/39968654567) completed successfully on commit `904762750185b2c9cab863b86ad7ea5f3a48e41f`, including Linux clean installation, build and real Chromium Python execution. This evidence paragraph is a documentation-only follow-up to that tested commit. No deployment or branch-protection configuration is claimed.
 
 ## Product gates still open
 
