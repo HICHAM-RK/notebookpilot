@@ -2,7 +2,7 @@
 
 - [x] Initialize local repository and attribution.
 - [x] Write product requirements and build phases.
-- [ ] Create private GitHub repository, push, verify privacy and remote SHA.
+- [x] Create private GitHub repository and push initial history: https://github.com/HICHAM-RK/notebookpilot (private label verified).
 - [ ] Foundation packaging: resolve compatible versions and lock dependencies. Verify clean install and compilation. Files: package manifests, locks, extension entry point.
 - [ ] Foundation runtime: build JupyterLite with example notebook. Verify real Python output. Depends on packaging. Files: build script, site config, sample notebook.
 - [ ] Foundation checks: implement lint, unit/browser tests and CI. Verify all documented commands. Depends on runtime. Files: test configs, package scripts, workflow.
