@@ -1,19 +1,52 @@
-# Work tracker
+# Work tracker and implementation tasks
 
-- [x] Initialize local repository and attribution.
-- [x] Write product requirements and build phases.
-- [x] Create private GitHub repository and push initial history: https://github.com/HICHAM-RK/notebookpilot (private label verified).
-- [ ] Foundation packaging: resolve compatible versions and lock dependencies. Verify clean install and compilation. Files: package manifests, locks, extension entry point.
-- [ ] Foundation runtime: build JupyterLite with example notebook. Verify real Python output. Depends on packaging. Files: build script, site config, sample notebook.
-- [ ] Foundation checks: implement lint, unit/browser tests and CI. Verify all documented commands. Depends on runtime. Files: test configs, package scripts, workflow.
-- [ ] Checkpoint: record foundation runtime evidence.
-- [ ] Specify and implement guarded live notebook operations.
-- [ ] Add WebMCP registration and real-host smoke test.
-- [ ] Add proposal and execution approval UI with browser tests.
-- [ ] Add CSV profiling and Colab round-trip fixtures.
-- [ ] Checkpoint: upload → profile → propose → approve → execute.
-- [ ] Implement reproducible classification experiments.
-- [ ] Implement notebook audit and report exports.
-- [ ] Run agent evaluation and release review.
+Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does not complete it. `ext/` means future packages/notebookpilot/. For every task run typecheck, lint and its relevant tests; browser checks require a fresh build. Tests specified below are requirements to add, not tests already implemented. Split a task if more than five files need behavioral changes.
 
-Expand later-phase tasks with acceptance criteria, files and verification commands before implementation. Unchecked items remain incomplete.
+## Foundation
+
+- [x] F0: Initialize repository, attribution and initial private GitHub history.
+- [x] F1: Pin JupyterLite dependencies, build static site and validate sample notebook. Files: pyproject.toml, uv.lock, jupyter-lite.json, content/welcome.ipynb, content/data/customers.csv. Evidence: frozen sync/build and trusted-fixture unit test.
+- [x] F2: Add test tooling and CI configuration; prove real Pyodide sample output. Files: package.json/lock, playwright.config.ts, e2e/foundation.spec.ts, .github/workflows/ci.yml. Hosted CI execution is recorded separately.
+- [ ] F3: Package original JupyterLab extension. Depends F2; SPEC-foundation. Files: ext/package.json, ext/pyproject.toml, ext/src/index.ts, ext/tsconfig.json, ext/tests/activation.test.ts. Acceptance: activation in built JupyterLite, compatible Jupyter packages pinned, original implementation. Verify activation unit test and browser-visible status.
+- [ ] F4: Wire extension into root checks and build. Depends F3. Files: package.json/lock, tsconfig.json, .github/workflows/ci.yml, ext/jest.config.js. Acceptance: production TS/TSX included, Jest wired, prebuilt extension installed into site; deliberate production type/test errors fail checks. Verify clean installation and all root commands; update SPEC-foundation with packaging commands.
+
+## Notebook and human control
+
+- [ ] N1: Live snapshots and revisions. Depends F4; SPEC-notebook-core. Files: ext/src/notebook/adapter.ts, ext/src/notebook/revisions.ts, ext/tests/notebook.test.ts. Acceptance: unsaved text returned, stable IDs, UTF-8 SHA-256, no-active-notebook and deleted-cell cases. Verify actual Jupyter model integration tests.
+- [ ] H1: Permissions. Depends N1; SPEC-human-control. Files: ext/src/control/policy.ts, ext/src/ui/permissions.tsx, ext/tests/policy.test.ts. Acceptance: read-only default, hidden excluded, corrupt policy denies writes, imported metadata cannot elevate permission. Verify permission matrix and keyboard controls.
+- [ ] H2: Proposals and diff review. Depends H1. Files: ext/src/control/proposals.ts, ext/src/ui/review.tsx, ext/tests/control.test.ts, e2e/review.spec.ts. Acceptance: accept once, reject changes nothing, stale/deleted target fails, ten-minute expiry, insertion anchor checked, no execution. Verify browser accept/reject and concurrent-edit race.
+- [ ] N2: Approved execution queue. Depends H2. Files: ext/src/notebook/execution.ts, ext/src/ui/execution.tsx, ext/tests/execution.test.ts, e2e/execution.spec.ts. Acceptance: separate approval, permission/hash recheck at dispatch, visible cells only, 20-cell/120s limits, cancellation/restart resolves records, human work not inadvertently interrupted. Verify real output, denial, timeout and edit-after-approval.
+
+## WebMCP
+
+- [ ] W1: Native API and lifecycle. Depends N1,H1; SPEC-webmcp-surface. Files: ext/src/webmcp/register.ts, ext/src/webmcp/types.ts, ext/tests/registration.test.ts, docs/HOST_VERIFICATION.md. Acceptance: host API/version recorded, feature detection, teardown, no duplicate registration, unsupported browser still usable. Verify native discovery separately from mocked lifecycle tests.
+- [ ] W2: Notebook tool validation/routing. Depends W1,N2. Files: ext/src/webmcp/validation.ts, ext/src/webmcp/tools.ts, ext/tests/webmcp.test.ts, contracts/tools.json. Acceptance: contract parity, unknown fields/bounds rejected, scoped errors, result byte limits, no approval tool. Verify adversarial fixtures and adapter integration.
+- [ ] W3: Native host journey. Depends W2. Files: docs/HOST_VERIFICATION.md, e2e/webmcp.spec.ts. Acceptance: host discovers tools, reads unsaved cell, proposes edit, human accepts and separately approves execution, real output returned; denial leaves state unchanged. Record host/version/prompts/calls/outcomes. A shim never passes this gate.
+
+## Dataset and Colab
+
+- [ ] D1: CSV validation/profile. Depends H1,W2; SPEC-dataset-intelligence. Files: ext/src/data/import.ts, ext/src/data/profile.ts, ext/tests/data.test.ts, content/fixtures/profile.csv. Acceptance: correct counts, quoted commas/newlines/Unicode accepted, duplicate headers/ragged rows rejected, 10MiB/100k row bounds, original-byte hash, formula text inert. Verify exact edge-fixture results and generated boundary inputs.
+- [ ] D2: Dataset UI and tools. Depends D1,N2. Files: ext/src/ui/datasets.tsx, ext/src/webmcp/data-tools.ts, ext/tests/data-tools.test.ts, e2e/dataset.spec.ts. Acceptance: explicit sharing, no raw samples by default, bounded results, visible loading/errors/cancel, no hidden Python. Verify upload → profile → propose → review → execute.
+- [ ] D3: Colab file round-trip. Depends D1,N1. Files: ext/src/notebook/portability.ts, ext/tests/portability.test.ts, content/fixtures/colab.ipynb, e2e/import.spec.ts. Acceptance: nbformat4/20MiB validation, cells/unknown metadata preserved, no autorun or active imported HTML, GPU/shell/Drive/google.colab warnings. Verify downloaded notebook schema and metadata. Live Colab runtime access is out of scope.
+
+## Experiments
+
+- [ ] X1: Reproducible training cells. Depends D2,N2; SPEC-experiment-lab. Files: ext/src/experiments/templates.ts, ext/src/experiments/model.ts, ext/tests/templates.test.ts, e2e/experiment.spec.ts. Acceptance: logistic regression/random forest in actual Pyodide, stratified80/20 seed42, train-only preprocessing, impossible split rejected, versions/metrics recorded. Verify known labelled fixture, repeatability and preprocessing leakage.
+- [ ] X2: Persist and compare records. Depends X1. Files: ext/src/experiments/store.ts, ext/src/experiments/compare.ts, ext/src/webmcp/experiment-tools.ts, ext/tests/experiments.test.ts, ext/src/ui/experiments.tsx. Acceptance: trusted execution-derived records, reload persistence, visible quota failures, failed/cancelled not ranked, exact dataset/target/features/split compatibility, delete/export controls. Verify forged IDs, mismatches and browser reload.
+
+## Audit and reporting
+
+- [ ] A1: Audit rules. Depends N1,H1,D1; SPEC-notebook-audit. Files: ext/src/audit/rules.ts, ext/src/audit/model.ts, ext/tests/audit.test.ts. Acceptance: fixed documented penalties, evidence spans, hidden cells excluded, stale findings invalidated, unsupported syntax not evaluated. Verify positive/negative cases for every rule.
+- [ ] A2: Audit UI/tool. Depends A1,W2. Files: ext/src/ui/audit.tsx, ext/src/webmcp/audit-tools.ts, e2e/audit.spec.ts. Acceptance: scope/heuristic limitations visible, keyboard navigation to cells, empty/error states. Verify changed-source warning and keyboard flow.
+- [ ] R1: Portable report rendering. Depends X2,A2; SPEC-reporting. Files: ext/src/reports/model.ts, ext/src/reports/export.ts, ext/tests/reports.test.ts. Acceptance: exact metrics/provenance, failed/missing runs labelled, HTML/Markdown escaped, no scripts/external requests, 5MiB cap. Verify hostile strings, size limits and report contents.
+- [ ] R2: Export UI/tools. Depends R1,W2. Files: ext/src/ui/reports.tsx, ext/src/webmcp/report-tools.ts, e2e/report.spec.ts. Acceptance: explicit local download, scope visible, raw rows excluded by default, standalone report works offline. Verify downloads and rendering without external requests.
+
+## Evaluation and release
+
+- [ ] E1: Evaluation runner. Depends W3,R2; SPEC-evaluation. Files: eval/cases.json, eval/run.ts, eval/report.ts, ext/tests/evaluation.test.ts. Acceptance: read/profile/stale edit/deny/run/export cases three times each; actual calls, validity/success/latency, native/shim labels, failures retained. Verify deterministic scorer fixtures and native run. Never invent costs.
+- [ ] E2: Security/accessibility review. Depends E1. Files: docs/REVIEW.md, docs/VERIFICATION.md, e2e/accessibility.spec.ts. Acceptance: zero successful unauthorized execution/hidden-data access, keyboard flows, no secrets, render/upload boundary tests, dependency audit triage. Verify fresh browser profile and complete checks; record findings.
+- [ ] E3: Hosted demo. Depends E2. Files: deployment workflow/config, README.md, docs/RELEASE.md. Acceptance: approved host/privacy choice, HTTPS/assets/worker behavior verified, native journey on hosted URL, rollback/backup instructions and attribution. No new paid service or credentials without authorization. Verify deployed commit and complete journey.
+
+## Completion rule
+
+Build-package readiness requires specs, contracts, actionable tasks, skills, test/CI setup, browser evidence, Graphify and reviewed handoff. Product readiness additionally requires every unchecked task above. These are distinct milestones; documentation never completes an implementation task.

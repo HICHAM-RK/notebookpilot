@@ -14,6 +14,7 @@ Read these documents before changing code:
 2. The applicable `SPEC-<module>.md` for requirements and acceptance criteria.
 3. `tasks/plan.md` and `tasks/todo.md` for approved implementation work.
 4. `THIRD_PARTY_NOTICES.md` before copying or adapting external code.
+5. `docs/START_HERE.md`, `docs/TOOL_CONTRACTS.md`, and `docs/VERIFICATION.md` for the handoff and current evidence.
 
 If code and an approved specification disagree, update the specification first or stop and surface the conflict.
 
@@ -38,13 +39,13 @@ Use the following Codex skills when their trigger applies:
 | `observability-and-instrumentation` | Adding tool-call traces, experiment history, diagnostics, or metrics |
 | `shipping-and-launch` | Preparing the hosted demo or a release |
 
-There is no installed `graphify` skill. Use Mermaid diagrams in Markdown for architecture, flows, state machines, and trust boundaries. Keep diagrams synchronized with the implementation.
+Graphify is installed at `/Users/hicham/.codex/skills/graphify/skill.md`. Follow docs/SKILLS.md for Graphify, skill portability, CI and debugging. Mermaid diagrams complement the extracted graph.
 
 ## Development workflow
 
 Follow this sequence for every module:
 
-1. Specify: write or update `SPEC-<module>.md` and obtain approval.
+1. Specify: read or update `SPEC-<module>.md`. Existing user authorization covers the agreed build package; do not ask again for routine work within it. Obtain approval for material product-scope changes.
 2. Plan: update `tasks/plan.md` and `tasks/todo.md`.
 3. Test first: add one meaningful failing test for the next behavior.
 4. Implement the smallest vertical slice that passes it.
@@ -91,14 +92,14 @@ Do not combine unrelated refactoring and feature behavior in one commit.
 
 ## Quality gates
 
-Before merge, the affected workspace must pass the applicable checks. The npm commands below are planned extension gates and do not exist yet. Current site build commands are in SPEC-foundation.md; never report a nonexistent check as passed.
+Before merge, run the applicable commands below. These now cover the foundation notebook, browser smoke test and test-tool TypeScript. Extend them to production extension sources as those are implemented; passing foundation checks does not prove future features.
 
 ```bash
 npm run typecheck
 npm run lint:check
 npm test
-npm run test:e2e
 npm run build
+npm run test:e2e
 ```
 
 Commands may be refined in the approved foundation specification. A gate may be skipped only when it is structurally irrelevant to a documentation-only change, and the reason must be recorded in the review summary.

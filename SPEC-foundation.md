@@ -22,7 +22,7 @@ Open http://localhost:8000/lab/index.html. These commands build and serve static
 - No API keys, private datasets or upstream implementation code are included.
 
 ## Structure and style
-content/ contains original demonstration fixtures; root configuration defines the site; future packages/notebookpilot contains the TypeScript extension. Use explicit TypeScript interfaces, single quotes, two-space indentation, and structured errors at tool boundaries.
+content/ contains original demonstration fixtures; root configuration defines the site; future packages/notebookpilot contains the TypeScript extension. Use explicit TypeScript interfaces, Prettier formatting, two-space indentation, and structured errors at tool boundaries.
 
 ## Verification
-Validate notebook schema and execute its code against its fixture using Python; then check browser execution independently. TypeScript unit tests and Playwright are introduced with the extension; do not claim currently nonexistent npm scripts pass.
+`npm test` validates notebook schema and executes the trusted sample against its CSV using CPython. `npm run test:e2e` opens the built notebook and checks actual Pyodide output in Chromium. Run `npm run build` before browser tests. `npm run typecheck` checks test/config TypeScript, and `npm run lint:check` checks its formatting. These scripts and CI exist; extension packaging and extension unit tests remain task F3. Record verification in docs/VERIFICATION.md.
