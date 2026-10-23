@@ -7,8 +7,8 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 - [x] F0: Initialize repository, attribution and initial private GitHub history.
 - [x] F1: Pin JupyterLite dependencies, build static site and validate sample notebook. Files: pyproject.toml, uv.lock, jupyter-lite.json, content/welcome.ipynb, content/data/customers.csv. Evidence: frozen sync/build and trusted-fixture unit test.
 - [x] F2: Add test tooling and CI configuration; prove real Pyodide sample output. Files: package.json/lock, playwright.config.ts, e2e/foundation.spec.ts, .github/workflows/ci.yml. Hosted CI execution is recorded separately.
-- [ ] F3: Package original JupyterLab extension. Depends F2; SPEC-foundation. Files: ext/package.json, ext/pyproject.toml, ext/src/index.ts, ext/tsconfig.json, ext/tests/activation.test.ts. Acceptance: activation in built JupyterLite, compatible Jupyter packages pinned, original implementation. Verify activation unit test and browser-visible status.
-- [ ] F4: Wire extension into root checks and build. Depends F3. Files: package.json/lock, tsconfig.json, .github/workflows/ci.yml, ext/jest.config.js. Acceptance: production TS/TSX included, Jest wired, prebuilt extension installed into site; deliberate production type/test errors fail checks. Verify clean installation and all root commands; update SPEC-foundation with packaging commands.
+- [x] F3: Original JupyterLab extension packaged and activated. Files: ext/package.json, ext/src/index.ts, ext/src/workspace.tsx, ext/src/view.tsx, ext/tsconfig.json. Actual browser activation/open/close checked; direct federated-extension packaging replaces an unnecessary Python wheel as documented in SPEC-foundation.
+- [x] F4: Extension wired into root build/typecheck/formatting/Jest and existing CI commands. Production type-error mutation failed the check as required; unit test first failed before the view existed. Verify evidence in docs/VERIFICATION.md. Browser tests cover activation and actual Python.
 
 ## Notebook and human control
 

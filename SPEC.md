@@ -1,6 +1,6 @@
 # NotebookPilot requirements
 
-Status: agent build package and tested static-site foundation. Product features remain implementation tasks. See docs/VERIFICATION.md for evidence and tasks/todo.md for work order.
+Status: agent build package, tested static-site foundation and original sidebar extension. Agent tools and analysis features remain implementation tasks. See docs/VERIFICATION.md for evidence and tasks/todo.md for work order.
 
 ## Objective
 ChatGPT uses WebMCP tools to work with a live JupyterLite notebook. Python runs through Pyodide. No embedded chatbot or application API key is needed.

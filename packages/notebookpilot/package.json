@@ -1,0 +1,23 @@
+{
+  "name": "@notebookpilot/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Human-controlled data science tools for JupyterLite",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "files": [
+    "lib",
+    "style"
+  ],
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "labextension"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "4.6.4",
+    "@jupyterlab/apputils": "4.7.4",
+    "@jupyterlab/notebook": "4.6.4",
+    "react": "18.3.1"
+  }
+}

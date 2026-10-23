@@ -2,7 +2,7 @@
 
 NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebMCP site tools to inspect datasets, propose safe notebook changes, execute approved cells, and produce reproducible analysis.
 
-The project contains an agent build package and a tested JupyterLite foundation. The custom AI features are specified but not implemented. Start with:
+The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. Agent tools and analysis features remain implementation work. Start with:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
@@ -17,12 +17,13 @@ The initial static JupyterLite build and sample notebook are implemented. Produc
 
 ```sh
 uv sync --frozen
-uv run jupyter lite build --contents content --output-dir _output
+npm ci --ignore-scripts
+npm run build
 uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output
 ```
 
 Open http://localhost:8000/lab/index.html and run welcome.ipynb.
-Build, notebook schema and actual Pyodide sample output were checked locally. Custom extension, native WebMCP and approval controls remain implementation tasks. Colab support is planned as `.ipynb` import/export, not connection to a live Colab runtime.
+Build, extension activation and actual Pyodide sample output were checked locally. Native WebMCP and approval controls remain implementation tasks. Colab support is planned as `.ipynb` import/export, not connection to a live Colab runtime.
 
 ## Development checks
 
@@ -38,5 +39,5 @@ npm run build
 npm run test:e2e
 ```
 
-Port 8000 must be free for browser tests. First-use Python runtime downloads require internet. Current TypeScript checks cover test/config files; F3/F4 will extend them to production extension code. GitHub Actions configuration runs these foundation checks on pushes and pull requests.
+Port 8000 must be free for browser tests. First-use Python runtime downloads require internet. TypeScript and formatting checks include extension sources and tests. `npm test` runs Python fixture/contract tests and extension Jest tests. GitHub Actions runs these commands on pushes and pull requests. See docs/DEPENDENCIES.md for dependency compatibility and open rendering-advisory release gates.
 

@@ -4,7 +4,7 @@
 
 NotebookPilot adds a human-controlled AI tool surface to a browser notebook. The first complete demonstration is CSV upload → bounded profile → proposed cleaning cell → human review → separate execution approval → real Python output. The next milestone adds reproducible classification comparisons, audits and downloadable reports.
 
-This repository currently contains the build package and a working JupyterLite sample. No NotebookPilot extension or native WebMCP integration exists yet. Do not mistake the specifications or Graphify nodes for implemented features.
+This repository contains the build package, a working JupyterLite sample and the original sidebar extension. Native WebMCP integration is not implemented yet. Do not mistake the specifications or historical Graphify nodes for implemented features.
 
 ## Start a development session
 
@@ -20,7 +20,7 @@ Commands run from the repository root. `npm run serve` serves the already built 
 
 Existing site fixtures: content/. Existing foundation tests: tests/ and e2e/. Planned extension: packages/notebookpilot/ with src/, tests/ and package/build metadata. Paths in module specs beginning src/ or tests/ are relative to that future extension unless explicitly marked root. Browser tests remain root e2e/. Evaluation files live in root eval/.
 
-F3 must wire extension source into typecheck, formatting, Jest and the production JupyterLite build. Until then, npm test covers only foundation tests. Never report production coverage from those checks.
+F3/F4 wire extension source into typecheck, formatting, Jest and the production JupyterLite build. npm test covers the Python fixture/contracts and extension UI unit test. The next slice is N1/H1: live notebook reads and permissions. Do not report coverage of future tools from foundation checks.
 
 ## Connection and portability
 

@@ -2,6 +2,16 @@
 
 Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphify snapshot and JupyterLite foundation. This is not a product-completion report.
 
+## Implementation checkpoint: F3/F4
+
+The original @notebookpilot/extension now builds as a prebuilt federated extension and is included in the JupyterLite site. Its React sidebar shows the selected notebook and a truthful disconnected-agent state. It handles notebook opening and closing without breaking ordinary Python execution. The UI uses Jupyter theme tokens and contains no agent mutation/execution path yet.
+
+Verification: npm ci --ignore-scripts, full typecheck, formatting, five Python tests, one Jest view test, extension/site build and two browser tests passed. The new activation test first failed because no sidebar existed; the view unit test first failed before its module existed. A deliberate production TypeScript error failed the root check and was restored. Browser traces identified Jupyter's save-on-close dialog and the test now explicitly discards fixture changes. A final targeted browser run passed in 2.8s; screenshot test-results/notebookpilot-workspace.png was visually inspected at 1280×720. Native WebMCP remains untested.
+
+Self-review: source/config/test boundaries checked, UI text uses React escaping, signal subscription disconnects on disposal, no source reads or hidden execution added. Build metadata comes from the locked local JupyterLite archive, without extracting arbitrary archive paths. Direct federation avoids an unnecessary Python distribution. Dependency compatibility and inherited advisories are recorded in docs/DEPENDENCIES.md; no high/critical npm findings, but rendering advisories remain release gates. Existing CI calls the expanded root commands; hosted evidence for this implementation is pending push.
+
+The sections below record the earlier build-package baseline; their historical test counts and zero-vulnerability npm result do not describe the expanded dependency tree.
+
 ## Requirements audit
 
 | Requested deliverable | Evidence | Status |
@@ -51,4 +61,4 @@ GitHub API verified HICHAM-RK/notebookpilot remains private with default branch 
 
 ## Product gates still open
 
-F3 onward in tasks/todo.md is implementation work. Native ChatGPT discovery/approval/execution has NOT been tested; docs/HOST_VERIFICATION.md defines that gate. Extension activation, Colab round-trip, profiling, classification, audits, reports, accessibility and hosted release are not implemented or passed by the foundation checks. No paid services, public deployment or production credentials were added.
+N1 onward in tasks/todo.md is implementation work. Native ChatGPT discovery/approval/execution has NOT been tested; docs/HOST_VERIFICATION.md defines that gate. Colab round-trip, profiling, classification, audits, reports, full accessibility and hosted release are not implemented or passed by the foundation checks. No paid services, public deployment or production credentials were added.

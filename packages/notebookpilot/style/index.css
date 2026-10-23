@@ -1,0 +1,27 @@
+.np-workspace {
+  min-width: 240px;
+  padding: 16px;
+  overflow: auto;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font: var(--jp-ui-font-size1) var(--jp-ui-font-family);
+}
+
+.np-workspace h2 {
+  margin: 0 0 8px;
+  font-size: var(--jp-ui-font-size3);
+}
+
+.np-workspace h3 {
+  margin: 24px 0 8px;
+  font-size: var(--jp-ui-font-size1);
+}
+
+.np-workspace p {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.np-workspace .np-subtitle {
+  color: var(--jp-ui-font-color2);
+}

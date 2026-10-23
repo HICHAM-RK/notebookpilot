@@ -92,7 +92,7 @@ Do not combine unrelated refactoring and feature behavior in one commit.
 
 ## Quality gates
 
-Before merge, run the applicable commands below. These now cover the foundation notebook, browser smoke test and test-tool TypeScript. Extend them to production extension sources as those are implemented; passing foundation checks does not prove future features.
+Before merge, run the applicable commands below. These cover the foundation notebook, planned contracts, production extension TypeScript, Jest and browser activation/runtime tests. Extend behavioral tests as features are implemented; passing current checks does not prove future features.
 
 ```bash
 npm run typecheck

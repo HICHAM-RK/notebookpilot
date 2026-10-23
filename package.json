@@ -3,21 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/notebookpilot"
+  ],
   "engines": {
     "node": ">=24 <25"
   },
   "scripts": {
-    "build": "uv run jupyter lite build --contents content --output-dir _output",
-    "test": "uv run python -m unittest discover -s tests -v",
-    "typecheck": "tsc --noEmit",
-    "lint:check": "prettier --check package.json tsconfig.json playwright.config.ts e2e/*.ts",
+    "build": "npm run build:extension && uv run jupyter lite build --contents content --output-dir _output --LiteBuildConfig.federated_extensions=packages/notebookpilot/labextension",
+    "build:extension": "tsc -p packages/notebookpilot/tsconfig.json && uv run python scripts/prepare_core.py && build-labextension --core-path build/core packages/notebookpilot",
+    "test": "uv run python -m unittest discover -s tests -v && npm run test:unit",
+    "test:unit": "jest --config packages/notebookpilot/jest.config.cjs --runInBand",
+    "typecheck": "tsc --noEmit && tsc -p packages/notebookpilot/tsconfig.test.json --noEmit",
+    "lint:check": "prettier --check package.json tsconfig.json playwright.config.ts e2e/*.ts packages/notebookpilot/package.json packages/notebookpilot/tsconfig*.json packages/notebookpilot/jest.config.cjs packages/notebookpilot/src packages/notebookpilot/tests packages/notebookpilot/style",
     "test:e2e": "playwright test",
     "serve": "uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output"
   },
   "devDependencies": {
+    "@jupyterlab/builder": "4.5.11",
     "@playwright/test": "1.64.1",
+    "@types/jest": "30.0.0",
     "@types/node": "26.6.5",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "jest": "30.5.2",
     "prettier": "3.9.10",
-    "typescript": "7.0.2"
+    "react-dom": "18.3.1",
+    "ts-jest": "29.4.15",
+    "typescript": "5.9.3"
   }
 }
