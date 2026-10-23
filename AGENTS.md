@@ -91,7 +91,7 @@ Do not combine unrelated refactoring and feature behavior in one commit.
 
 ## Quality gates
 
-Before merge, the affected workspace must pass:
+Before merge, the affected workspace must pass the applicable checks. The npm commands below are planned extension gates and do not exist yet. Current site build commands are in SPEC-foundation.md; never report a nonexistent check as passed.
 
 ```bash
 npm run typecheck

@@ -1,6 +1,6 @@
 # NotebookPilot requirements
 
-Status: initial implementation baseline. No runtime features are complete.
+Status: initial implementation baseline. Static site build exists; browser runtime verification and agent features remain incomplete.
 
 ## Objective
 ChatGPT uses WebMCP tools to work with a live JupyterLite notebook. Python runs through Pyodide. No embedded chatbot or application API key is needed.
