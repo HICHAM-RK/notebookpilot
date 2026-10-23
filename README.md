@@ -13,6 +13,8 @@ The project contains an agent build package, a tested JupyterLite foundation and
 
 The initial static JupyterLite build and sample notebook are implemented. Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md).
 
+Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. This preview stays local; agent connection, proposal approval and approved execution are still being built.
+
 ## Run locally
 
 ```sh

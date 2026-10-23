@@ -20,7 +20,7 @@ Commands run from the repository root. `npm run serve` serves the already built 
 
 Existing site fixtures: content/. Existing foundation tests: tests/ and e2e/. Planned extension: packages/notebookpilot/ with src/, tests/ and package/build metadata. Paths in module specs beginning src/ or tests/ are relative to that future extension unless explicitly marked root. Browser tests remain root e2e/. Evaluation files live in root eval/.
 
-F3/F4 wire extension source into typecheck, formatting, Jest and the production JupyterLite build. npm test covers the Python fixture/contracts and extension UI unit test. The next slice is N1/H1: live notebook reads and permissions. Do not report coverage of future tools from foundation checks.
+F3/F4 wire extension source into typecheck, formatting, Jest and the production JupyterLite build. N1/H1 provide live permission-aware reads and human access controls, with a local preview. npm test covers Python fixtures/contracts and extension UI/domain tests. Next: W1 host registration investigation and H2 proposal review, before N2 execution and W2 mutation exposure. Do not report coverage of future tools from current checks.
 
 ## Connection and portability
 

@@ -25,3 +25,38 @@
 .np-workspace .np-subtitle {
   color: var(--jp-ui-font-color2);
 }
+
+.np-access label {
+  display: block;
+  margin: 12px 0;
+}
+.np-access select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+.np-access button,
+.np-access select {
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color1);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 2px;
+}
+.np-access button {
+  margin: 12px 0;
+  cursor: pointer;
+}
+.np-access :is(button, select, summary):focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+.np-access pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--jp-code-font-size);
+}
+.np-access details {
+  margin: 12px 0;
+}

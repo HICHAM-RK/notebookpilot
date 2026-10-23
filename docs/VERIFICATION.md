@@ -12,6 +12,16 @@ Self-review: source/config/test boundaries checked, UI text uses React escaping,
 
 The sections below record the earlier build-package baseline; their historical test counts and zero-vulnerability npm result do not describe the expanded dependency tree.
 
+## Implementation checkpoint: N1/H1
+
+Live Jupyter cell reads now use a domain reader with full UTF-8 SHA-256 revisions, visible-only pagination and bounded source/output summaries. The 50KiB envelope check includes JSON escaping and the duplicated text/structured payload. Invalid/duplicate IDs fail closed. Source/type/order changes, closure or permission revocation while hashing invalidate the read before content is returned. Session policy is held in separate maps; notebook metadata grants no authority.
+
+The sidebar now exposes human-only notebook/cell permission selectors and an agent-access preview. Changing notebook/source/policy clears the preview. React renders source as plain text. The browser test edits the real CodeMirror cell without saving, verifies that exact text in the preview, hides the cell, verifies exclusion, then hides the notebook with keyboard type-ahead and verifies refusal. A bare native select reproduced headless macOS arrow-key limitations; type-ahead is used to test actual keyboard selection. Controls suppress enclosing Lumino shortcuts using its documented data attribute.
+
+Verification: five Python tests and 17 Jest tests pass, along with production typecheck, formatting and build. Three browser cases passed together before the keyboard refinement; the final targeted permission/keyboard case passed in 3.0s. Hidden-policy mutation was rejected by the tests and restored. Source deletion during hashing has a regression test. Visual review of the 1280×720 sidebar found no overflow or hidden controls. Proposal/execution authority is not exposed yet.
+
+Hosted F3/F4 checks passed on `f7d33a01d41cf32c2bfc4e954976145f03256439`: [run 40009008911](https://github.com/HICHAM-RK/notebookpilot/actions/runs/40009008911). N1/H1 hosted checks will be verified after push. Full native-host compatibility, imported notebook safety and public-release advisory remediation remain separate gates.
+
 ## Requirements audit
 
 | Requested deliverable | Evidence | Status |
@@ -61,4 +71,4 @@ GitHub API verified HICHAM-RK/notebookpilot remains private with default branch 
 
 ## Product gates still open
 
-N1 onward in tasks/todo.md is implementation work. Native ChatGPT discovery/approval/execution has NOT been tested; docs/HOST_VERIFICATION.md defines that gate. Colab round-trip, profiling, classification, audits, reports, full accessibility and hosted release are not implemented or passed by the foundation checks. No paid services, public deployment or production credentials were added.
+H2, N2, W1 onward in tasks/todo.md remains implementation work. Native ChatGPT discovery/approval/execution has NOT been tested; docs/HOST_VERIFICATION.md defines that gate. Colab round-trip, profiling, classification, audits, reports, full accessibility and hosted release are not implemented or passed by the current checks. No paid services, public deployment or production credentials were added.

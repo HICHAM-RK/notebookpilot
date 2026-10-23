@@ -1,12 +1,14 @@
 # Specification: Review and execution approval
 
-Status: implementation contract; not implemented. Module: human-control.
+Status: H1 session permissions implemented; proposal/execution approval remain H2/N2. Module: human-control.
 
 ## Dependencies
 notebook-core, webmcp-surface.
 
 ## Behavior and boundaries
 Permission defaults are read-only. Unknown/corrupt policies deny writes. Store user-controlled policy outside imported notebook metadata. Bind approval to notebook ID, cell IDs and hashes. No tool can approve itself. Approval for editing does not authorize execution. Proposals expire after 10 minutes and are cancelled on close or target change.
+
+H1 uses session-only maps keyed by live notebook/cell IDs, never metadata. Notebook choices are read, write (allow proposals), or hidden; a hidden notebook overrides every cell choice, and a read-only notebook prevents cell-level write grants. Unset cell policy inherits the notebook mode. Unknown values become hidden. Closing a notebook forgets grants. Sidebar selectors are human controls and are not exposed as tools. Preview content is cleared whenever source or policy changes.
 
 ## Acceptance criteria
 1. Accept/reject accessible by keyboard

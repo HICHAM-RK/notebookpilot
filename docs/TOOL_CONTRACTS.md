@@ -8,6 +8,8 @@ An execution request's requestId is also its executionId in execution records an
 
 The envelope below is the application contract. W1 must verify its host transport representation against the actual API and adapt it without changing payload semantics; it is not a claim that every host accepts MCP server envelopes unchanged.
 
+Read implementation detail: cell `outputs` is an untrusted JSON text summary of the nbformat outputs array (empty string for non-code cells), never executable HTML. Each cell carries `truncated:boolean` independently of page.truncated. Hidden cells are omitted before reading/serializing their source or outputs. The reader rejects invalid/duplicate visible cell IDs rather than making them ambiguous mutation targets. Policy changes during hashing invalidate the whole read; no partial sensitive response is returned.
+
 ## Common results
 Success: `{content:[{type:'text',text:JSON.stringify(payload)}], structuredContent:payload}`. Failure adds `isError:true` and payload `{error:{code,message,retryable}}`. No stack traces or hidden-object identifiers. Cap the entire serialized result to 50 KiB; reads return explicit truncation and pagination, writes reject oversized source. Untrusted notebook/data content must be labelled untrusted using the supported host API.
 

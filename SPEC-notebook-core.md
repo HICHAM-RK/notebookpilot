@@ -1,12 +1,14 @@
 # Specification: Live notebook operations
 
-Status: implementation contract; not implemented. Module: notebook-core.
+Status: N1 live reading implemented; proposals/execution/import work remain H2/N2/D3. Module: notebook-core.
 
 ## Dependencies
 foundation.
 
 ## Behavior and boundaries
 Resolve open NotebookPanel through Jupyter APIs; never read saved bytes in place of live cells. Use stable cell IDs and SHA-256 of UTF-8 source as revision tokens. Read-only snapshots return at most 20 cells by default, 100 maximum. Mutation proposals preserve their original revision and never overwrite concurrent edits.
+
+N1 implementation provides a local permission-aware preview using the same domain reader intended for WebMCP. Pagination uses visible-cell positions only. Full-source hashes survive truncation; byte limits include JSON escaping and duplicated envelope content. Source/type/order changes or permission revocation while awaiting hashing invalidate the response. Invalid or duplicate visible cell IDs fail before result construction.
 
 ## Acceptance criteria
 1. Unsaved edit appears in read response

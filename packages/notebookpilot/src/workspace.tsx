@@ -1,30 +1,120 @@
 import { ReactWidget } from "@jupyterlab/apputils";
-import type { INotebookTracker } from "@jupyterlab/notebook";
+import type { INotebookTracker, NotebookPanel } from "@jupyterlab/notebook";
 import React from "react";
 import { WorkspaceContent } from "./view";
+import { PolicyStore } from "./control/policy";
+import {
+  NotebookError,
+  NotebookReader,
+  type CellsPage,
+} from "./notebook/reader";
+import { AccessControls } from "./ui/access";
 
 export class WorkspacePanel extends ReactWidget {
-  constructor(private readonly notebooks: INotebookTracker) {
+  private active: NotebookPanel | null = null;
+  private result: CellsPage | null = null;
+  private pending = false;
+  private error: string | null = null;
+  private request = 0;
+
+  constructor(
+    private readonly notebooks: INotebookTracker,
+    private readonly policies: PolicyStore,
+    private readonly reader: NotebookReader,
+  ) {
     super();
     this.id = "notebookpilot-workspace";
     this.title.label = "NotebookPilot";
     this.title.caption = "NotebookPilot";
     this.addClass("np-workspace");
-    this.notebooks.currentChanged.connect(this.refresh, this);
+    this.notebooks.currentChanged.connect(this.selectNotebook, this);
+    this.selectNotebook();
   }
 
   private refresh(): void {
+    this.request++;
+    this.result = null;
+    this.pending = false;
+    this.error = null;
     this.update();
+  }
+
+  private selectNotebook(): void {
+    this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
+    this.active?.title.changed.disconnect(this.refresh, this);
+    this.active = this.notebooks.currentWidget;
+    this.active?.content.model?.contentChanged.connect(this.refresh, this);
+    this.active?.title.changed.connect(this.refresh, this);
+    this.refresh();
+  }
+
+  private async preview(offset = 0): Promise<void> {
+    const notebook = this.active;
+    if (!notebook) return;
+    const request = ++this.request;
+    this.pending = true;
+    this.result = null;
+    this.error = null;
+    this.update();
+    try {
+      const result = await this.reader.getCells(notebook.id, offset);
+      if (request === this.request) this.result = result;
+    } catch (error) {
+      if (request === this.request) {
+        this.error =
+          error instanceof NotebookError && error.code === "NOT_FOUND"
+            ? "Notebook is unavailable for agent access."
+            : "The notebook changed or could not be read. Try previewing again.";
+      }
+    } finally {
+      if (request === this.request) {
+        this.pending = false;
+        this.update();
+      }
+    }
   }
 
   dispose(): void {
     if (this.isDisposed) return;
-    this.notebooks.currentChanged.disconnect(this.refresh, this);
+    this.notebooks.currentChanged.disconnect(this.selectNotebook, this);
+    this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
+    this.active?.title.changed.disconnect(this.refresh, this);
+    this.request++;
     super.dispose();
   }
 
   protected render(): React.ReactElement {
-    const notebook = this.notebooks.currentWidget;
-    return <WorkspaceContent notebookName={notebook?.title.label ?? null} />;
+    const notebook = this.active;
+    const cells = notebook?.content.model
+      ? Array.from(notebook.content.model.cells)
+      : [];
+    return (
+      <WorkspaceContent notebookName={notebook?.title.label ?? null}>
+        {notebook && (
+          <AccessControls
+            notebookMode={this.policies.notebookMode(notebook.id)}
+            cells={cells.map((cell) => ({
+              id: cell.id,
+              type: cell.type,
+              mode: this.policies.cellMode(notebook.id, cell.id),
+            }))}
+            pending={this.pending}
+            result={this.result}
+            error={this.error}
+            onNotebook={(value) => {
+              this.policies.setNotebook(notebook.id, value);
+              this.refresh();
+            }}
+            onCell={(id, value) => {
+              this.policies.setCell(notebook.id, id, value);
+              this.refresh();
+            }}
+            onPreview={(offset) => {
+              void this.preview(offset);
+            }}
+          />
+        )}
+      </WorkspaceContent>
+    );
   }
 }

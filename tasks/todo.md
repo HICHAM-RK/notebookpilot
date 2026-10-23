@@ -12,8 +12,8 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 
 ## Notebook and human control
 
-- [ ] N1: Live snapshots and revisions. Depends F4; SPEC-notebook-core. Files: ext/src/notebook/adapter.ts, ext/src/notebook/revisions.ts, ext/tests/notebook.test.ts. Acceptance: unsaved text returned, stable IDs, UTF-8 SHA-256, no-active-notebook and deleted-cell cases. Verify actual Jupyter model integration tests.
-- [ ] H1: Permissions. Depends N1; SPEC-human-control. Files: ext/src/control/policy.ts, ext/src/ui/permissions.tsx, ext/tests/policy.test.ts. Acceptance: read-only default, hidden excluded, corrupt policy denies writes, imported metadata cannot elevate permission. Verify permission matrix and keyboard controls.
+- [x] N1: Live snapshots and revisions. Implemented adapter.ts, reader.ts and revisions.ts. Unsaved source verified against the real Jupyter model in browser; unit tests cover SHA-256, UTF-8/transport bounds, visible-only pagination, invalid IDs, permission revocation, edits/deletion/close during hashing.
+- [x] H1: Session permissions. Implemented control/policy.ts and ui/access.tsx. Read-only default, notebook/cell hiding, corrupt values fail closed; no policy comes from imported metadata. Preview invalidates on edits/permission changes. Unit matrix and browser keyboard/type-ahead selection verified.
 - [ ] H2: Proposals and diff review. Depends H1. Files: ext/src/control/proposals.ts, ext/src/ui/review.tsx, ext/tests/control.test.ts, e2e/review.spec.ts. Acceptance: accept once, reject changes nothing, stale/deleted target fails, ten-minute expiry, insertion anchor checked, no execution. Verify browser accept/reject and concurrent-edit race.
 - [ ] N2: Approved execution queue. Depends H2. Files: ext/src/notebook/execution.ts, ext/src/ui/execution.tsx, ext/tests/execution.test.ts, e2e/execution.spec.ts. Acceptance: separate approval, permission/hash recheck at dispatch, visible cells only, 20-cell/120s limits, cancellation/restart resolves records, human work not inadvertently interrupted. Verify real output, denial, timeout and edit-after-approval.
 
