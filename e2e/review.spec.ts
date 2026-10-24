@@ -74,17 +74,33 @@ test("mock transport proposal requires human review and never executes", async (
     }, source);
   }
   const before = await page.getByRole("textbox").innerText();
-  await propose("print('reviewed but not executed')");
+  const rejected = await propose("print('reviewed but not executed')");
   await expect(
     panel.getByRole("button", { name: "Reject edit" }),
   ).toBeVisible();
   await panel.getByRole("button", { name: "Reject edit" }).click();
+  async function status(proposalId: unknown) {
+    return page.evaluate(async (id) => {
+      const call = (
+        window as unknown as {
+          callTestTool: (name: string, input: unknown) => Promise<unknown>;
+        }
+      ).callTestTool;
+      return call("notebook_get_proposal", { proposalId: id });
+    }, proposalId);
+  }
+  expect(await status(rejected.structuredContent.proposalId)).toMatchObject({
+    structuredContent: { status: "denied" },
+  });
   await expect(page.getByRole("textbox")).toHaveText(before, {
     useInnerText: true,
   });
-  await propose("print('reviewed but not executed')");
+  const accepted = await propose("print('reviewed but not executed')");
   await panel.getByRole("button", { name: "Accept edit" }).focus();
   await panel.getByRole("button", { name: "Accept edit" }).press("Enter");
+  expect(await status(accepted.structuredContent.proposalId)).toMatchObject({
+    structuredContent: { status: "accepted" },
+  });
   await expect(page.getByRole("textbox")).toHaveText(
     "print('reviewed but not executed')",
   );

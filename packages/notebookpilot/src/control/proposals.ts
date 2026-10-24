@@ -33,6 +33,17 @@ export class UpdateProposals {
       .map((proposal) => ({ ...this.current(proposal.proposalId) }));
   }
 
+  status(id: string): { status: UpdateProposal["status"] } {
+    const record = this.records.get(id);
+    if (
+      !record ||
+      !this.policies.canRead(record.notebookId, record.cellId) ||
+      this.read(record.notebookId, record.cellId) === null
+    )
+      throw new Error("NOT_FOUND");
+    return { status: this.current(id).status };
+  }
+
   constructor(
     private readonly policies: PolicyStore,
     private readonly read: (

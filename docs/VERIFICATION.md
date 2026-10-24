@@ -98,3 +98,9 @@ The real Chromium review test uses an explicitly mocked registration transport. 
 
 Remaining: native proposal journey, insertion proposals, proposal-status tool, fuller diff presentation, bounded history cleanup and complete execution approval. H2/W2/W3 remain unchecked.
 
+# Proposal outcome checkpoint — 2026-10-24
+
+Registered notebook_get_proposal with its contract schema and closed input validation. The result contains status only, never original/replacement source. Lookup rechecks current notebook/cell visibility and target existence; hidden, closed, deleted and unknown targets return NOT_FOUND. Reading status can expire/cancel stale pending records but cannot accept or reject them. Unit tests verify schema parity, pending/denied outcomes, source omission, hidden/unknown equivalence and rejection of an approval field. The browser review scenario additionally checks tool-reported denied/accepted outcomes after human controls.
+
+55 Jest tests, five Python tests, typecheck, formatting and production build passed. Native proposal/status invocation remains unverified; browser review uses a mocked transport. No execution or insertion support is implied.
+

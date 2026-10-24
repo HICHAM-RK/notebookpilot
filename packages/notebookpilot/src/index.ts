@@ -8,7 +8,10 @@ import { ToolRegistration } from "./webmcp/register";
 import { createReadTools, type NotebookContext } from "./webmcp/read-tools";
 import { createNotebookMutations } from "./notebook/mutations";
 import { UpdateProposals } from "./control/proposals";
-import { createUpdateTool } from "./webmcp/proposal-tools";
+import {
+  createUpdateTool,
+  createProposalStatusTool,
+} from "./webmcp/proposal-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -64,7 +67,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
     });
     const registration = new ToolRegistration(
       (document as Document & { modelContext?: unknown }).modelContext,
-      [...tools, createUpdateTool(proposals)],
+      [
+        ...tools,
+        createUpdateTool(proposals),
+        createProposalStatusTool(proposals),
+      ],
     );
     panel.disposed.connect(() => registration.dispose());
     void registration.start().then((status) => {

@@ -2,8 +2,57 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PolicyStore } from "../src/control/policy";
 import { UpdateProposals } from "../src/control/proposals";
-import { createUpdateTool } from "../src/webmcp/proposal-tools";
+import {
+  createUpdateTool,
+  createProposalStatusTool,
+} from "../src/webmcp/proposal-tools";
 import { hashSource } from "../src/notebook/revisions";
+
+test("status exposes only outcome and checks current visibility", async () => {
+  const policies = new PolicyStore();
+  policies.setNotebook("n", "write");
+  const store = new UpdateProposals(
+    policies,
+    () => "before",
+    () => true,
+  );
+  const proposal = await store.propose(
+    "n",
+    "c",
+    await hashSource("before"),
+    "private replacement",
+  );
+  const tool = createProposalStatusTool(store);
+  const options = { signal: new AbortController().signal };
+  const input = { proposalId: proposal.proposalId };
+  expect(await tool.execute(input, options)).toMatchObject({
+    structuredContent: { status: "pending" },
+  });
+  store.reject(proposal.proposalId);
+  expect(await tool.execute(input, options)).toMatchObject({
+    structuredContent: { status: "denied" },
+  });
+  expect(JSON.stringify(await tool.execute(input, options))).not.toContain(
+    "private replacement",
+  );
+  policies.setCell("n", "c", "hidden");
+  expect(await tool.execute(input, options)).toEqual(
+    await tool.execute({ proposalId: "missing" }, options),
+  );
+  expect(
+    await tool.execute({ ...input, approved: true }, options),
+  ).toMatchObject({
+    isError: true,
+    structuredContent: { error: { code: "INVALID_ARGUMENT" } },
+  });
+  const contract = JSON.parse(
+    readFileSync(resolve(__dirname, "../../../contracts/tools.json"), "utf8"),
+  );
+  expect(tool.inputSchema).toEqual(
+    contract.tools.find((entry: { name: string }) => entry.name === tool.name)
+      .inputSchema,
+  );
+});
 
 test("proposal schema matches contract and cannot accept an approval field", async () => {
   const policies = new PolicyStore();
