@@ -221,5 +221,35 @@ test("mock transport requires separate edit and execution approvals", async ({
   await expect(page.locator(".jp-OutputArea-output")).toContainText(
     "PRESERVED 42",
   );
+
+  await page
+    .getByRole("textbox")
+    .first()
+    .fill(
+      "import time\nfinish = time.monotonic() + 15\nwhile time.monotonic() < finish:\n    pass\nprint('RESTART_FAILED_FINISHED')",
+    );
+  const restarting = await requestRun();
+  const restartReview = panel.getByRole("article", {
+    name: `Run ${restarting.structuredContent.requestId}`,
+    exact: true,
+  });
+  await restartReview.getByRole("button", { name: "Approve run" }).click();
+  await expect(restartReview.getByRole("status")).toHaveText("running");
+  await page.getByRole("menuitem", { name: "Kernel" }).click();
+  await page.locator('[data-command="kernelmenu:restart"]').click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Confirm Kernel Restart", exact: true })
+    .click();
+  await expect(restartReview.getByRole("status")).toHaveText("cancelled");
+  await expect(
+    panel.getByText("Waiting for an idle Python kernel before approval."),
+  ).toHaveCount(0, { timeout: 60_000 });
+  await page.getByRole("textbox").first().fill("print('RESTARTED', 6 * 7)");
+  await requestRun();
+  await panel.getByRole("button", { name: "Approve run" }).click();
+  await expect(page.locator(".jp-OutputArea-output")).toContainText(
+    "RESTARTED 42",
+  );
   await page.screenshot({ path: "test-results/runtime-cancellation.png" });
 });
