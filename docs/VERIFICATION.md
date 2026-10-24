@@ -104,3 +104,7 @@ Registered notebook_get_proposal with its contract schema and closed input valid
 
 55 Jest tests, five Python tests, typecheck, formatting and production build passed. Native proposal/status invocation remains unverified; browser review uses a mocked transport. No execution or insertion support is implied.
 
+# Native proposal evidence — 2026-10-24
+
+Verified commit 87c6fec in the actual in-app browser: four native tools discovered; read-only update denied; rejected proposal preserved original hash; UI-accepted proposal changed the visible cell and native readback; status tool returned denied/accepted correctly. Outputs stayed empty and execution prompt stayed unexecuted. No registration shim was installed. The automated tester operated the human controls on repository-owned fixture data. See HOST_VERIFICATION.md for exact steps, source hashes and limitations. No code changed in this evidence checkpoint, so prior build/test results apply; no redundant test run was needed.
+

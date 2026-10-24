@@ -1,6 +1,17 @@
 # Native WebMCP verification gate
 
-Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked both read tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. The full proposal/approval/execution journey is not implemented or verified. Exact host/browser version and native teardown evidence remain to collect.
+Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked read, update-proposal and proposal-status tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. Native rejection and UI acceptance passed; execution remains unimplemented. Exact host/browser version and native teardown evidence remain to collect.
+
+## Native update review — commit 87c6fec, 2026-10-24
+
+Host: ChatGPT in-app browser surfaced by Codex computer-use tools, local site on port 8001. Four tools were discovered through the host's WebMCP capability, not an injected test API. Testing used only the repository-owned welcome.ipynb fixture. The automated tester operated the human UI controls; this demonstrates the UI boundary, not approval by a separate human participant.
+
+1. Native get_cells returned the analysis cell's original source hash `6bec9e614083aeeca285050a30643879a56a8beb679cf387c8314a83dcf7aeee` and empty outputs.
+2. Native propose_update under default read-only permissions returned ACCESS_DENIED. The tester selected Allow proposals in the UI.
+3. Native propose_update returned pending and the sidebar displayed original/replacement source. The tester clicked Reject edit. Native get_proposal returned denied; get_cells returned the unchanged original hash.
+4. A second native proposal requested `print('Native review verified; not executed')`. The tester clicked Accept edit. Native get_proposal returned accepted; the visible editor and native get_cells both contained the replacement. The new source hash was `678ada17d8d5f6be2a2b5886040d74509be906faec629a2a1135b776f4a2e72b`; outputs remained `[]` and the UI execution prompt remained `[ ]`.
+
+This verifies native proposal delivery, permission denial, UI rejection/acceptance, status retrieval and readback of the accepted source. It does not prove execution approval, insertion, native stale-edit handling, full host/version compatibility or teardown. Those gates remain open.
 
 ## Native read checkpoint — 2026-10-24
 
