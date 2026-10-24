@@ -12,7 +12,8 @@
   ],
   "jupyterlab": {
     "extension": true,
-    "outputDir": "labextension"
+    "outputDir": "labextension",
+    "webpackConfig": "webpack.config.cjs"
   },
   "dependencies": {
     "@jupyterlab/application": "4.6.4",
@@ -20,6 +21,10 @@
     "@jupyterlab/cells": "4.6.4",
     "@jupyterlab/notebook": "4.6.4",
     "@jupyterlab/services": "7.6.4",
+    "@jupyterlite/apputils": "0.8.5",
+    "@jupyterlite/pyodide-kernel": "0.8.6",
+    "@jupyterlite/services": "0.8.5",
+    "coincident": "1.2.3",
     "react": "18.3.1"
   }
 }

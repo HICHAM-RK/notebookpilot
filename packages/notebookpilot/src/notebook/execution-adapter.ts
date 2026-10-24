@@ -4,6 +4,7 @@ import type { ISessionContext } from "@jupyterlab/apputils";
 import type { Kernel } from "@jupyterlab/services";
 import { PolicyStore } from "../control/policy";
 import type { ExecutionAdapter } from "./execution";
+import { interruptChannels } from "../runtime/interrupt";
 
 type ExecuteCell = (
   cell: CodeCell,
@@ -90,7 +91,9 @@ export function createExecutionAdapter(
           panel.sessionContext.session?.kernel === kernel
         ) {
           interruptSent = true;
-          void kernel.interrupt().catch(() => undefined);
+          const channel = interruptChannels.get(kernel.id);
+          if (channel) channel.interrupt(ownMessageId);
+          else void kernel.interrupt().catch(() => undefined);
         }
       };
       kernel.anyMessage.connect(observe);

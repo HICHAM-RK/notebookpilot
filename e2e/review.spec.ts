@@ -191,7 +191,7 @@ test("mock transport requires separate edit and execution approvals", async ({
     .getByRole("textbox")
     .first()
     .fill(
-      "import time\nfinish = time.monotonic() + 15\nwhile time.monotonic() < finish:\n    pass\nprint('CANCELLATION_FAILED_FINISHED')",
+      "import time\npreserved_value = 42\nfinish = time.monotonic() + 15\nwhile time.monotonic() < finish:\n    pass\nprint('CANCELLATION_FAILED_FINISHED')",
     );
   const cancelled = await requestRun();
   const runReview = panel.getByRole("article", {
@@ -206,7 +206,20 @@ test("mock transport requires separate edit and execution approvals", async ({
     "KeyboardInterrupt",
     { timeout: 20_000 },
   );
-  await expect(page.locator(".jp-OutputArea-output")).not.toContainText(
+  const stdout = page.locator(
+    '.jp-OutputArea-output[data-mime-type="application/vnd.jupyter.stdout"]',
+  );
+  expect((await stdout.allTextContents()).join("\n")).not.toContain(
     "CANCELLATION_FAILED_FINISHED",
   );
+  await page
+    .getByRole("textbox")
+    .first()
+    .fill("print('PRESERVED', preserved_value)");
+  await requestRun();
+  await panel.getByRole("button", { name: "Approve run" }).click();
+  await expect(page.locator(".jp-OutputArea-output")).toContainText(
+    "PRESERVED 42",
+  );
+  await page.screenshot({ path: "test-results/runtime-cancellation.png" });
 });

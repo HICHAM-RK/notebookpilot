@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "npm run build:extension && uv run jupyter lite build --contents content --output-dir _output --LiteBuildConfig.federated_extensions=packages/notebookpilot/labextension",
-    "build:extension": "tsc -p packages/notebookpilot/tsconfig.json && uv run python scripts/prepare_core.py && build-labextension --core-path build/core packages/notebookpilot",
+    "build:extension": "tsc -p packages/notebookpilot/tsconfig.json && esbuild packages/notebookpilot/src/runtime/worker-entry.ts --bundle --format=esm --target=es2022 --outfile=packages/notebookpilot/lib/runtime/python.worker.js && uv run python scripts/prepare_core.py && build-labextension --core-path build/core packages/notebookpilot",
     "test": "uv run python -m unittest discover -s tests -v && npm run test:unit",
     "test:unit": "jest --config packages/notebookpilot/jest.config.cjs --runInBand",
     "typecheck": "tsc --noEmit && tsc -p packages/notebookpilot/tsconfig.test.json --noEmit",
@@ -26,6 +26,7 @@
     "@types/node": "26.6.5",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
+    "esbuild": "0.25.12",
     "jest": "30.5.2",
     "prettier": "3.9.10",
     "react-dom": "18.3.1",

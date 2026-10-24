@@ -16,7 +16,7 @@ This repository contains the build package, a working JupyterLite sample and the
 
 Commands run from the repository root. `npm run serve` serves the already built site at http://127.0.0.1:8000/lab/index.html. Stop the manual server before browser tests, which own their server.
 
-Use the project server rather than bare `python -m http.server`: it sends COOP same-origin and COEP require-corp headers on pages and workers so Pyodide can use shared memory. Another local port is available with `npm run serve -- --port 8001`. This is static development hosting, not an application backend. A deployment must provide equivalent headers; shared memory alone does not implement interruption.
+Use the project server rather than bare `python -m http.server`: it sends COOP same-origin and COEP require-corp headers on pages and workers so NotebookPilot's Pyodide worker can interrupt an approved run without restarting the kernel. Another local port is available with `npm run serve -- --port 8001`. This is static development hosting, not an application backend. Without equivalent deployment headers, notebooks still work but active Python cannot use the shared-memory cancellation path.
 
 ## File placement
 

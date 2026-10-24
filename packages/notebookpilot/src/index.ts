@@ -1,5 +1,6 @@
 import type { JupyterFrontEndPlugin } from "@jupyterlab/application";
 import { CodeCell } from "@jupyterlab/cells";
+import { pythonPlugin } from "./runtime/plugin";
 import { ExecutionQueue } from "./notebook/execution";
 import { createExecutionAdapter } from "./notebook/execution-adapter";
 import { createExecutionTools } from "./webmcp/execution-tools";
@@ -110,4 +111,4 @@ const plugin: JupyterFrontEndPlugin<void> = {
   },
 };
 
-export default plugin;
+export default [pythonPlugin, plugin];
