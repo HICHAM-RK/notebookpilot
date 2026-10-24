@@ -22,6 +22,8 @@ flowchart LR
 
 Dataset files receive generated app-owned names and remain scoped to the open notebook session. The agent can discover bounded metadata and profiles. Raw sample rows are absent unless the human enables sharing for that dataset, and enabling samples does not grant edit or execution authority.
 
+Notebook file imports pass through strict UTF-8, nbformat 4 and 20 MiB validation before a human sees the replacement review. Applying the import cancels pending edit/run requests and clears session datasets. Active HTML, SVG and JavaScript output MIME types are removed before Jupyter receives the notebook; plain outputs, cells and unknown metadata remain. Export validates the live model again before creating a local download.
+
 ## ADR 001: Browser runtime
 
 Use JupyterLite/Pyodide with a prebuilt JupyterLab extension. This preserves a real notebook UI without a production Python server. Limitations: browser memory, available WebAssembly packages, browser storage eviction, and no Colab GPU. A local HTTP server serves assets only. Internet is needed for uncached runtime assets; do not claim offline support until assets are vendored and tested.

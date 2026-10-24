@@ -1,6 +1,6 @@
 # Specification: CSV profiling and notebook portability
 
-Status: implementation contract; D1–D2 and the D3 portability domain implemented, D3 browser UI pending. Module: dataset-intelligence.
+Status: D1–D3 implemented. Module: dataset-intelligence.
 
 ## Dependencies
 
@@ -8,7 +8,7 @@ webmcp-surface.
 
 ## Behavior and boundaries
 
-Accept UTF-8 CSV up to 10 MiB, 100,000 rows and 1,024 columns, rejecting a breached bound as soon as it is known. The column ceiling prevents delimiter-heavy inputs from exhausting browser memory and is above what can fit the 50 KiB profile-result cap. Validate quoted delimiters, headers and ragged rows. A read-only dataset list exposes notebook-scoped opaque IDs and bounded metadata so agents can discover human uploads; it never includes raw rows. Profiles contain counts/types and missing/duplicate summaries; raw examples require explicit sharing. Dataset identity is SHA-256 of original bytes. Imports accept nbformat 4 .ipynb up to 20 MiB; never execute on import. Colab GPU, shell, Drive mount and google.colab calls receive compatibility warnings.
+Accept UTF-8 CSV up to 10 MiB, 100,000 rows and 1,024 columns, rejecting a breached bound as soon as it is known. The column ceiling prevents delimiter-heavy inputs from exhausting browser memory and is above what can fit the 50 KiB profile-result cap. Validate quoted delimiters, headers and ragged rows. A read-only dataset list exposes notebook-scoped opaque IDs and bounded metadata so agents can discover human uploads; it never includes raw rows. Profiles contain counts/types and missing/duplicate summaries; raw examples require explicit sharing. Dataset identity is SHA-256 of original bytes. Imports accept nbformat 4 .ipynb up to 20 MiB; never execute on import. Active HTML, SVG and JavaScript output MIME types are removed before the notebook model receives imported data. Colab GPU, shell, Drive mount and google.colab calls receive compatibility warnings.
 
 ## Deterministic profile rules
 

@@ -17,6 +17,14 @@ import { ExecutionReview } from "./ui/execution";
 import { DatasetStore, DatasetError } from "./data/store";
 import { DataError } from "./data/import";
 import { DatasetPanel } from "./ui/datasets";
+import {
+  exportNotebook,
+  importNotebook,
+  NotebookPortabilityError,
+  type NotebookJson,
+  type PortabilityWarning,
+} from "./notebook/portability";
+import { PortabilityPanel } from "./ui/portability";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -31,6 +39,16 @@ export class WorkspacePanel extends ReactWidget {
   private uploadController: AbortController | null = null;
   private uploadName: string | null = null;
   private datasetError: string | null = null;
+  private portabilityRequest = 0;
+  private portabilityPending = false;
+  private portabilityPreview: {
+    name: string;
+    notebook: NotebookJson;
+    warnings: PortabilityWarning[];
+  } | null = null;
+  private portabilityWarnings: PortabilityWarning[] = [];
+  private portabilityError: string | null = null;
+  private portabilityStatus: string | null = null;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -72,12 +90,100 @@ export class WorkspacePanel extends ReactWidget {
     this.uploadController = null;
     this.uploadName = null;
     this.datasetError = null;
+    this.portabilityRequest++;
+    this.portabilityPending = false;
+    this.portabilityPreview = null;
+    this.portabilityWarnings = [];
+    this.portabilityError = null;
+    this.portabilityStatus = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
     this.active?.content.model?.contentChanged.connect(this.refresh, this);
     this.active?.title.changed.connect(this.refresh, this);
     this.refresh();
+  }
+
+  private async prepareNotebookImport(file: File): Promise<void> {
+    const notebook = this.active;
+    if (!notebook || this.portabilityPending || this.portabilityPreview) return;
+    const request = ++this.portabilityRequest;
+    this.portabilityPending = true;
+    this.portabilityError = null;
+    this.portabilityStatus = null;
+    this.update();
+    try {
+      if (!file.name.toLowerCase().endsWith(".ipynb")) {
+        throw new NotebookPortabilityError("INVALID_NOTEBOOK");
+      }
+      const imported = importNotebook(new Uint8Array(await file.arrayBuffer()));
+      if (request !== this.portabilityRequest || notebook !== this.active)
+        return;
+      this.portabilityPreview = {
+        name: file.name.split(/[\\/]/).at(-1) ?? "notebook.ipynb",
+        notebook: imported.notebook,
+        warnings: imported.warnings,
+      };
+    } catch (error) {
+      if (request !== this.portabilityRequest) return;
+      this.portabilityError =
+        error instanceof NotebookPortabilityError &&
+        error.code === "LIMIT_EXCEEDED"
+          ? "Notebook exceeds the 20 MiB import limit."
+          : "Notebook must be a valid UTF-8 nbformat 4 .ipynb file.";
+    } finally {
+      if (request === this.portabilityRequest) {
+        this.portabilityPending = false;
+        this.update();
+      }
+    }
+  }
+
+  private applyNotebookImport(): void {
+    const notebook = this.active;
+    const preview = this.portabilityPreview;
+    const model = notebook?.content.model;
+    if (!notebook || !model || !preview) return;
+    this.proposals.cancelNotebook(notebook.id);
+    this.executions.cancelNotebook(notebook.id);
+    void this.datasets.clearNotebook(notebook.id);
+    model.fromString(JSON.stringify(preview.notebook));
+    this.portabilityWarnings = preview.warnings;
+    this.portabilityPreview = null;
+    this.portabilityError = null;
+    this.portabilityStatus =
+      "Notebook imported without running code. Review cells before execution.";
+    this.update();
+  }
+
+  private downloadNotebook(): void {
+    const notebook = this.active;
+    const model = notebook?.content.model;
+    if (!notebook || !model) return;
+    try {
+      const bytes = exportNotebook(model.toJSON());
+      const blob = new Blob([new TextDecoder().decode(bytes)], {
+        type: "application/x-ipynb+json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const stem = notebook.title.label.replace(/\.ipynb$/i, "") || "notebook";
+      link.href = url;
+      link.download = `${stem.slice(0, 180)}-notebookpilot.ipynb`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      this.portabilityError = null;
+      this.portabilityStatus = "Notebook download prepared.";
+    } catch (error) {
+      this.portabilityError =
+        error instanceof NotebookPortabilityError &&
+        error.code === "LIMIT_EXCEEDED"
+          ? "Notebook exceeds the 20 MiB export limit."
+          : "Notebook could not be downloaded.";
+    }
+    this.update();
   }
 
   private async upload(file: File): Promise<void> {
@@ -151,6 +257,7 @@ export class WorkspacePanel extends ReactWidget {
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.request++;
+    this.portabilityRequest++;
     this.uploadController?.abort();
     this.unsubscribeProposals();
     this.unsubscribeDatasets();
@@ -168,6 +275,30 @@ export class WorkspacePanel extends ReactWidget {
         notebookName={notebook?.title.label ?? null}
         connection={this.connection}
       >
+        {notebook && (
+          <PortabilityPanel
+            pending={this.portabilityPending}
+            importedName={this.portabilityPreview?.name ?? null}
+            cellCount={this.portabilityPreview?.notebook.cells.length ?? null}
+            warnings={
+              this.portabilityPreview?.warnings ?? this.portabilityWarnings
+            }
+            error={this.portabilityError}
+            status={this.portabilityStatus}
+            onChoose={(file) => {
+              void this.prepareNotebookImport(file);
+            }}
+            onApply={() => this.applyNotebookImport()}
+            onCancel={() => {
+              this.portabilityRequest++;
+              this.portabilityPending = false;
+              this.portabilityPreview = null;
+              this.portabilityError = null;
+              this.update();
+            }}
+            onExport={() => this.downloadNotebook()}
+          />
+        )}
         {notebook && (
           <DatasetPanel
             datasets={this.datasets.list(notebook.id)}

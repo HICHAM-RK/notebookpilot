@@ -28,12 +28,14 @@
 
 .np-access label,
 .np-datasets > label,
-.np-datasets article > label {
+.np-datasets article > label,
+.np-portability > label {
   display: block;
   margin: 12px 0;
 }
 .np-access select,
-.np-datasets input[type="file"] {
+.np-datasets input[type="file"],
+.np-portability input[type="file"] {
   display: block;
   width: 100%;
   margin-top: 4px;
@@ -41,7 +43,9 @@
 .np-access button,
 .np-access select,
 .np-datasets button,
-.np-datasets input[type="file"] {
+.np-datasets input[type="file"],
+.np-portability button,
+.np-portability input[type="file"] {
   padding: 6px 8px;
   font: inherit;
   color: var(--jp-ui-font-color1);
@@ -79,6 +83,21 @@
 }
 .np-upload-status {
   margin-top: 8px;
+}
+.np-portability,
+.np-datasets {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--jp-border-color2);
+}
+.np-portability button {
+  margin: 8px 0;
+  cursor: pointer;
+}
+.np-import-review {
+  margin-top: 12px;
+  padding: 8px;
+  background: var(--jp-layout-color2);
+  border: 1px solid var(--jp-border-color2);
 }
 .np-access pre {
   white-space: pre-wrap;

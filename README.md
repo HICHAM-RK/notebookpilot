@@ -25,7 +25,7 @@ uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output
 ```
 
 Open http://localhost:8000/lab/index.html and run welcome.ipynb.
-Build, extension activation, human approval controls and actual Pyodide output were checked locally. Some WebMCP tools have native host evidence; the complete native journey remains an open release gate. Colab support is planned as `.ipynb` import/export, not connection to a live Colab runtime.
+Build, extension activation, human approval controls and actual Pyodide output were checked locally. Some WebMCP tools have native host evidence; the complete native journey remains an open release gate. Colab-compatible `.ipynb` import/export is implemented with review, compatibility warnings and no automatic execution. NotebookPilot does not connect to a live Colab runtime.
 
 ## Development checks
 

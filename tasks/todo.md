@@ -30,9 +30,9 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 - [x] D2: Dataset UI and tools. Depends D1,N2. Files: ext/src/ui/datasets.tsx, ext/src/webmcp/data-tools.ts, ext/tests/data-tools.test.ts, e2e/dataset.spec.ts. Acceptance: explicit sharing, no raw samples by default, bounded results, visible loading/errors/cancel, no hidden Python. Verify upload → profile → propose → review → execute.
   - [x] D2a: Session dataset store and profile tool. Generated app-owned filenames, strict lookup/permission checks, raw rows absent by default, explicit sample sharing, cancellation cleanup and bounded envelopes.
   - [x] D2b: Upload/review UI and browser journey. Visible loading/error/cancel/remove states; upload → profile → proposed visible cell → human edit acceptance → separate run approval → real output.
-- [ ] D3: Colab file round-trip. Depends D1,N1. Files: ext/src/notebook/portability.ts, ext/tests/portability.test.ts, content/fixtures/colab.ipynb, e2e/import.spec.ts. Acceptance: nbformat4/20MiB validation, cells/unknown metadata preserved, no autorun or active imported HTML, GPU/shell/Drive/google.colab warnings. Verify downloaded notebook schema and metadata. Live Colab runtime access is out of scope.
+- [x] D3: Colab file round-trip. Depends D1,N1. Files: ext/src/notebook/portability.ts, ext/tests/portability.test.ts, content/fixtures/colab.ipynb, e2e/import.spec.ts. Acceptance: nbformat4/20MiB validation, cells/unknown metadata preserved, no autorun or active imported HTML, GPU/shell/Drive/google.colab warnings. Verify downloaded notebook schema and metadata. Live Colab runtime access is out of scope.
   - [x] D3a: Portability domain and fixture. Strict UTF-8 nbformat 4 validation, 20 MiB import/export bounds, semantic round-trip of cells and unknown metadata, inert HTML storage and deterministic Colab/Drive/shell/GPU warnings.
-  - [ ] D3b: Human import/export UI and real-browser round-trip. Import into the active notebook without autorun, show compatibility warnings, download and verify the resulting `.ipynb`, and prove hostile imported HTML remains inactive.
+  - [x] D3b: Human import/export UI and real-browser round-trip. Import into the active notebook without autorun, show compatibility warnings, download and verify the resulting `.ipynb`, and prove hostile imported HTML remains inactive.
 
 ## Experiments
 

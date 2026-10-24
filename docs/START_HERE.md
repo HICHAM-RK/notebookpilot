@@ -12,7 +12,7 @@ This repository contains the build package, a working JupyterLite sample and the
 2. Follow tasks/todo.md in dependency order; start the first unchecked foundation task. Read its module specification and docs/TOOL_CONTRACTS.md.
 3. Use Node 24 and uv 0.12.0. Run `uv sync --frozen`, `npm ci --ignore-scripts`, then `npx playwright install chromium` (Linux CI also needs `--with-deps`).
 4. Run `npm test`, `npm run typecheck`, `npm run lint:check`, `npm run build`, and `npm run test:e2e` to establish the baseline. Browser testing requires port 8000 free and internet for first-use Pyodide downloads.
-5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task. The next product task is D3, the safe Colab-compatible `.ipynb` round-trip.
+5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task. The next product task is X1, reproducible in-browser training cells.
 
 Commands run from the repository root. `npm run serve` serves the already built site at http://127.0.0.1:8000/lab/index.html. Stop the manual server before browser tests, which own their server.
 
@@ -28,7 +28,7 @@ F3/F4 wire extension source into typecheck, formatting, Jest and the production 
 
 WebMCP means tools exposed by this open website; it is not a separate Python MCP server. ChatGPT is the intended first host, but support must be proven on a named host/version. Keep registration in a small adapter because this API is evolving. Native support failure leaves ordinary notebooks usable and produces a truthful unavailable status.
 
-Colab compatibility means importing and exporting `.ipynb` files. It does not mean controlling a live Colab session or using its GPU. Imported notebooks never run automatically. Dataset files and Python packages must be provided separately.
+Colab compatibility means importing and exporting `.ipynb` files. It does not mean controlling a live Colab session or using its GPU. Imports require a second review action, never run automatically, remove active HTML/SVG/JavaScript output and warn about incompatible APIs. Dataset files and Python packages must be provided separately.
 
 ## Skills and maintenance
 

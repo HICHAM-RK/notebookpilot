@@ -31,7 +31,7 @@ test("warns about Colab APIs, Drive, shell commands and GPU expectations", () =>
   ).toEqual(["COLAB_API", "DRIVE_MOUNT", "SHELL_COMMAND", "GPU_RUNTIME"]);
 });
 
-test("treats imported HTML as data and never evaluates it", () => {
+test("removes active imported output while retaining plain output", () => {
   (
     globalThis as { notebookPilotImportExecuted?: boolean }
   ).notebookPilotImportExecuted = false;
@@ -46,6 +46,7 @@ test("treats imported HTML as data and never evaluates it", () => {
             {
               output_type: "display_data",
               data: {
+                "text/plain": "safe fallback",
                 "text/html":
                   "<img src=x onerror='globalThis.notebookPilotImportExecuted=true'><script>globalThis.notebookPilotImportExecuted=true</script>",
               },
@@ -61,7 +62,13 @@ test("treats imported HTML as data and never evaluates it", () => {
     }),
   );
   const imported = importNotebook(payload);
-  expect(imported.notebook.cells[0].outputs).toHaveLength(1);
+  const output = (
+    imported.notebook.cells[0].outputs as Array<{ data: object }>
+  )[0];
+  expect(output.data).toEqual({ "text/plain": "safe fallback" });
+  expect(imported.warnings.map((warning) => warning.code)).toContain(
+    "ACTIVE_OUTPUT_REMOVED",
+  );
   expect(
     (globalThis as { notebookPilotImportExecuted?: boolean })
       .notebookPilotImportExecuted,
@@ -78,6 +85,23 @@ test.each([
     "unknown cell type",
     {
       cells: [{ cell_type: "html", metadata: {}, source: "x" }],
+      metadata: {},
+      nbformat: 4,
+      nbformat_minor: 5,
+    },
+  ],
+  [
+    "malformed code output",
+    {
+      cells: [
+        {
+          cell_type: "code",
+          execution_count: null,
+          metadata: {},
+          outputs: [{ output_type: "display_data", data: {} }],
+          source: "x = 1",
+        },
+      ],
       metadata: {},
       nbformat: 4,
       nbformat_minor: 5,
