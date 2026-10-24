@@ -5,8 +5,39 @@ import { UpdateProposals } from "../src/control/proposals";
 import {
   createUpdateTool,
   createProposalStatusTool,
+  createInsertTool,
 } from "../src/webmcp/proposal-tools";
 import { hashSource } from "../src/notebook/revisions";
+
+test("insert schema matches contract and invalid types never create proposals", async () => {
+  const policies = new PolicyStore();
+  policies.setNotebook("n", "write");
+  const store = new UpdateProposals(
+    policies,
+    () => "",
+    () => true,
+    Date.now,
+    { order: () => [], insert: () => true },
+  );
+  const tool = createInsertTool(store);
+  const contract = JSON.parse(
+    readFileSync(resolve(__dirname, "../../../contracts/tools.json"), "utf8"),
+  );
+  expect(tool.inputSchema).toEqual(
+    contract.tools.find((entry: { name: string }) => entry.name === tool.name)
+      .inputSchema,
+  );
+  expect(
+    await tool.execute(
+      { notebookId: "n", afterCellId: null, cellType: "raw", source: "" },
+      { signal: new AbortController().signal },
+    ),
+  ).toMatchObject({
+    isError: true,
+    structuredContent: { error: { code: "INVALID_ARGUMENT" } },
+  });
+  expect(store.list("n")).toHaveLength(0);
+});
 
 test("status exposes only outcome and checks current visibility", async () => {
   const policies = new PolicyStore();

@@ -113,4 +113,31 @@ test("mock transport proposal requires human review and never executes", async (
   await expect(page.getByRole("textbox")).toHaveText(
     "print('human changed it')",
   );
+  const inserted = await page.evaluate(async () => {
+    const call = (
+      window as unknown as {
+        callTestTool: (
+          name: string,
+          input: unknown,
+        ) => Promise<{ structuredContent: Record<string, unknown> }>;
+      }
+    ).callTestTool;
+    const context = (await call("notebook_get_context", {})).structuredContent;
+    return call("notebook_propose_insert", {
+      notebookId: context.notebookId,
+      afterCellId: null,
+      cellType: "code",
+      source: "print('inserted without running')",
+    });
+  });
+  await expect(page.getByRole("textbox")).toHaveCount(1);
+  await panel.getByRole("button", { name: "Accept edit" }).click();
+  await expect(page.getByRole("textbox")).toHaveCount(2);
+  await expect(page.getByRole("textbox").first()).toHaveText(
+    "print('inserted without running')",
+  );
+  expect(await status(inserted.structuredContent.proposalId)).toMatchObject({
+    structuredContent: { status: "accepted" },
+  });
+  await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
 });

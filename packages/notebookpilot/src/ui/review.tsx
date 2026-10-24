@@ -20,13 +20,31 @@ export function ProposalReview({
           key={proposal.proposalId}
           aria-label={`Proposal for cell ${proposal.cellId}`}
         >
-          <h4>Cell {proposal.cellId}</h4>
+          <h4>
+            {proposal.insertion
+              ? `New ${proposal.insertion.cellType} cell`
+              : `Cell ${proposal.cellId}`}
+          </h4>
           <p role="status">{proposal.status}</p>
           {proposal.status === "pending" && (
             <>
-              <h5>Before</h5>
-              <pre className="np-preview">{proposal.original}</pre>
-              <h5>Proposed replacement</h5>
+              {proposal.insertion ? (
+                <p>
+                  {proposal.insertion.afterCellId === null
+                    ? "Insert at the beginning."
+                    : `Insert after cell ${proposal.insertion.afterCellId}.`}
+                </p>
+              ) : (
+                <>
+                  <h5>Before</h5>
+                  <pre className="np-preview">{proposal.original}</pre>
+                </>
+              )}
+              <h5>
+                {proposal.insertion
+                  ? "Proposed new cell"
+                  : "Proposed replacement"}
+              </h5>
               <pre className="np-preview">{proposal.source}</pre>
               <button
                 type="button"

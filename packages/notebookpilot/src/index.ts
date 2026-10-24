@@ -6,11 +6,15 @@ import { NotebookReader } from "./notebook/reader";
 import { readLiveNotebook } from "./notebook/adapter";
 import { ToolRegistration } from "./webmcp/register";
 import { createReadTools, type NotebookContext } from "./webmcp/read-tools";
-import { createNotebookMutations } from "./notebook/mutations";
+import {
+  createNotebookMutations,
+  createNotebookInsertion,
+} from "./notebook/mutations";
 import { UpdateProposals } from "./control/proposals";
 import {
   createUpdateTool,
   createProposalStatusTool,
+  createInsertTool,
 } from "./webmcp/proposal-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -28,6 +32,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
       policies,
       mutations.read,
       mutations.replace,
+      Date.now,
+      createNotebookInsertion(notebooks, policies),
     );
     const trackNotebook = (notebook: NotebookPanel) => {
       notebook.disposed.connect(() => {
@@ -70,6 +76,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       [
         ...tools,
         createUpdateTool(proposals),
+        createInsertTool(proposals),
         createProposalStatusTool(proposals),
       ],
     );

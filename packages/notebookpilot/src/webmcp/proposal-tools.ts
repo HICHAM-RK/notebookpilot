@@ -50,21 +50,55 @@ export function createProposalStatusTool(proposals: UpdateProposals): SiteTool {
 }
 
 export function createUpdateTool(proposals: UpdateProposals): SiteTool {
+  return createEditTool(proposals, false);
+}
+
+export function createInsertTool(proposals: UpdateProposals): SiteTool {
+  return createEditTool(proposals, true);
+}
+
+function createEditTool(proposals: UpdateProposals, insert: boolean): SiteTool {
   return {
-    name: "notebook_propose_update",
-    description:
-      "Propose a replacement for a visible writable cell. The human must review and accept it. This never executes code and cannot approve itself.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        notebookId: { type: "string", minLength: 1, maxLength: 128 },
-        cellId: { type: "string", minLength: 1, maxLength: 128 },
-        expectedSourceHash: { type: "string", pattern: "^[a-f0-9]{64}$" },
-        source: { type: "string", maxLength: 262144, "x-maxUtf8Bytes": 262144 },
-      },
-      required: ["notebookId", "cellId", "expectedSourceHash", "source"],
-      additionalProperties: false,
-    },
+    name: insert ? "notebook_propose_insert" : "notebook_propose_update",
+    description: insert
+      ? "Propose a new visible notebook cell. Human acceptance is required before insertion. This does not execute code."
+      : "Propose a replacement for a visible writable cell. The human must review and accept it. This never executes code and cannot approve itself.",
+    inputSchema: insert
+      ? {
+          type: "object",
+          properties: {
+            notebookId: { type: "string", minLength: 1, maxLength: 128 },
+            afterCellId: {
+              anyOf: [
+                { type: "string", minLength: 1, maxLength: 128 },
+                { type: "null" },
+              ],
+            },
+            cellType: { enum: ["code", "markdown"] },
+            source: {
+              type: "string",
+              maxLength: 262144,
+              "x-maxUtf8Bytes": 262144,
+            },
+          },
+          required: ["notebookId", "afterCellId", "cellType", "source"],
+          additionalProperties: false,
+        }
+      : {
+          type: "object",
+          properties: {
+            notebookId: { type: "string", minLength: 1, maxLength: 128 },
+            cellId: { type: "string", minLength: 1, maxLength: 128 },
+            expectedSourceHash: { type: "string", pattern: "^[a-f0-9]{64}$" },
+            source: {
+              type: "string",
+              maxLength: 262144,
+              "x-maxUtf8Bytes": 262144,
+            },
+          },
+          required: ["notebookId", "cellId", "expectedSourceHash", "source"],
+          additionalProperties: false,
+        },
     annotations: {
       readOnlyHint: false,
       untrustedContentHint: true,
@@ -75,7 +109,9 @@ export function createUpdateTool(proposals: UpdateProposals): SiteTool {
       let isError = false;
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        const keys = ["notebookId", "cellId", "expectedSourceHash", "source"];
+        const keys = insert
+          ? ["notebookId", "afterCellId", "cellType", "source"]
+          : ["notebookId", "cellId", "expectedSourceHash", "source"];
         if (
           !input ||
           typeof input !== "object" ||
@@ -84,15 +120,28 @@ export function createUpdateTool(proposals: UpdateProposals): SiteTool {
         )
           throw new Error("INVALID_ARGUMENT");
         const args = input as Record<string, unknown>;
-        if (keys.some((key) => typeof args[key] !== "string"))
+        if (
+          keys.some(
+            (key) =>
+              !(insert && key === "afterCellId" && args[key] === null) &&
+              typeof args[key] !== "string",
+          )
+        )
           throw new Error("INVALID_ARGUMENT");
-        const proposal = await proposals.propose(
-          args.notebookId as string,
-          args.cellId as string,
-          args.expectedSourceHash as string,
-          args.source as string,
-          signal,
-        );
+        const proposal = insert
+          ? proposals.proposeInsert(
+              args.notebookId as string,
+              args.afterCellId as string | null,
+              args.cellType as "code" | "markdown",
+              args.source as string,
+            )
+          : await proposals.propose(
+              args.notebookId as string,
+              args.cellId as string,
+              args.expectedSourceHash as string,
+              args.source as string,
+              signal,
+            );
         payload = { proposalId: proposal.proposalId, status: proposal.status };
       } catch (error) {
         const allowed = [

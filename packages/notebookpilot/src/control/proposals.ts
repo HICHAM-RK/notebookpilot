@@ -9,6 +9,23 @@ export interface UpdateProposal {
   source: string;
   expiresAt: number;
   status: "pending" | "accepted" | "denied" | "expired" | "cancelled";
+  insertion?: {
+    afterCellId: string | null;
+    cellType: "code" | "markdown";
+    order: string[];
+  };
+}
+
+export interface InsertionAdapter {
+  order(notebookId: string): string[] | null;
+  insert(
+    notebookId: string,
+    expectedOrder: string[],
+    afterCellId: string | null,
+    cellId: string,
+    cellType: "code" | "markdown",
+    source: string,
+  ): boolean;
 }
 
 /** Human acceptance is intentionally separate from any exposed agent tool. */
@@ -30,15 +47,22 @@ export class UpdateProposals {
   list(notebookId: string): UpdateProposal[] {
     return Array.from(this.records.values())
       .filter((proposal) => proposal.notebookId === notebookId)
-      .map((proposal) => ({ ...this.current(proposal.proposalId) }));
+      .map((proposal) => structuredClone(this.current(proposal.proposalId)));
   }
 
   status(id: string): { status: UpdateProposal["status"] } {
     const record = this.records.get(id);
     if (
       !record ||
-      !this.policies.canRead(record.notebookId, record.cellId) ||
-      this.read(record.notebookId, record.cellId) === null
+      !this.policies.canRead(
+        record.notebookId,
+        record.insertion
+          ? (record.insertion.afterCellId ?? undefined)
+          : record.cellId,
+      ) ||
+      (record.insertion
+        ? this.insertionAdapter?.order(record.notebookId) == null
+        : this.read(record.notebookId, record.cellId) === null)
     )
       throw new Error("NOT_FOUND");
     return { status: this.current(id).status };
@@ -58,7 +82,61 @@ export class UpdateProposals {
       source: string,
     ) => boolean,
     private readonly now: () => number = Date.now,
+    private readonly insertionAdapter?: InsertionAdapter,
   ) {}
+
+  proposeInsert(
+    notebookId: string,
+    afterCellId: string | null,
+    cellType: "code" | "markdown",
+    source: string,
+  ): UpdateProposal {
+    const validId = (id: unknown): id is string =>
+      typeof id === "string" && id.length > 0 && id.length <= 128;
+    if (
+      !validId(notebookId) ||
+      (afterCellId !== null && !validId(afterCellId)) ||
+      !["code", "markdown"].includes(cellType) ||
+      typeof source !== "string"
+    )
+      throw new Error("INVALID_ARGUMENT");
+    if (!this.canInsert(notebookId, afterCellId))
+      throw new Error("ACCESS_DENIED");
+    if (
+      this.records.size >= 100 ||
+      new TextEncoder().encode(source).length > 256 * 1024
+    )
+      throw new Error("LIMIT_EXCEEDED");
+    const order = this.insertionAdapter?.order(notebookId);
+    if (!order || (afterCellId !== null && !order.includes(afterCellId)))
+      throw new Error("NOT_FOUND");
+    if (
+      order.length > 10000 ||
+      new Set(order).size !== order.length ||
+      order.some((id) => !validId(id))
+    )
+      throw new Error("LIMIT_EXCEEDED");
+    const proposal: UpdateProposal = {
+      proposalId: crypto.randomUUID(),
+      notebookId,
+      cellId: crypto.randomUUID(),
+      original: "",
+      source,
+      expiresAt: this.now() + 600000,
+      status: "pending",
+      insertion: { afterCellId, cellType, order: [...order] },
+    };
+    this.records.set(proposal.proposalId, proposal);
+    this.changed();
+    return structuredClone(proposal);
+  }
+
+  private canInsert(notebookId: string, afterCellId: string | null): boolean {
+    return (
+      this.policies.notebookMode(notebookId) === "write" &&
+      (afterCellId === null || this.policies.canWrite(notebookId, afterCellId))
+    );
+  }
 
   async propose(
     notebookId: string,
@@ -117,7 +195,17 @@ export class UpdateProposals {
     if (!proposal) throw new Error("NOT_FOUND");
     if (proposal.status === "pending") {
       if (this.now() >= proposal.expiresAt) proposal.status = "expired";
-      else if (
+      else if (proposal.insertion) {
+        if (
+          !this.canInsert(
+            proposal.notebookId,
+            proposal.insertion.afterCellId,
+          ) ||
+          JSON.stringify(this.insertionAdapter?.order(proposal.notebookId)) !==
+            JSON.stringify(proposal.insertion.order)
+        )
+          proposal.status = "cancelled";
+      } else if (
         !this.policies.canWrite(proposal.notebookId, proposal.cellId) ||
         this.read(proposal.notebookId, proposal.cellId) !== proposal.original
       )
@@ -132,24 +220,33 @@ export class UpdateProposals {
       // Mark terminal before calling the adapter to prevent reentrant acceptance.
       proposal.status = "cancelled";
       if (
-        this.replace(
-          proposal.notebookId,
-          proposal.cellId,
-          proposal.original,
-          proposal.source,
-        )
+        proposal.insertion
+          ? this.insertionAdapter?.insert(
+              proposal.notebookId,
+              proposal.insertion.order,
+              proposal.insertion.afterCellId,
+              proposal.cellId,
+              proposal.insertion.cellType,
+              proposal.source,
+            )
+          : this.replace(
+              proposal.notebookId,
+              proposal.cellId,
+              proposal.original,
+              proposal.source,
+            )
       )
         proposal.status = "accepted";
     }
     this.changed();
-    return { ...proposal };
+    return structuredClone(proposal);
   }
 
   reject(id: string): UpdateProposal {
     const proposal = this.current(id);
     if (proposal.status === "pending") proposal.status = "denied";
     this.changed();
-    return { ...proposal };
+    return structuredClone(proposal);
   }
 
   cancelNotebook(notebookId: string): void {

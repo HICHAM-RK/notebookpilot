@@ -108,3 +108,9 @@ Registered notebook_get_proposal with its contract schema and closed input valid
 
 Verified commit 87c6fec in the actual in-app browser: four native tools discovered; read-only update denied; rejected proposal preserved original hash; UI-accepted proposal changed the visible cell and native readback; status tool returned denied/accepted correctly. Outputs stayed empty and execution prompt stayed unexecuted. No registration shim was installed. The automated tester operated the human controls on repository-owned fixture data. See HOST_VERIFICATION.md for exact steps, source hashes and limitations. No code changed in this evidence checkpoint, so prior build/test results apply; no redundant test run was needed.
 
+# Insertion proposal checkpoint — 2026-10-24
+
+Implemented notebook_propose_insert, insertion review location, live Jupyter shared-model insertion and shared proposal lifecycle/status. Captured cell order is cloned and compared before applying; missing/hidden anchors, revoked write permission, duplicate IDs and changed order cannot insert. New code cells have empty outputs and null execution count. All inserted source remains visible; no execution path is called. The shared record limit is 100, source limit 256 KiB, and captured order limit 10,000 cells. Internal order IDs are not returned through tools.
+
+60 Jest tests and five Python tests pass, plus typecheck, formatting, production build and all four Chromium tests. The review browser test uses mocked transport and verifies no pre-approval insertion, accepted insertion at the beginning, accepted status and empty outputs. Domain tests verify once-only acceptance, reorder cancellation, hidden anchors, revoked access, missing anchors and isolation of returned order arrays. Native insertion remains unverified. H2 is still unchecked pending fuller review/lifecycle coverage; N2 execution is not implemented.
+
