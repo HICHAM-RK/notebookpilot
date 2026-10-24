@@ -29,13 +29,16 @@
 .np-access label,
 .np-datasets > label,
 .np-datasets article > label,
-.np-portability > label {
+.np-portability > label,
+.np-experiments > label,
+.np-experiments fieldset label {
   display: block;
   margin: 12px 0;
 }
 .np-access select,
 .np-datasets input[type="file"],
-.np-portability input[type="file"] {
+.np-portability input[type="file"],
+.np-experiments select {
   display: block;
   width: 100%;
   margin-top: 4px;
@@ -45,7 +48,9 @@
 .np-datasets button,
 .np-datasets input[type="file"],
 .np-portability button,
-.np-portability input[type="file"] {
+.np-portability input[type="file"],
+.np-experiments button,
+.np-experiments select {
   padding: 6px 8px;
   font: inherit;
   color: var(--jp-ui-font-color1);
@@ -85,13 +90,22 @@
   margin-top: 8px;
 }
 .np-portability,
-.np-datasets {
+.np-datasets,
+.np-experiments {
   padding-bottom: 12px;
   border-bottom: 1px solid var(--jp-border-color2);
 }
 .np-portability button {
   margin: 8px 0;
   cursor: pointer;
+}
+.np-experiments button {
+  margin: 8px 0;
+  cursor: pointer;
+}
+.np-experiments fieldset {
+  margin: 12px 0;
+  border: 1px solid var(--jp-border-color2);
 }
 .np-import-review {
   margin-top: 12px;

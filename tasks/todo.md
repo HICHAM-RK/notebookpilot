@@ -37,6 +37,8 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 ## Experiments
 
 - [ ] X1: Reproducible training cells. Depends D2,N2; SPEC-experiment-lab. Files: ext/src/experiments/templates.ts, ext/src/experiments/model.ts, ext/tests/templates.test.ts, e2e/experiment.spec.ts. Acceptance: logistic regression/random forest in actual Pyodide, stratified80/20 seed42, train-only preprocessing, impossible split rejected, versions/metrics recorded. Verify known labelled fixture, repeatability and preprocessing leakage.
+  - [x] X1a: Fixed training templates and explicit selection UI. Human chooses dataset, target, features and model; generated insertion proposals contain the documented split, preprocessing, estimator, metrics, version and fingerprint logic.
+  - [ ] X1b: Real Pyodide model verification. Execute both models on the labelled fixture through edit and run approvals, prove repeatability, inspect metrics/fingerprints and verify an impossible split fails visibly.
 - [ ] X2: Persist and compare records. Depends X1. Files: ext/src/experiments/store.ts, ext/src/experiments/compare.ts, ext/src/webmcp/experiment-tools.ts, ext/tests/experiments.test.ts, ext/src/ui/experiments.tsx. Acceptance: trusted execution-derived records, reload persistence, visible quota failures, failed/cancelled not ranked, exact dataset/target/features/split compatibility, delete/export controls. Verify forged IDs, mismatches and browser reload.
 
 ## Audit and reporting

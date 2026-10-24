@@ -1,6 +1,6 @@
 # Specification: Reproducible model comparisons
 
-Status: implementation contract; not implemented. Module: experiment-lab.
+Status: implementation contract; X1 template and selection UI implemented, real Pyodide verification pending. Module: experiment-lab.
 
 ## Dependencies
 dataset-intelligence, human-control.

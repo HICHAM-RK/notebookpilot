@@ -25,6 +25,11 @@ import {
   type PortabilityWarning,
 } from "./notebook/portability";
 import { PortabilityPanel } from "./ui/portability";
+import {
+  generateTrainingCell,
+  type ExperimentModel,
+} from "./experiments/templates";
+import { ExperimentPanel } from "./ui/experiments";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -49,6 +54,8 @@ export class WorkspacePanel extends ReactWidget {
   private portabilityWarnings: PortabilityWarning[] = [];
   private portabilityError: string | null = null;
   private portabilityStatus: string | null = null;
+  private experimentError: string | null = null;
+  private experimentStatus: string | null = null;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -96,6 +103,8 @@ export class WorkspacePanel extends ReactWidget {
     this.portabilityWarnings = [];
     this.portabilityError = null;
     this.portabilityStatus = null;
+    this.experimentError = null;
+    this.experimentStatus = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
@@ -182,6 +191,38 @@ export class WorkspacePanel extends ReactWidget {
         error.code === "LIMIT_EXCEEDED"
           ? "Notebook exceeds the 20 MiB export limit."
           : "Notebook could not be downloaded.";
+    }
+    this.update();
+  }
+
+  private createTrainingProposal(
+    datasetId: string,
+    target: string,
+    features: string[],
+    model: ExperimentModel,
+  ): void {
+    const notebook = this.active;
+    if (!notebook) return;
+    try {
+      const dataset = this.datasets
+        .list(notebook.id)
+        .find((item) => item.datasetId === datasetId);
+      if (!dataset) throw new Error("NOT_FOUND");
+      const source = generateTrainingCell({
+        datasetHash: dataset.sha256,
+        fileName: dataset.fileName,
+        target,
+        features,
+        model,
+      });
+      this.proposals.proposeInsert(notebook.id, null, "code", source);
+      this.experimentError = null;
+      this.experimentStatus =
+        "Training cell proposed. Review the code below before accepting it.";
+    } catch {
+      this.experimentError =
+        "Training proposal needs notebook write access and a valid dataset selection.";
+      this.experimentStatus = null;
     }
     this.update();
   }
@@ -324,6 +365,16 @@ export class WorkspacePanel extends ReactWidget {
                 this.update();
               });
             }}
+          />
+        )}
+        {notebook && (
+          <ExperimentPanel
+            datasets={this.datasets.list(notebook.id)}
+            error={this.experimentError}
+            status={this.experimentStatus}
+            onCreate={(datasetId, target, features, model) =>
+              this.createTrainingProposal(datasetId, target, features, model)
+            }
           />
         )}
         {notebook && (
