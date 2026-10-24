@@ -78,3 +78,9 @@ Added the WebMCP registration owner and four mocked lifecycle tests. The focused
 
 This module is not yet wired into extension activation; native discovery, UI status and browser teardown remain W1 work. No browser test was run for this isolated module, and W1 remains unchecked. The full product remains incomplete.
 
+# Native read tools checkpoint — 2026-10-24
+
+Implemented context/cell tools with closed argument validation, schema parity tests, bounded envelopes, cancellation checks and redacted errors. Extension activation registers both tools; sidebar reports registration separately from agent connection; panel disposal aborts registrations. Unit coverage includes invalid inputs, hidden notebook/cell state, unknown IDs, cancellation, exception redaction and permission changes before context resolves.
+
+Build, typecheck, formatting, five Python tests and three real Chromium tests passed. Initial native in-app discovery, actual cell reads and notebook hiding also passed; detailed observations and remaining limits are in HOST_VERIFICATION.md. W1/W2/W3 remain unchecked because native teardown, the full mutation surface and approved execution are unfinished.
+

@@ -9,6 +9,7 @@ import {
   type CellsPage,
 } from "./notebook/reader";
 import { AccessControls } from "./ui/access";
+import type { RegistrationStatus } from "./webmcp/register";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -16,6 +17,12 @@ export class WorkspacePanel extends ReactWidget {
   private pending = false;
   private error: string | null = null;
   private request = 0;
+  private connection: RegistrationStatus | "connecting" = "connecting";
+
+  setConnectionStatus(status: RegistrationStatus): void {
+    this.connection = status;
+    this.update();
+  }
 
   constructor(
     private readonly notebooks: INotebookTracker,
@@ -89,7 +96,10 @@ export class WorkspacePanel extends ReactWidget {
       ? Array.from(notebook.content.model.cells)
       : [];
     return (
-      <WorkspaceContent notebookName={notebook?.title.label ?? null}>
+      <WorkspaceContent
+        notebookName={notebook?.title.label ?? null}
+        connection={this.connection}
+      >
         {notebook && (
           <AccessControls
             notebookMode={this.policies.notebookMode(notebook.id)}

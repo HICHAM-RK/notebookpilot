@@ -1,11 +1,14 @@
 import React from "react";
+import type { RegistrationStatus } from "./webmcp/register";
 
 export function WorkspaceContent({
   notebookName,
   children,
+  connection = "unavailable",
 }: {
   notebookName: string | null;
   children?: React.ReactNode;
+  connection?: RegistrationStatus | "connecting";
 }): React.ReactElement {
   return (
     <section aria-label="NotebookPilot workspace">
@@ -17,9 +20,19 @@ export function WorkspaceContent({
       </div>
       {children}
       <h3>Agent connection</h3>
-      <p>Agent tools are not connected.</p>
+      <p role="status">
+        {connection === "available"
+          ? "Read-only notebook tools are registered with this browser."
+          : connection === "connecting"
+            ? "Checking browser tool support…"
+            : connection === "failed"
+              ? "Browser tool registration failed. Reload to try again."
+              : "Agent tools are not connected."}
+      </p>
       <p>
-        You can use your notebook normally while this connection is being built.
+        You can use your notebook normally. Tool registration does not mean an
+        agent is connected. Edit proposals and execution tools are still being
+        built.
       </p>
     </section>
   );

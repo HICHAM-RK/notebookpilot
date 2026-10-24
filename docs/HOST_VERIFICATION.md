@@ -1,12 +1,18 @@
 # Native WebMCP verification gate
 
-Status: NOT RUN. NotebookPilot has a working extension, but no registered tools yet. The registration lifecycle has mock-based unit coverage; it is not wired to extension activation. Chromium foundation tests prove the notebook runtime, not ChatGPT integration.
+Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked both read tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. The full proposal/approval/execution journey is not implemented or verified. Exact host/browser version and native teardown evidence remain to collect.
+
+## Native read checkpoint — 2026-10-24
+
+Extension activation now registers notebook_get_context and notebook_get_cells. Actual host discovery returned both schemas and readOnlyHint/untrustedContentHint annotations. An initial context call returned null notebook identity. After opening the repository-owned welcome.ipynb, context returned the active notebook ID, intro cell ID and idle kernel. The cells call returned the actual two cells, complete source hashes and no truncation.
+
+Changing Notebook access to Hidden from agent through the UI caused a subsequent native cells call to return NOT_FOUND without content. The native context call then returned null notebook/cell IDs and unavailable kernel status. This proves discovery, read invocation and notebook hiding on this host session, not the full W3 journey. Native unsaved-edit reads, per-cell hiding, cancellation and teardown still need dedicated evidence.
 
 ## Registration implementation checkpoint — 2026-10-24
 
 `src/webmcp/register.ts` implements single-start registration, missing-API detection, shared AbortSignal cleanup after partial failure, and disposal during an asynchronous registration. Four mocked tests pass. The adapter follows the 20 October 2026 draft's `document.modelContext.registerTool(tool, {signal})` interface; aborting the signal removes registrations. No compatibility shim is installed.
 
-Remaining W1 work: connect validated read handlers and activation/disposal, show truthful connection status, and verify discovery/invocation in a named native host. These unit tests do not establish host compatibility or duplicate activation across separate adapter instances.
+Read handlers and activation/disposal are now connected, with truthful UI registration status. These lifecycle unit tests do not establish native teardown or duplicate activation across separate adapter instances.
 
 Run this after W1/W2 and again against the deployed site in E3:
 
