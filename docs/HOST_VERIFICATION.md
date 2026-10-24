@@ -1,6 +1,12 @@
 # Native WebMCP verification gate
 
-Status: NOT RUN. NotebookPilot has no extension or registered tools yet. Chromium foundation tests only prove the notebook runtime. They do not prove ChatGPT integration.
+Status: NOT RUN. NotebookPilot has a working extension, but no registered tools yet. The registration lifecycle has mock-based unit coverage; it is not wired to extension activation. Chromium foundation tests prove the notebook runtime, not ChatGPT integration.
+
+## Registration implementation checkpoint — 2026-10-24
+
+`src/webmcp/register.ts` implements single-start registration, missing-API detection, shared AbortSignal cleanup after partial failure, and disposal during an asynchronous registration. Four mocked tests pass. The adapter follows the 20 October 2026 draft's `document.modelContext.registerTool(tool, {signal})` interface; aborting the signal removes registrations. No compatibility shim is installed.
+
+Remaining W1 work: connect validated read handlers and activation/disposal, show truthful connection status, and verify discovery/invocation in a named native host. These unit tests do not establish host compatibility or duplicate activation across separate adapter instances.
 
 Run this after W1/W2 and again against the deployed site in E3:
 
