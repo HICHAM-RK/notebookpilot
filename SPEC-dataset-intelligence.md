@@ -1,6 +1,6 @@
 # Specification: CSV profiling and notebook portability
 
-Status: implementation contract; D1 profile domain implemented, D2–D3 planned. Module: dataset-intelligence.
+Status: implementation contract; D1–D2 and the D3 portability domain implemented, D3 browser UI pending. Module: dataset-intelligence.
 
 ## Dependencies
 
