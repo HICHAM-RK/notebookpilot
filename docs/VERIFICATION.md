@@ -24,18 +24,18 @@ Hosted F3/F4 checks passed on `f7d33a01d41cf32c2bfc4e954976145f03256439`: [run 4
 
 ## Requirements audit
 
-| Requested deliverable | Evidence | Status |
-|---|---|---|
-| Agent instructions and skills | AGENTS.md; docs/SKILLS.md | Created, including Ponytail, testing, review and actual Graphify path |
-| Product and module specs | SPEC.md, SPEC-foundation.md, eight SPEC-module documents | Written; product behavior remains planned |
-| Precise tools | docs/TOOL_CONTRACTS.md; contracts/tools.json | Twelve planned inputs with bounds, state/results/error rules |
-| Ordered build work | tasks/plan.md; tasks/todo.md; docs/START_HERE.md | Dependencies, files, acceptance and verification documented |
-| Architecture and trust boundaries | docs/ARCHITECTURE.md; CAPABILITY_MAP.md | Documented with diagrams and decisions |
-| Test setup and CI | package.json/lock, tests/, e2e/, .github/workflows/ci.yml | Local checks passed; remote run recorded below |
-| Real browser Python | e2e/foundation.spec.ts | Passed after a fresh build; actual Pyodide output asserted |
-| Graphify | graphify-out/; docs/GRAPHIFY.md | Real extraction/clustering/export; dated snapshot limitations explicit |
-| Review and handoff | docs/REVIEW.md; this file; docs/START_HERE.md | Self-review completed; future product release gates documented |
-| Colab scope | SPEC-dataset-intelligence.md; task D3 | File round-trip specified; no live Colab integration promised |
+| Requested deliverable             | Evidence                                                  | Status                                                                 |
+| --------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Agent instructions and skills     | AGENTS.md; docs/SKILLS.md                                 | Created, including Ponytail, testing, review and actual Graphify path  |
+| Product and module specs          | SPEC.md, SPEC-foundation.md, eight SPEC-module documents  | Written; product behavior remains planned                              |
+| Precise tools                     | docs/TOOL_CONTRACTS.md; contracts/tools.json              | Twelve planned inputs with bounds, state/results/error rules           |
+| Ordered build work                | tasks/plan.md; tasks/todo.md; docs/START_HERE.md          | Dependencies, files, acceptance and verification documented            |
+| Architecture and trust boundaries | docs/ARCHITECTURE.md; CAPABILITY_MAP.md                   | Documented with diagrams and decisions                                 |
+| Test setup and CI                 | package.json/lock, tests/, e2e/, .github/workflows/ci.yml | Local checks passed; remote run recorded below                         |
+| Real browser Python               | e2e/foundation.spec.ts                                    | Passed after a fresh build; actual Pyodide output asserted             |
+| Graphify                          | graphify-out/; docs/GRAPHIFY.md                           | Real extraction/clustering/export; dated snapshot limitations explicit |
+| Review and handoff                | docs/REVIEW.md; this file; docs/START_HERE.md             | Self-review completed; future product release gates documented         |
+| Colab scope                       | SPEC-dataset-intelligence.md; task D3                     | File round-trip specified; no live Colab integration promised          |
 
 ## Local verification
 
@@ -72,6 +72,7 @@ GitHub API verified HICHAM-RK/notebookpilot remains private with default branch 
 ## Product gates still open
 
 H2, N2 and the remaining WebMCP journey gates in tasks/todo.md still include open implementation work. Native ChatGPT discovery/approval/execution evidence is tracked in docs/HOST_VERIFICATION.md. Colab round-trip, dataset upload/tool wiring, classification, audits, reports, full accessibility and hosted release are not implemented or passed by the current checks. No paid services, public deployment or production credentials were added.
+
 # Registration lifecycle checkpoint — 2026-10-24
 
 Added the WebMCP registration owner and four mocked lifecycle tests. The focused test first failed because the module did not exist. After implementation, all 21 Jest tests, production/test typechecking and formatting checks passed. Covered missing/malformed APIs, repeated starts, partial failure cleanup, and disposal during pending registration. Reviewed signal ownership and error handling: host exception details do not escape, and failed partial registration aborts the shared signal.
@@ -176,3 +177,10 @@ Resource checks stop files above 10 MiB before decoding, stop after 100,000 data
 
 The test-first checkpoint began with missing-module failures. The final focused suite has 15 passing cases, including exact fixture contents and hash, both byte and row boundaries, delimiter-heavy input, header-only data, whitespace-sensitive duplicates and oversize output. A mutation removing the leading-zero guard made the fixture test fail, and the original source was restored. Final checks: 91 Jest tests and six Python tests pass; typecheck, formatting and the production build pass. The build retains its four previously documented third-party license-discovery warnings. Browser tests are structurally deferred to D2 because D1 is an unregistered domain module with no UI or WebMCP route. Review found no unresolved correctness, security, architecture or performance issue. D1 is complete; D2 upload UI, explicit sharing and `dataset_profile` registration remain open.
 
+# Dataset session store and profile tool — 2026-10-24
+
+Implemented D2a as an isolated store/tool slice. CSV uploads receive generated app-owned filenames derived only from a cryptographic session ID; supplied names are reduced to display-only basenames and never become storage paths. Records are scoped to their notebook and bounded to 20 datasets and 50 MiB per session in addition to D1's per-file limits. A cancelled save is withheld from the registry and its unique partial file is removed. Unknown, cross-notebook and hidden records all return NOT_FOUND.
+
+The `dataset_profile` tool has the checked-in closed input schema, rechecks notebook permission after its async boundary, marks all returned dataset text untrusted and caps the complete transport envelope at 50 KiB. It returns a generated filename so proposed Python can visibly reference the app-owned file. Raw values are absent by default; after the human changes the store's sharing state, at most five parsed rows are included as `sampleRows`. This changes no execution path and runs no Python.
+
+Seven focused tests cover generated paths, default privacy, explicit sharing, hostile/formula text, schema parity, invalid arguments, notebook isolation, cancellation cleanup, malformed CSV and session limits. Reversing the sample-sharing condition made both privacy tests fail; the source was restored. Final D2a checks: 98 Jest tests and six Python checks, typecheck and formatting pass. Browser and native registration evidence remain D2b because this isolated tool is not registered or rendered yet.
