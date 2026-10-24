@@ -26,6 +26,12 @@ import {
   createDatasetListTool,
   createDatasetProfileTool,
 } from "./webmcp/data-tools";
+import {
+  ExperimentStore,
+  type ExperimentPersistence,
+} from "./experiments/store";
+import { ExperimentRecorder, ExperimentRegistry } from "./experiments/record";
+import { createExperimentTools } from "./webmcp/experiment-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -49,6 +55,22 @@ const plugin: JupyterFrontEndPlugin<void> = {
       remove: (fileName) => app.serviceManager.contents.delete(fileName),
     };
     const datasets = new DatasetStore(datasetStorage);
+    const experimentPersistence: ExperimentPersistence = {
+      read: () => window.localStorage.getItem("notebookpilot.experiments.v1"),
+      write: (value) =>
+        window.localStorage.setItem("notebookpilot.experiments.v1", value),
+    };
+    let experiments: ExperimentStore;
+    try {
+      experiments = new ExperimentStore(experimentPersistence);
+    } catch {
+      experiments = new ExperimentStore({
+        read: () => null,
+        write: (value) => experimentPersistence.write(value),
+      });
+      experiments.storageError = "INVALID_STORAGE";
+    }
+    const experimentRegistry = new ExperimentRegistry();
     const executions = new ExecutionQueue(
       policies,
       createExecutionAdapter(notebooks, policies, CodeCell.execute),
@@ -71,6 +93,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         executions.cancelNotebook(notebook.id);
         policies.forget(notebook.id);
         void datasets.clearNotebook(notebook.id);
+        experimentRegistry.forgetNotebook(notebook.id);
       });
       notebook.sessionContext.kernelChanged.connect(() => {
         proposals.cancelNotebook(notebook.id);
@@ -89,6 +112,19 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
     notebooks.forEach(trackNotebook);
     notebooks.widgetAdded.connect((_, notebook) => trackNotebook(notebook));
+    const notebookKey = (notebookId: string) => {
+      const notebook = notebooks.find(
+        (candidate) => candidate.id === notebookId && !candidate.isDisposed,
+      );
+      return notebook?.context.path ?? null;
+    };
+    const experimentRecorder = new ExperimentRecorder(
+      executions,
+      experimentRegistry,
+      experiments,
+      notebookKey,
+      (notebookId, datasetHash) => datasets.hasHash(notebookId, datasetHash),
+    );
     const panel = new WorkspacePanel(
       notebooks,
       policies,
@@ -96,6 +132,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
       proposals,
       executions,
       datasets,
+      experimentRegistry,
+      experimentRecorder,
+      experiments,
     );
     const tools = createReadTools(reader, policies, () => {
       const notebook = notebooks.currentWidget;
@@ -123,6 +162,17 @@ const plugin: JupyterFrontEndPlugin<void> = {
         ...createExecutionTools(executions),
         createDatasetListTool(datasets, policies),
         createDatasetProfileTool(datasets, policies),
+        ...createExperimentTools(
+          experimentRecorder,
+          experiments,
+          policies,
+          () => {
+            const notebook = notebooks.currentWidget;
+            return notebook && !notebook.isDisposed
+              ? { notebookId: notebook.id, notebookKey: notebook.context.path }
+              : null;
+          },
+        ),
       ],
     );
     panel.disposed.connect(() => {

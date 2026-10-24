@@ -30,6 +30,12 @@ import {
   type ExperimentModel,
 } from "./experiments/templates";
 import { ExperimentPanel } from "./ui/experiments";
+import { ExperimentRecorder, ExperimentRegistry } from "./experiments/record";
+import {
+  ExperimentStore,
+  type ExperimentComparison,
+} from "./experiments/store";
+import { ExperimentHistory } from "./ui/experiment-history";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -60,6 +66,9 @@ export class WorkspacePanel extends ReactWidget {
   private experimentTarget = "";
   private experimentFeatures: string[] = [];
   private experimentModel: ExperimentModel = "logistic_regression";
+  private experimentSelection: string[] = [];
+  private experimentComparison: ExperimentComparison | null = null;
+  private unsubscribeExperiments: () => void;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -73,6 +82,9 @@ export class WorkspacePanel extends ReactWidget {
     private readonly proposals: UpdateProposals,
     private readonly executions: ExecutionQueue,
     private readonly datasets: DatasetStore,
+    private readonly experimentRegistry: ExperimentRegistry,
+    private readonly experimentRecorder: ExperimentRecorder,
+    private readonly experiments: ExperimentStore,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -83,6 +95,7 @@ export class WorkspacePanel extends ReactWidget {
     this.selectNotebook();
     this.unsubscribeProposals = proposals.subscribe(() => this.update());
     this.unsubscribeDatasets = datasets.subscribe(() => this.update());
+    this.unsubscribeExperiments = experiments.subscribe(() => this.update());
     this.expiryTimer = setInterval(() => this.update(), 1000);
   }
 
@@ -113,6 +126,8 @@ export class WorkspacePanel extends ReactWidget {
     this.experimentTarget = "";
     this.experimentFeatures = [];
     this.experimentModel = "logistic_regression";
+    this.experimentSelection = [];
+    this.experimentComparison = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
@@ -223,13 +238,66 @@ export class WorkspacePanel extends ReactWidget {
         features,
         model,
       });
-      this.proposals.proposeInsert(notebook.id, null, "code", source);
+      const proposal = this.proposals.proposeInsert(
+        notebook.id,
+        null,
+        "code",
+        source,
+      );
+      this.experimentRegistry.register(proposal, {
+        datasetHash: dataset.sha256,
+        fileName: dataset.fileName,
+        target,
+        features,
+        model,
+      });
       this.experimentError = null;
       this.experimentStatus =
         "Training cell proposed. Review the code below before accepting it.";
     } catch {
       this.experimentError =
         "Training proposal needs notebook write access and a valid dataset selection.";
+      this.experimentStatus = null;
+    }
+    this.update();
+  }
+
+  private recordExperiment(executionId: string): void {
+    const notebook = this.active;
+    if (!notebook) return;
+    try {
+      this.experimentRecorder.record(notebook.id, executionId);
+      this.experimentError = null;
+      this.experimentStatus = "Experiment result saved in this browser.";
+    } catch (error) {
+      if (error instanceof Error && error.message === "UNTRUSTED_EXECUTION")
+        return;
+      this.experimentError =
+        error instanceof Error && error.message === "STORAGE_FAILED"
+          ? "Experiment finished, but browser storage could not save it."
+          : "Experiment result could not be verified and saved.";
+      this.experimentStatus = null;
+    }
+    this.update();
+  }
+
+  private downloadExperiments(): void {
+    if (this.experimentSelection.length === 0) return;
+    try {
+      const content = this.experiments.export(this.experimentSelection);
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "notebookpilot-experiments.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      this.experimentError = null;
+      this.experimentStatus = "Experiment export prepared.";
+    } catch {
+      this.experimentError = "Experiment results could not be exported.";
       this.experimentStatus = null;
     }
     this.update();
@@ -310,6 +378,7 @@ export class WorkspacePanel extends ReactWidget {
     this.uploadController?.abort();
     this.unsubscribeProposals();
     this.unsubscribeDatasets();
+    this.unsubscribeExperiments();
     clearInterval(this.expiryTimer);
     super.dispose();
   }
@@ -318,6 +387,10 @@ export class WorkspacePanel extends ReactWidget {
     const notebook = this.active;
     const cells = notebook?.content.model
       ? Array.from(notebook.content.model.cells)
+      : [];
+    const notebookKey = notebook?.context.path ?? null;
+    const experimentRuns = notebookKey
+      ? this.experiments.list(notebookKey)
       : [];
     return (
       <WorkspaceContent
@@ -417,6 +490,47 @@ export class WorkspacePanel extends ReactWidget {
           />
         )}
         {notebook && (
+          <ExperimentHistory
+            runs={experimentRuns}
+            selected={this.experimentSelection}
+            comparison={this.experimentComparison}
+            storageError={this.experiments.storageError}
+            onSelect={(runId, enabled) => {
+              this.experimentSelection = enabled
+                ? [...new Set([...this.experimentSelection, runId])]
+                : this.experimentSelection.filter((id) => id !== runId);
+              this.experimentComparison = null;
+              this.update();
+            }}
+            onCompare={() => {
+              try {
+                this.experimentComparison = this.experiments.compare(
+                  this.experimentSelection,
+                );
+                this.experimentError = null;
+              } catch {
+                this.experimentError =
+                  "Selected experiment results are unavailable.";
+              }
+              this.update();
+            }}
+            onDelete={(runId) => {
+              try {
+                this.experiments.remove(runId);
+                this.experimentSelection = this.experimentSelection.filter(
+                  (id) => id !== runId,
+                );
+                this.experimentComparison = null;
+              } catch {
+                this.experimentError =
+                  "Experiment result could not be deleted.";
+              }
+              this.update();
+            }}
+            onExport={() => this.downloadExperiments()}
+          />
+        )}
+        {notebook && (
           <AccessControls
             notebookMode={this.policies.notebookMode(notebook.id)}
             cells={cells.map((cell) => ({
@@ -444,10 +558,10 @@ export class WorkspacePanel extends ReactWidget {
           <ProposalReview
             proposals={this.proposals.list(notebook.id)}
             onAccept={(id) => {
-              this.proposals.accept(id);
+              this.experimentRegistry.settle(this.proposals.accept(id));
             }}
             onReject={(id) => {
-              this.proposals.reject(id);
+              this.experimentRegistry.settle(this.proposals.reject(id));
             }}
           />
         )}
@@ -458,6 +572,7 @@ export class WorkspacePanel extends ReactWidget {
             onApprove={(id) => {
               void this.executions
                 .approve(id)
+                .then(() => this.recordExperiment(id))
                 .catch(() => {
                   this.error = "Run request could not be approved.";
                 })
@@ -466,6 +581,7 @@ export class WorkspacePanel extends ReactWidget {
             }}
             onCancel={(id) => {
               this.executions.cancel(id);
+              this.recordExperiment(id);
               this.update();
             }}
           />

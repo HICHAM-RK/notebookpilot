@@ -31,6 +31,7 @@ export interface ExecutionRecord {
 interface PendingRun {
   record: ExecutionRecord;
   targets: { cellId: string; expected: ExecutionTarget }[];
+  outputs: string[];
   controller: AbortController;
   completion?: Promise<void>;
 }
@@ -112,6 +113,7 @@ export class ExecutionQueue {
     this.records.set(requestId, {
       record: { requestId, notebookId, status: "pending", cells: [] },
       targets,
+      outputs: [],
       controller: new AbortController(),
     });
     return { requestId, status: "pending" };
@@ -143,6 +145,24 @@ export class ExecutionQueue {
     )
       throw new Error("NOT_FOUND");
     return structuredClone(pending.record);
+  }
+
+  /** Internal evidence for app-owned result processors; never returned directly to a tool. */
+  trusted(requestId: string): {
+    record: ExecutionRecord;
+    targets: { cellId: string; source: string }[];
+    outputs: string[];
+  } {
+    const record = this.get(requestId);
+    const pending = this.records.get(requestId)!;
+    return {
+      record,
+      targets: pending.targets.map((target) => ({
+        cellId: target.cellId,
+        source: target.expected.source,
+      })),
+      outputs: [...pending.outputs],
+    };
   }
 
   approve(requestId: string): Promise<void> {
@@ -218,6 +238,7 @@ export class ExecutionQueue {
         if (controller.signal.aborted) return;
         if (!this.policies.canRead(record.notebookId, target.cellId))
           throw new Error("ACCESS_DENIED");
+        pending.outputs[index] = truncateUtf8(output, 50 * 1024).text;
         record.cells[index].outputSummary = truncateUtf8(output, 1024).text;
         record.cells[index].status = "succeeded";
       }

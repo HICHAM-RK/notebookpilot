@@ -12,7 +12,7 @@ This repository contains the build package, a working JupyterLite sample and the
 2. Follow tasks/todo.md in dependency order; start the first unchecked foundation task. Read its module specification and docs/TOOL_CONTRACTS.md.
 3. Use Node 24 and uv 0.12.0. Run `uv sync --frozen`, `npm ci --ignore-scripts`, then `npx playwright install chromium` (Linux CI also needs `--with-deps`).
 4. Run `npm test`, `npm run typecheck`, `npm run lint:check`, `npm run build`, and `npm run test:e2e` to establish the baseline. Browser testing requires port 8000 free and internet for first-use Pyodide downloads.
-5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task. The next product task is X2, trusted experiment persistence and comparison.
+5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task. The next product task is A1, evidence-based notebook audit rules.
 
 Commands run from the repository root. `npm run serve` serves the already built site at http://127.0.0.1:8000/lab/index.html. Stop the manual server before browser tests, which own their server.
 

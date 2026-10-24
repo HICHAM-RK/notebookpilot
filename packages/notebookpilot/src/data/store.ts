@@ -84,6 +84,13 @@ export class DatasetStore {
       .map((record) => copySummary(record.summary));
   }
 
+  hasHash(notebookId: string, sha256: string): boolean {
+    return [...this.records.values()].some(
+      (record) =>
+        record.notebookId === notebookId && record.summary.sha256 === sha256,
+    );
+  }
+
   async upload(
     notebookId: string,
     suppliedName: string,

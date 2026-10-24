@@ -193,6 +193,56 @@ test("runs repeatable logistic and random-forest experiments after human approva
     testFraction: 0.2,
   });
   expect(forest.splitFingerprint).toBe(first.splitFingerprint);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const value = localStorage.getItem("notebookpilot.experiments.v1");
+        return value ? JSON.parse(value).runs.length : 0;
+      }),
+    )
+    .toBe(3);
+  const persisted = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("notebookpilot.experiments.v1")!),
+  );
+  expect(persisted).toMatchObject({
+    schemaVersion: 1,
+    runs: [
+      { status: "succeeded", model: "logistic_regression" },
+      { status: "succeeded", model: "logistic_regression" },
+      { status: "succeeded", model: "random_forest" },
+    ],
+  });
+  const successfulRunIds = persisted.runs.map(
+    (run: { runId: string }) => run.runId,
+  );
+  const toolEvidence = await page.evaluate(
+    async ({ notebookId, executionId, runIds }) => {
+      const call = (
+        window as unknown as {
+          callTestTool: (name: string, input: unknown) => Promise<ToolResult>;
+        }
+      ).callTestTool;
+      const recorded = await call("experiment_record", {
+        notebookId,
+        executionId,
+      });
+      const compared = await call("experiment_compare", { runIds });
+      return {
+        recorded: recorded.structuredContent,
+        compared: compared.structuredContent,
+      };
+    },
+    {
+      notebookId: firstRequest.notebookId,
+      executionId: firstRequest.requestId,
+      runIds: successfulRunIds,
+    },
+  );
+  expect(toolEvidence.recorded).toMatchObject({ status: "succeeded" });
+  expect(toolEvidence.compared).toMatchObject({
+    compatible: true,
+    reasons: [],
+  });
 
   await panel.getByLabel("Upload CSV").setInputFiles({
     name: "impossible.csv",
@@ -233,4 +283,54 @@ test("runs repeatable logistic and random-forest experiments after human approva
       .filter({ hasText: "Each target class needs at least two rows" })
       .first(),
   ).toBeVisible();
+
+  const history = panel
+    .getByRole("heading", { name: "Experiment history" })
+    .locator("..");
+  await expect(history.getByRole("article")).toHaveCount(4);
+  const successful = history
+    .getByRole("article")
+    .filter({ hasText: "succeeded" });
+  await expect(successful).toHaveCount(3);
+  for (const article of await successful.all()) {
+    await article.getByRole("checkbox").check();
+  }
+  await history.getByRole("button", { name: "Compare selected" }).click();
+  await expect(
+    history.getByText("Compatible runs ranked by macro F1."),
+  ).toBeVisible();
+
+  const downloadPromise = page.waitForEvent("download");
+  await history.getByRole("button", { name: "Export selected JSON" }).click();
+  const download = await downloadPromise;
+  const exportPath = await download.path();
+  expect(exportPath).not.toBeNull();
+  const exported = JSON.parse(readFileSync(exportPath!, "utf8"));
+  expect(exported.runs).toHaveLength(3);
+  expect(JSON.stringify(exported)).not.toContain("classification.csv");
+
+  await page.reload();
+  await page.getByRole("tab", { name: "NotebookPilot", exact: true }).click();
+  const restoredPanel = page.getByRole("region", {
+    name: "NotebookPilot workspace",
+  });
+  const restoredHistory = restoredPanel
+    .getByRole("heading", { name: "Experiment history" })
+    .locator("..");
+  await expect(restoredHistory.getByRole("article")).toHaveCount(4);
+  await restoredHistory
+    .getByRole("article")
+    .filter({ hasText: "failed" })
+    .getByRole("button", { name: "Delete result" })
+    .click();
+  await expect(restoredHistory.getByRole("article")).toHaveCount(3);
+  await page.reload();
+  await page.getByRole("tab", { name: "NotebookPilot", exact: true }).click();
+  await expect(
+    page
+      .getByRole("region", { name: "NotebookPilot workspace" })
+      .getByRole("heading", { name: "Experiment history" })
+      .locator("..")
+      .getByRole("article"),
+  ).toHaveCount(3);
 });

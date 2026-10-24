@@ -17,7 +17,9 @@ flowchart LR
     Q -->|visible cells only| K[Pyodide worker]
     N -->|bounded permitted content leaves browser| Agent
     K --> O[Notebook output and execution records]
-    O --> R[Experiments audit reports]
+    O --> E[Trusted experiment recorder]
+    E --> S[Versioned browser storage]
+    S --> R[Comparisons audit reports]
 ```
 
 Dataset files receive generated app-owned names and remain scoped to the open notebook session. The agent can discover bounded metadata and profiles. Raw sample rows are absent unless the human enables sharing for that dataset, and enabling samples does not grant edit or execution authority.
@@ -39,6 +41,8 @@ The host may request a proposal or run but cannot grant permissions or approve e
 ## ADR 004: Evidence and data lifecycle
 
 Profiles identify original dataset bytes; experiments identify dataset, split, code and versions. Store run records in browser storage under versioned keys, without raw rows by default. Handle quota errors without claiming persistence succeeded. Provide user-visible deletion/export. Clearing site data removes these records. Reports are explicit local downloads and never automatically uploaded.
+
+Experiment definitions are registered when NotebookPilot creates a proposal and bound to the exact inserted cell only after human acceptance. The recorder accepts one-cell terminal execution evidence only when notebook, cell and source still match that binding. Successful output is parsed from the app-generated stream marker, checked against the registered dataset hash, target, features and model, and validated again before an atomic localStorage write. Copied cells and imported outputs are not trusted records. Failed and cancelled generated runs retain status only and never receive a comparison rank.
 
 ## ADR 005: Host compatibility is an integration gate
 

@@ -2,7 +2,7 @@
 
 NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebMCP site tools to inspect datasets, propose safe notebook changes, execute approved cells, and produce reproducible analysis.
 
-The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. The current implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling and reproducible browser-local classification experiments. Start with:
+The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. The current implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments and persistent comparison history. Start with:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
@@ -14,6 +14,8 @@ The project contains an agent build package, a tested JupyterLite foundation and
 The initial static JupyterLite build and sample notebook are implemented. Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md).
 
 Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. Upload a CSV to profile it locally, choose whether the agent may receive up to five sample rows, and review proposed notebook edits before separately approving execution. The experiment panel can generate reviewed logistic-regression or random-forest cells with a fixed split, training-only preprocessing and recorded metrics.
+
+Verified generated experiments are saved locally in the browser under a versioned schema. The history panel ranks only compatible successful runs, explains incompatibilities, and provides explicit JSON export and deletion. Exported experiment records contain metrics and provenance without uploaded dataset rows.
 
 ## Run locally
 
