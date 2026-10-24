@@ -26,7 +26,7 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 
 ## Dataset and Colab
 
-- [ ] D1: CSV validation/profile. Depends H1,W2; SPEC-dataset-intelligence. Files: ext/src/data/import.ts, ext/src/data/profile.ts, ext/tests/data.test.ts, content/fixtures/profile.csv. Acceptance: correct counts, quoted commas/newlines/Unicode accepted, duplicate headers/ragged rows rejected, 10MiB/100k row bounds, original-byte hash, formula text inert. Verify exact edge-fixture results and generated boundary inputs.
+- [x] D1: CSV validation/profile. Depends H1,W2; SPEC-dataset-intelligence. Files: ext/src/data/import.ts, ext/src/data/profile.ts, ext/tests/data.test.ts, content/fixtures/profile.csv. Acceptance: correct counts, quoted commas/newlines/Unicode accepted, duplicate headers/ragged rows rejected, 10MiB/100k row bounds, original-byte hash, formula text inert. Verify exact edge-fixture results and generated boundary inputs.
 - [ ] D2: Dataset UI and tools. Depends D1,N2. Files: ext/src/ui/datasets.tsx, ext/src/webmcp/data-tools.ts, ext/tests/data-tools.test.ts, e2e/dataset.spec.ts. Acceptance: explicit sharing, no raw samples by default, bounded results, visible loading/errors/cancel, no hidden Python. Verify upload → profile → propose → review → execute.
 - [ ] D3: Colab file round-trip. Depends D1,N1. Files: ext/src/notebook/portability.ts, ext/tests/portability.test.ts, content/fixtures/colab.ipynb, e2e/import.spec.ts. Acceptance: nbformat4/20MiB validation, cells/unknown metadata preserved, no autorun or active imported HTML, GPU/shell/Drive/google.colab warnings. Verify downloaded notebook schema and metadata. Live Colab runtime access is out of scope.
 
