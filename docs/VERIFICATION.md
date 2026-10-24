@@ -246,3 +246,11 @@ The sidebar states that checks cover visible cells and are heuristics rather tha
 The Chromium journey inserts an absolute-path cell through the normal human edit review, obtains the same finding through the sidebar and mocked WebMCP transport, navigates to the active evidence cell, replaces the source through another reviewed edit, observes the changed-source warning and confirms a fresh audit removes the obsolete finding. The focused A2 checks passed before the final full gate. Native-host invocation of `notebook_audit` remains part of the open W3 evidence gate.
 
 Final A2 gates pass: 147 Jest tests, six Python checks, typecheck, formatting, production build and all ten Chromium scenarios. The production build retains the four previously documented dependency-license discovery warnings.
+
+# Portable report rendering — 2026-10-25
+
+Completed R1 with an immutable report model and bounded standalone HTML/Markdown renderers. The model selects at most ten requested records from the exact active-notebook scope, retains stored dataset and split fingerprints, parameters, versions and metrics without recalculation, and labels unavailable, failed and cancelled runs. Reports state that only visible cells were audited, raw dataset rows are excluded and audit findings are heuristic. Audit findings, unevaluated checks, execution coverage and changed-evidence warnings are included.
+
+The HTML document escapes every data field, includes no scripts or remote-resource elements, and uses a restrictive embedded Content Security Policy. Markdown escapes structural delimiters and collapses user-controlled line breaks. Both formats are complete local documents and reject UTF-8 output above five MiB. Tests cover hostile HTML and Markdown strings, exact stored metrics/provenance, missing and failed runs, explicit scope and the size boundary.
+
+Final R1 gates pass: 151 Jest tests, six Python checks, typecheck, formatting, production build and all ten Chromium scenarios. The production build retains the four previously documented dependency-license discovery warnings. R2 remains responsible for explicit local download controls, the bounded WebMCP preparation tool and offline browser verification.

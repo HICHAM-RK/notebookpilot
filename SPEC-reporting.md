@@ -1,6 +1,6 @@
 # Specification: Portable analysis reports
 
-Status: implementation contract; not implemented. Module: reporting.
+Status: R1 portable rendering implemented; R2 export UI and tool remain planned. Module: reporting.
 
 ## Dependencies
 experiment-lab, notebook-audit.
@@ -16,7 +16,7 @@ Export Markdown and static HTML with escaped data and no scripts or external req
 5. exported report usable without app.
 
 ## Files and interfaces
-Planned extension-relative files: src/reports/export.ts, src/reports/model.ts, tests/reports.test.ts, e2e/report.spec.ts. Tool interfaces are defined in docs/TOOL_CONTRACTS.md. Keep domain logic independent of the WebMCP adapter.
+Extension-relative report-domain files: src/reports/export.ts, src/reports/model.ts and tests/reports.test.ts. R2 adds the UI, WebMCP adapter and e2e/report.spec.ts. Tool interfaces are defined in docs/TOOL_CONTRACTS.md. Domain logic remains independent of the WebMCP adapter.
 
 ## Verification
 Write failing behavioral tests for each acceptance criterion, then implement. Use npm test for unit contracts, npm run typecheck and npm run lint:check; add relevant npm run test:e2e cases. Native browser-agent compatibility must be recorded independently of mocked protocol tests.
