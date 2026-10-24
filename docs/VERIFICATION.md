@@ -134,3 +134,11 @@ Real Chromium/Pyodide review scenario passed: update rejection and acceptance, s
 
 72 Jest tests, five Python tests, typecheck, formatting, production build and four browser tests pass. Native execution invocation, actual long-running timeout/interrupt behavior, multi-request races against human kernel activity and complete restart coverage remain unverified. N2/W3 are not marked complete. Cancelling after foreign work is observed does not interrupt the shared kernel; the UI explicitly explains that Python may continue until settlement.
 
+# Cancellation before kernel busy — 2026-10-24
+
+Reproduced a missed interrupt when cancellation arrived after dispatch but before the kernel reported busy. The execution adapter now observes status changes and message ownership while cancellation is pending, sends at most one interrupt, and removes both listeners when execution settles. It still declines interruption after observing foreign work or a replacement kernel.
+
+The new regression failed before the fix (zero interrupts instead of one). Both delayed-busy cases now pass: owned work is interrupted once despite repeated status notifications; foreign work is not interrupted. Inverting the new once-only guard caused two tests to fail, then the original source was restored. Review checked reentrant interrupt notifications, ownership guards, listener cleanup and absence of new dependencies.
+
+74 Jest tests, five Python tests, typecheck, formatting, production build and all four browser tests passed. Browser tests execute real Python through mocked WebMCP transport; the new timing regression uses a controlled kernel double. Actual long-running Pyodide interruption and restart coverage remain open N2 gates. No claim of a hard runtime termination guarantee follows from this fix.
+

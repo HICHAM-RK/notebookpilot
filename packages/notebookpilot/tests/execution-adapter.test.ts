@@ -6,10 +6,15 @@ function setup() {
   const policies = new PolicyStore();
   policies.setNotebook("n", "write");
   const listeners = new Set<(sender: unknown, args: unknown) => void>();
+  const statusListeners = new Set<() => void>();
   const kernel = {
     id: "k",
     status: "idle",
     interrupt: jest.fn(async () => undefined),
+    statusChanged: {
+      connect: (fn: () => void) => statusListeners.add(fn),
+      disconnect: (fn: () => void) => statusListeners.delete(fn),
+    },
     anyMessage: {
       connect: (fn: (sender: unknown, args: unknown) => void) =>
         listeners.add(fn),
@@ -43,7 +48,7 @@ function setup() {
     ) => ({ content: { status: "ok" } }),
   );
   const adapter = createExecutionAdapter(tracker, policies, execute);
-  return { adapter, kernel, cell, execute, listeners };
+  return { adapter, kernel, cell, execute, listeners, statusListeners };
 }
 
 test("dispatches visible cell only after live source/kernel checks", async () => {
@@ -117,6 +122,54 @@ test.each([false, true])(
     expect(s.kernel.interrupt).toHaveBeenCalledTimes(foreign ? 0 : 1);
     finish();
     await expect(run).rejects.toThrow("CANCELLED");
+    expect(s.listeners.size).toBe(0);
+  },
+);
+
+test.each([false, true])(
+  "cancellation before busy waits for ownership-safe interruption (foreign=%s)",
+  async (foreign) => {
+    const s = setup();
+    let finish!: () => void;
+    s.execute.mockImplementationOnce(async (_cell, _session, metadata) => {
+      for (const listener of s.listeners)
+        listener(s.kernel, {
+          direction: "send",
+          msg: {
+            header: { msg_type: "execute_request", msg_id: "owned" },
+            metadata,
+          },
+        });
+      await new Promise<void>((resolve) => {
+        finish = resolve;
+      });
+      return { content: { status: "ok" } };
+    });
+    const controller = new AbortController();
+    const run = s.adapter.run(
+      "n",
+      "c",
+      s.adapter.read("n", "c")!,
+      controller.signal,
+    );
+    controller.abort();
+    expect(s.kernel.interrupt).not.toHaveBeenCalled();
+    if (foreign)
+      for (const listener of s.listeners)
+        listener(s.kernel, {
+          direction: "send",
+          msg: {
+            header: { msg_type: "execute_request", msg_id: "human" },
+            metadata: {},
+          },
+        });
+    s.kernel.status = "busy";
+    for (const listener of s.statusListeners) listener();
+    for (const listener of s.statusListeners) listener();
+    expect(s.kernel.interrupt).toHaveBeenCalledTimes(foreign ? 0 : 1);
+    finish();
+    await expect(run).rejects.toThrow("CANCELLED");
+    expect(s.statusListeners.size).toBe(0);
     expect(s.listeners.size).toBe(0);
   },
 );

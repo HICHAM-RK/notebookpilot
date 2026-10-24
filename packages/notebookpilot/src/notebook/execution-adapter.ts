@@ -60,6 +60,7 @@ export function createExecutionAdapter(
       const token = crypto.randomUUID();
       let ownMessageId: string | null = null;
       let foreignWork = false;
+      let interruptSent = false;
       const observe = (
         _sender: Kernel.IKernelConnection,
         args: Kernel.IAnyMessageArgs,
@@ -76,18 +77,25 @@ export function createExecutionAdapter(
           msg.parent_header.msg_id !== ownMessageId
         )
           foreignWork = true;
+        abort();
       };
       const abort = () => {
         // An interrupt affects the whole kernel. Decline if another run was observed.
         if (
+          signal.aborted &&
+          !interruptSent &&
           ownMessageId &&
           !foreignWork &&
           kernel.status === "busy" &&
           panel.sessionContext.session?.kernel === kernel
-        )
+        ) {
+          interruptSent = true;
           void kernel.interrupt().catch(() => undefined);
+        }
       };
       kernel.anyMessage.connect(observe);
+      // Cancellation can arrive before the kernel acknowledges execution as busy.
+      kernel.statusChanged.connect(abort);
       signal.addEventListener("abort", abort, { once: true });
       try {
         const reply = await execute(cell, panel.sessionContext, {
@@ -102,6 +110,7 @@ export function createExecutionAdapter(
       } finally {
         signal.removeEventListener("abort", abort);
         kernel.anyMessage.disconnect(observe);
+        kernel.statusChanged.disconnect(abort);
       }
     },
   };
