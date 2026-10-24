@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("mock transport proposal requires human review and never executes", async ({
+test("mock transport requires separate edit and execution approvals", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -140,4 +140,49 @@ test("mock transport proposal requires human review and never executes", async (
     structuredContent: { status: "accepted" },
   });
   await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
+  async function requestRun() {
+    return page.evaluate(async () => {
+      const call = (
+        window as unknown as {
+          callTestTool: (
+            name: string,
+            input: unknown,
+          ) => Promise<{ structuredContent: Record<string, unknown> }>;
+        }
+      ).callTestTool;
+      const context = (await call("notebook_get_context", {}))
+        .structuredContent;
+      const result = (
+        await call("notebook_get_cells", { notebookId: context.notebookId })
+      ).structuredContent;
+      const cell = (
+        result.cells as { cellId: string; sourceHash: string; type: string }[]
+      ).find((cell) => cell.type === "code")!;
+      return call("notebook_run_cells", {
+        notebookId: context.notebookId,
+        cells: [{ cellId: cell.cellId, expectedSourceHash: cell.sourceHash }],
+      });
+    });
+  }
+  await requestRun();
+  await expect(
+    panel.getByRole("button", { name: "Approve run" }),
+  ).toBeVisible();
+  await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
+  await panel.getByRole("button", { name: "Cancel run" }).click();
+  await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
+  const execution = await requestRun();
+  await panel.getByRole("button", { name: "Approve run" }).click();
+  await expect(page.locator(".jp-OutputArea-output")).toContainText(
+    "inserted without running",
+  );
+  const outcome = await page.evaluate(async (requestId) => {
+    const call = (
+      window as unknown as {
+        callTestTool: (name: string, input: unknown) => Promise<unknown>;
+      }
+    ).callTestTool;
+    return call("notebook_get_execution", { requestId });
+  }, execution.structuredContent.requestId);
+  expect(outcome).toMatchObject({ structuredContent: { status: "succeeded" } });
 });

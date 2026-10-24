@@ -4,7 +4,7 @@
 
 NotebookPilot adds a human-controlled AI tool surface to a browser notebook. The first complete demonstration is CSV upload → bounded profile → proposed cleaning cell → human review → separate execution approval → real Python output. The next milestone adds reproducible classification comparisons, audits and downloadable reports.
 
-This repository contains the build package, a working JupyterLite sample and the original sidebar extension. Native reads, update proposals, human accept/reject controls and status reads have been verified in-app. Insertion proposals are connected and browser-tested using mocked transport; native insertion verification and execution approval remain unfinished. Do not mistake the specifications or historical Graphify nodes for implemented features.
+This repository contains the build package, a working JupyterLite sample and the original sidebar extension. Native reads, update proposals, human accept/reject controls and status reads have been verified in-app. Insertion and separate execution approval are connected and browser-tested using mocked transport with real Python. Native insertion/execution and full timeout/lifecycle verification remain unfinished. Do not mistake the specifications or historical Graphify nodes for implemented features.
 
 ## Start a development session
 

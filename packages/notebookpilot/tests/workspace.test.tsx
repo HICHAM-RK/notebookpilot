@@ -6,9 +6,7 @@ test("registration status does not claim an agent is connected", () => {
   const markup = renderToStaticMarkup(
     <WorkspaceContent notebookName={null} connection="available" />,
   );
-  expect(markup).toContain(
-    "Notebook read and edit-proposal tools are registered with this browser.",
-  );
+  expect(markup).toContain("Notebook tools are registered with this browser.");
   expect(markup).toContain(
     "Tool registration does not mean an agent is connected.",
   );

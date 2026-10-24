@@ -12,6 +12,8 @@ import { AccessControls } from "./ui/access";
 import type { RegistrationStatus } from "./webmcp/register";
 import { UpdateProposals } from "./control/proposals";
 import { ProposalReview } from "./ui/review";
+import { ExecutionQueue } from "./notebook/execution";
+import { ExecutionReview } from "./ui/execution";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -33,6 +35,7 @@ export class WorkspacePanel extends ReactWidget {
     private readonly policies: PolicyStore,
     private readonly reader: NotebookReader,
     private readonly proposals: UpdateProposals,
+    private readonly executions: ExecutionQueue,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -47,6 +50,7 @@ export class WorkspacePanel extends ReactWidget {
 
   private refresh(): void {
     if (this.active) this.proposals.list(this.active.id);
+    if (this.active) this.executions.review(this.active.id);
     this.request++;
     this.result = null;
     this.pending = false;
@@ -142,6 +146,25 @@ export class WorkspacePanel extends ReactWidget {
             }}
             onReject={(id) => {
               this.proposals.reject(id);
+            }}
+          />
+        )}
+        {notebook && (
+          <ExecutionReview
+            canRun={notebook.sessionContext.session?.kernel?.status === "idle"}
+            requests={this.executions.review(notebook.id)}
+            onApprove={(id) => {
+              void this.executions
+                .approve(id)
+                .catch(() => {
+                  this.error = "Run request could not be approved.";
+                })
+                .finally(() => this.update());
+              this.update();
+            }}
+            onCancel={(id) => {
+              this.executions.cancel(id);
+              this.update();
             }}
           />
         )}

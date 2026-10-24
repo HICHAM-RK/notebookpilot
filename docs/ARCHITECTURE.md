@@ -40,3 +40,19 @@ The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) inspected on 20
 ## Failure paths
 
 Malformed/oversize input fails before lookup or parsing. Hidden and unknown objects share NOT_FOUND responses. Stale approvals cancel without mutation. Execution timeout interrupts only the owned queue, records failure and preserves visible output. Storage failures remain visible. Unsupported API disables tools without disabling the notebook. Output limits return explicit truncation or reject an indivisible result; they never silently remove warnings.
+# Execution approval boundary
+
+The agent can create a pending run request and read its result. Only the sidebar human control invokes queue approval. Captured code is shown before approval; dispatch rechecks permissions, source and kernel identity. The live adapter executes the visible Jupyter CodeCell and attaches output to that cell. Tool results contain bounded summaries. Cancellation requests an interrupt only when the adapter has observed its own execution and no unrelated execute request; otherwise the queue retains the kernel lane until settlement.
+
+```mermaid
+flowchart LR
+  Agent[Agent tool call] --> Pending[Pending run with captured source]
+  Pending --> Review[Human code review]
+  Review -->|Approve run| Queue[Per-kernel queue]
+  Queue --> Check[Recheck source and permissions]
+  Check --> Cell[Visible Jupyter code cell]
+  Cell --> Python[Pyodide kernel]
+  Python --> Output[Visible output and bounded status]
+  Review -->|Cancel run| Cancel[Cancelled request]
+```
+

@@ -126,3 +126,11 @@ Added an unwired live-model adapter for ExecutionQueue. It resolves exactly one 
 
 Four mock-adapter tests cover source mismatch, visible-cell dispatch, busy/aborted denial, owned-work interruption and declining interruption after observing a foreign execute request. Listeners are removed when the runner settles. 71 Jest tests, five Python tests, typecheck and formatting pass. This is not real Pyodide execution evidence. The production plugin has not connected this adapter yet; execution controls/tools and real browser tests remain required. Interrupt ownership is based on messages observable on the local kernel connection, not a general guarantee for multi-client remote kernels. If ownership is uncertain, no interrupt is sent and the queue must wait for settlement.
 
+# Connected execution approval checkpoint — 2026-10-24
+
+Wired ExecutionQueue to Jupyter CodeCell.execute, the human execution-review panel, notebook_run_cells and notebook_get_execution. Tools validate closed arguments, reject approval fields, enforce bounded cell counts and cap serialized result envelopes. Pending requests show captured code; approval is disabled until the kernel is idle. Close/kernel changes cancel requests. Source changes invalidate pending requests during panel refresh; dispatch independently rechecks source/kernel/permissions.
+
+Real Chromium/Pyodide review scenario passed: update rejection and acceptance, stale-edit cancellation, insertion without execution, run cancellation without output, then separate human approval producing `inserted without running` in the visible output and succeeded in the execution tool. Registration transport is mocked in this test; Python is real. An initial failure revealed that approval was available during kernel startup; the adapter correctly refused dispatch. The UI now waits for idle rather than inviting a doomed approval.
+
+72 Jest tests, five Python tests, typecheck, formatting, production build and four browser tests pass. Native execution invocation, actual long-running timeout/interrupt behavior, multi-request races against human kernel activity and complete restart coverage remain unverified. N2/W3 are not marked complete. Cancelling after foreign work is observed does not interrupt the shared kernel; the UI explicitly explains that Python may continue until settlement.
+

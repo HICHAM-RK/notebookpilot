@@ -43,10 +43,32 @@ export class ExecutionQueue {
     private readonly adapter: ExecutionAdapter,
   ) {}
 
+  review(notebookId: string) {
+    return Array.from(this.records.values())
+      .filter((item) => item.record.notebookId === notebookId)
+      .map((item) => {
+        if (
+          item.record.status === "pending" &&
+          item.targets.some((target) => !this.matches(notebookId, target))
+        )
+          this.cancel(item.record.requestId);
+        return {
+          ...structuredClone(item.record),
+          approved: !!item.completion,
+          sources: item.targets.map((target) => ({
+            cellId: target.cellId,
+            source: target.expected.source,
+          })),
+        };
+      });
+  }
+
   async request(
     notebookId: string,
     cells: { cellId: string; expectedSourceHash: string }[],
+    signal?: AbortSignal,
   ): Promise<{ requestId: string; status: "pending" }> {
+    if (signal?.aborted) throw new Error("CANCELLED");
     const id = (value: unknown) =>
       typeof value === "string" && value.length > 0 && value.length <= 128;
     if (
@@ -80,6 +102,7 @@ export class ExecutionQueue {
       targets.push({ cellId: cell.cellId, expected });
     }
     if (version !== this.policies.version) throw new Error("ACCESS_DENIED");
+    if (signal?.aborted) throw new Error("CANCELLED");
     if (targets.some((target) => !this.matches(notebookId, target)))
       throw new Error("STALE_CELL");
     if (new Set(targets.map((target) => target.expected.kernelId)).size !== 1)
