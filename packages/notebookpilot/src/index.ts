@@ -21,6 +21,11 @@ import {
   createProposalStatusTool,
   createInsertTool,
 } from "./webmcp/proposal-tools";
+import { DatasetStore, type DatasetStorage } from "./data/store";
+import {
+  createDatasetListTool,
+  createDatasetProfileTool,
+} from "./webmcp/data-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -28,6 +33,22 @@ const plugin: JupyterFrontEndPlugin<void> = {
   requires: [INotebookTracker],
   activate: (app, notebooks: INotebookTracker) => {
     const policies = new PolicyStore();
+    const datasetStorage: DatasetStorage = {
+      save: async (fileName, bytes) => {
+        const content = new TextDecoder("utf-8", {
+          fatal: true,
+          ignoreBOM: true,
+        }).decode(bytes);
+        await app.serviceManager.contents.save(fileName, {
+          type: "file",
+          format: "text",
+          mimetype: "text/csv",
+          content,
+        });
+      },
+      remove: (fileName) => app.serviceManager.contents.delete(fileName),
+    };
+    const datasets = new DatasetStore(datasetStorage);
     const executions = new ExecutionQueue(
       policies,
       createExecutionAdapter(notebooks, policies, CodeCell.execute),
@@ -49,6 +70,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         proposals.cancelNotebook(notebook.id);
         executions.cancelNotebook(notebook.id);
         policies.forget(notebook.id);
+        void datasets.clearNotebook(notebook.id);
       });
       notebook.sessionContext.kernelChanged.connect(() => {
         proposals.cancelNotebook(notebook.id);
@@ -73,6 +95,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       reader,
       proposals,
       executions,
+      datasets,
     );
     const tools = createReadTools(reader, policies, () => {
       const notebook = notebooks.currentWidget;
@@ -98,6 +121,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
         createInsertTool(proposals),
         createProposalStatusTool(proposals),
         ...createExecutionTools(executions),
+        createDatasetListTool(datasets, policies),
+        createDatasetProfileTool(datasets, policies),
       ],
     );
     panel.disposed.connect(() => {

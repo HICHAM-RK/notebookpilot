@@ -2,7 +2,7 @@
 
 NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebMCP site tools to inspect datasets, propose safe notebook changes, execute approved cells, and produce reproducible analysis.
 
-The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. Agent tools and analysis features remain implementation work. Start with:
+The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. The current implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, and private-by-default CSV profiling. Start with:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
@@ -13,7 +13,7 @@ The project contains an agent build package, a tested JupyterLite foundation and
 
 The initial static JupyterLite build and sample notebook are implemented. Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md).
 
-Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. This preview stays local; agent connection, proposal approval and approved execution are still being built.
+Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. Upload a CSV to profile it locally, choose whether the agent may receive up to five sample rows, and review proposed notebook edits before separately approving execution.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output
 ```
 
 Open http://localhost:8000/lab/index.html and run welcome.ipynb.
-Build, extension activation and actual Pyodide sample output were checked locally. Native WebMCP and approval controls remain implementation tasks. Colab support is planned as `.ipynb` import/export, not connection to a live Colab runtime.
+Build, extension activation, human approval controls and actual Pyodide output were checked locally. Some WebMCP tools have native host evidence; the complete native journey remains an open release gate. Colab support is planned as `.ipynb` import/export, not connection to a live Colab runtime.
 
 ## Development checks
 

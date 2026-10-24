@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PolicyStore } from "../src/control/policy";
 import { DatasetStore, type DatasetStorage } from "../src/data/store";
-import { createDatasetProfileTool } from "../src/webmcp/data-tools";
+import {
+  createDatasetListTool,
+  createDatasetProfileTool,
+} from "../src/webmcp/data-tools";
 
 const encode = (value: string) => new TextEncoder().encode(value);
 const options = (signal = new AbortController().signal) => ({ signal });
@@ -121,6 +124,39 @@ test("matches the checked-in schema and rejects unknown or malformed inputs", as
       },
     });
   }
+});
+
+test("lists discoverable dataset IDs without exposing rows", async () => {
+  const { policies, store } = setup();
+  const uploaded = await store.upload(
+    "notebook-1",
+    "people.csv",
+    encode("name\nAda\n"),
+  );
+  store.setSampleSharing("notebook-1", uploaded.datasetId, true);
+  const tool = createDatasetListTool(store, policies);
+  const contract = JSON.parse(
+    readFileSync(resolve(__dirname, "../../../contracts/tools.json"), "utf8"),
+  );
+  expect(tool.inputSchema).toEqual(
+    contract.tools.find(
+      (entry: { name: string }) => entry.name === "dataset_list",
+    ).inputSchema,
+  );
+  const result = await tool.execute({ notebookId: "notebook-1" }, options());
+  expect(result.structuredContent).toEqual({
+    datasets: [
+      {
+        datasetId: uploaded.datasetId,
+        displayName: "people.csv",
+        fileName: uploaded.fileName,
+        rowCount: 1,
+        columnCount: 1,
+        sampleSharingEnabled: true,
+      },
+    ],
+  });
+  expect(JSON.stringify(result)).not.toContain("Ada");
 });
 
 test("unknown, cross-notebook and hidden datasets are indistinguishable", async () => {

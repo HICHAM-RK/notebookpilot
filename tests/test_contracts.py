@@ -18,7 +18,7 @@ class ToolContracts(unittest.TestCase):
         self.schemas = {tool["name"]: tool["inputSchema"] for tool in contract["tools"]}
 
     def test_schemas_are_valid_and_closed(self):
-        self.assertEqual(len(self.schemas), 12)
+        self.assertEqual(len(self.schemas), 13)
         for name, schema in self.schemas.items():
             with self.subTest(tool=name):
                 Draft202012Validator.check_schema(schema)

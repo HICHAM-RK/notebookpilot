@@ -45,6 +45,85 @@ function argumentsFor(input: unknown): {
   return { notebookId, datasetId };
 }
 
+function notebookArgument(input: unknown): string {
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input) ||
+    Object.keys(input).some((key) => key !== "notebookId")
+  ) {
+    throw new DatasetError("INVALID_ARGUMENT");
+  }
+  const notebookId = (input as Record<string, unknown>).notebookId;
+  if (
+    typeof notebookId !== "string" ||
+    !notebookId ||
+    notebookId.length > 128
+  ) {
+    throw new DatasetError("INVALID_ARGUMENT");
+  }
+  return notebookId;
+}
+
+export function createDatasetListTool(
+  datasets: DatasetStore,
+  policies: PolicyStore,
+) {
+  return {
+    name: "dataset_list",
+    description:
+      "List human-uploaded CSV datasets available to a notebook. This returns bounded metadata and never raw rows.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookId: { type: "string", minLength: 1, maxLength: 128 },
+      },
+      required: ["notebookId"],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, untrustedContentHint: true },
+    execute: async (input: unknown, { signal }: { signal: AbortSignal }) => {
+      try {
+        if (signal.aborted) throw new DatasetError("CANCELLED");
+        const notebookId = notebookArgument(input);
+        const version = policies.version;
+        if (!policies.canRead(notebookId)) {
+          throw new DatasetError("NOT_FOUND");
+        }
+        const payload = {
+          datasets: datasets.list(notebookId).map((dataset) => ({
+            datasetId: dataset.datasetId,
+            displayName: dataset.displayName,
+            fileName: dataset.fileName,
+            rowCount: dataset.rowCount,
+            columnCount: dataset.columns.length,
+            sampleSharingEnabled: dataset.shareSamples,
+          })),
+        };
+        await Promise.resolve();
+        if (signal.aborted) throw new DatasetError("CANCELLED");
+        if (policies.version !== version || !policies.canRead(notebookId)) {
+          throw new DatasetError("NOT_FOUND");
+        }
+        const result = envelope(payload);
+        if (
+          new TextEncoder().encode(JSON.stringify(result)).length >
+          MAX_RESULT_BYTES
+        ) {
+          throw new DatasetError("LIMIT_EXCEEDED");
+        }
+        return result;
+      } catch (error) {
+        const code =
+          error instanceof DatasetError || error instanceof DataError
+            ? error.code
+            : "INTERNAL_ERROR";
+        return failure(code);
+      }
+    },
+  } satisfies SiteTool;
+}
+
 export function createDatasetProfileTool(
   datasets: DatasetStore,
   policies: PolicyStore,

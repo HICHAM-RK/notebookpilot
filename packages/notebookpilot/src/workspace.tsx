@@ -14,6 +14,9 @@ import { UpdateProposals } from "./control/proposals";
 import { ProposalReview } from "./ui/review";
 import { ExecutionQueue } from "./notebook/execution";
 import { ExecutionReview } from "./ui/execution";
+import { DatasetStore, DatasetError } from "./data/store";
+import { DataError } from "./data/import";
+import { DatasetPanel } from "./ui/datasets";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -22,8 +25,12 @@ export class WorkspacePanel extends ReactWidget {
   private error: string | null = null;
   private request = 0;
   private connection: RegistrationStatus | "connecting" = "connecting";
-  private unsubscribe: () => void;
+  private unsubscribeProposals: () => void;
+  private unsubscribeDatasets: () => void;
   private expiryTimer: ReturnType<typeof setInterval>;
+  private uploadController: AbortController | null = null;
+  private uploadName: string | null = null;
+  private datasetError: string | null = null;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -36,6 +43,7 @@ export class WorkspacePanel extends ReactWidget {
     private readonly reader: NotebookReader,
     private readonly proposals: UpdateProposals,
     private readonly executions: ExecutionQueue,
+    private readonly datasets: DatasetStore,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -44,7 +52,8 @@ export class WorkspacePanel extends ReactWidget {
     this.addClass("np-workspace");
     this.notebooks.currentChanged.connect(this.selectNotebook, this);
     this.selectNotebook();
-    this.unsubscribe = proposals.subscribe(() => this.update());
+    this.unsubscribeProposals = proposals.subscribe(() => this.update());
+    this.unsubscribeDatasets = datasets.subscribe(() => this.update());
     this.expiryTimer = setInterval(() => this.update(), 1000);
   }
 
@@ -59,12 +68,55 @@ export class WorkspacePanel extends ReactWidget {
   }
 
   private selectNotebook(): void {
+    this.uploadController?.abort();
+    this.uploadController = null;
+    this.uploadName = null;
+    this.datasetError = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
     this.active?.content.model?.contentChanged.connect(this.refresh, this);
     this.active?.title.changed.connect(this.refresh, this);
     this.refresh();
+  }
+
+  private async upload(file: File): Promise<void> {
+    const notebook = this.active;
+    if (!notebook || this.uploadController) return;
+    const controller = new AbortController();
+    this.uploadController = controller;
+    this.uploadName = file.name;
+    this.datasetError = null;
+    this.update();
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (controller.signal.aborted) throw new DatasetError("CANCELLED");
+      await this.datasets.upload(
+        notebook.id,
+        file.name,
+        bytes,
+        controller.signal,
+      );
+    } catch (error) {
+      const code =
+        error instanceof DatasetError || error instanceof DataError
+          ? error.code
+          : "INTERNAL_ERROR";
+      if (code !== "CANCELLED") {
+        this.datasetError =
+          code === "LIMIT_EXCEEDED"
+            ? "CSV exceeds a dataset or session size limit."
+            : code === "INVALID_ARGUMENT"
+              ? `CSV could not be read${error instanceof DataError && error.line ? ` near line ${error.line}` : ""}.`
+              : "Dataset could not be stored. Try again.";
+      }
+    } finally {
+      if (this.uploadController === controller) {
+        this.uploadController = null;
+        this.uploadName = null;
+        this.update();
+      }
+    }
   }
 
   private async preview(offset = 0): Promise<void> {
@@ -99,7 +151,9 @@ export class WorkspacePanel extends ReactWidget {
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.request++;
-    this.unsubscribe();
+    this.uploadController?.abort();
+    this.unsubscribeProposals();
+    this.unsubscribeDatasets();
     clearInterval(this.expiryTimer);
     super.dispose();
   }
@@ -114,6 +168,33 @@ export class WorkspacePanel extends ReactWidget {
         notebookName={notebook?.title.label ?? null}
         connection={this.connection}
       >
+        {notebook && (
+          <DatasetPanel
+            datasets={this.datasets.list(notebook.id)}
+            pendingName={this.uploadName}
+            error={this.datasetError}
+            onUpload={(file) => {
+              void this.upload(file);
+            }}
+            onCancel={() => this.uploadController?.abort()}
+            onShareSamples={(datasetId, enabled) => {
+              try {
+                this.datasets.setSampleSharing(notebook.id, datasetId, enabled);
+                this.datasetError = null;
+              } catch {
+                this.datasetError = "Dataset is no longer available.";
+                this.update();
+              }
+            }}
+            onRemove={(datasetId) => {
+              this.datasetError = null;
+              void this.datasets.remove(notebook.id, datasetId).catch(() => {
+                this.datasetError = "Dataset could not be removed.";
+                this.update();
+              });
+            }}
+          />
+        )}
         {notebook && (
           <AccessControls
             notebookMode={this.policies.notebookMode(notebook.id)}

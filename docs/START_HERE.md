@@ -4,7 +4,7 @@
 
 NotebookPilot adds a human-controlled AI tool surface to a browser notebook. The first complete demonstration is CSV upload → bounded profile → proposed cleaning cell → human review → separate execution approval → real Python output. The next milestone adds reproducible classification comparisons, audits and downloadable reports.
 
-This repository contains the build package, a working JupyterLite sample and the original sidebar extension. Native reads, update proposals, human accept/reject controls and status reads have been verified in-app. Insertion and separate execution approval are connected and browser-tested using mocked transport with real Python. Native insertion/execution and full timeout/lifecycle verification remain unfinished. Do not mistake the specifications or historical Graphify nodes for implemented features.
+This repository contains the build package, a working JupyterLite sample and the original sidebar extension. Native reads, update proposals, human accept/reject controls and status reads have been verified in-app. Insertion, separate execution approval and the complete private-by-default CSV journey are browser-tested using mocked transport with real Python. Native insertion/execution/dataset verification and full timeout/lifecycle verification remain unfinished. Do not mistake the specifications or historical Graphify nodes for implemented features.
 
 ## Start a development session
 
@@ -12,7 +12,7 @@ This repository contains the build package, a working JupyterLite sample and the
 2. Follow tasks/todo.md in dependency order; start the first unchecked foundation task. Read its module specification and docs/TOOL_CONTRACTS.md.
 3. Use Node 24 and uv 0.12.0. Run `uv sync --frozen`, `npm ci --ignore-scripts`, then `npx playwright install chromium` (Linux CI also needs `--with-deps`).
 4. Run `npm test`, `npm run typecheck`, `npm run lint:check`, `npm run build`, and `npm run test:e2e` to establish the baseline. Browser testing requires port 8000 free and internet for first-use Pyodide downloads.
-5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task.
+5. Write a failing behavior test, implement one task, run relevant checks, review the diff and update evidence before checking off that task. The next product task is D3, the safe Colab-compatible `.ipynb` round-trip.
 
 Commands run from the repository root. `npm run serve` serves the already built site at http://127.0.0.1:8000/lab/index.html. Stop the manual server before browser tests, which own their server.
 
@@ -22,7 +22,7 @@ Use the project server rather than bare `python -m http.server`: it sends COOP s
 
 Existing site fixtures: content/. Existing foundation tests: tests/ and e2e/. Planned extension: packages/notebookpilot/ with src/, tests/ and package/build metadata. Paths in module specs beginning src/ or tests/ are relative to that future extension unless explicitly marked root. Browser tests remain root e2e/. Evaluation files live in root eval/.
 
-F3/F4 wire extension source into typecheck, formatting, Jest and the production JupyterLite build. N1/H1 provide live permission-aware reads and human access controls, with a local preview. npm test covers Python fixtures/contracts and extension UI/domain tests. Next: W1 host registration investigation and H2 proposal review, before N2 execution and W2 mutation exposure. Do not report coverage of future tools from current checks.
+F3/F4 wire extension source into typecheck, formatting, Jest and the production JupyterLite build. N1/H1 provide live permission-aware reads and human access controls, with a local preview. D1/D2 provide bounded CSV parsing, private profiles and the reviewed analysis journey. npm test covers Python fixtures/contracts and extension UI/domain tests. Native coverage remains narrower than mocked browser coverage; do not report future tools or mocked journeys as native evidence.
 
 ## Connection and portability
 

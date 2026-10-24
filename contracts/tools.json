@@ -34,9 +34,7 @@
             "default": 20
           }
         },
-        "required": [
-          "notebookId"
-        ],
+        "required": ["notebookId"],
         "additionalProperties": false
       }
     },
@@ -65,12 +63,7 @@
             "x-maxUtf8Bytes": 262144
           }
         },
-        "required": [
-          "notebookId",
-          "cellId",
-          "expectedSourceHash",
-          "source"
-        ],
+        "required": ["notebookId", "cellId", "expectedSourceHash", "source"],
         "additionalProperties": false
       }
     },
@@ -97,10 +90,7 @@
             ]
           },
           "cellType": {
-            "enum": [
-              "code",
-              "markdown"
-            ]
+            "enum": ["code", "markdown"]
           },
           "source": {
             "type": "string",
@@ -108,12 +98,7 @@
             "x-maxUtf8Bytes": 262144
           }
         },
-        "required": [
-          "notebookId",
-          "afterCellId",
-          "cellType",
-          "source"
-        ],
+        "required": ["notebookId", "afterCellId", "cellType", "source"],
         "additionalProperties": false
       }
     },
@@ -128,9 +113,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "proposalId"
-        ],
+        "required": ["proposalId"],
         "additionalProperties": false
       }
     },
@@ -159,20 +142,14 @@
                   "pattern": "^[a-f0-9]{64}$"
                 }
               },
-              "required": [
-                "cellId",
-                "expectedSourceHash"
-              ],
+              "required": ["cellId", "expectedSourceHash"],
               "additionalProperties": false
             },
             "minItems": 1,
             "maxItems": 20
           }
         },
-        "required": [
-          "notebookId",
-          "cells"
-        ],
+        "required": ["notebookId", "cells"],
         "additionalProperties": false
       }
     },
@@ -187,9 +164,22 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "requestId"
-        ],
+        "required": ["requestId"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "dataset_list",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notebookId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": ["notebookId"],
         "additionalProperties": false
       }
     },
@@ -209,10 +199,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "notebookId",
-          "datasetId"
-        ],
+        "required": ["notebookId", "datasetId"],
         "additionalProperties": false
       }
     },
@@ -232,10 +219,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "notebookId",
-          "executionId"
-        ],
+        "required": ["notebookId", "executionId"],
         "additionalProperties": false
       }
     },
@@ -256,9 +240,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "runIds"
-        ],
+        "required": ["runIds"],
         "additionalProperties": false
       }
     },
@@ -273,9 +255,7 @@
             "maxLength": 128
           }
         },
-        "required": [
-          "notebookId"
-        ],
+        "required": ["notebookId"],
         "additionalProperties": false
       }
     },
@@ -301,16 +281,10 @@
             "uniqueItems": true
           },
           "format": {
-            "enum": [
-              "html",
-              "markdown"
-            ]
+            "enum": ["html", "markdown"]
           }
         },
-        "required": [
-          "notebookId",
-          "format"
-        ],
+        "required": ["notebookId", "format"],
         "additionalProperties": false
       }
     }

@@ -1,13 +1,16 @@
 # Architecture decisions and trust boundaries
 
-Status: intended product architecture, with only the static JupyterLite foundation implemented.
+Status: evolving product architecture. The notebook control, approved execution and dataset-profile paths below are implemented; experiments, audits and reports remain planned.
 
 ```mermaid
 flowchart LR
     Agent[External agent host] -->|untrusted arguments| W[WebMCP adapter]
     W --> V[Validation and current permissions]
     V --> N[Live notebook adapter]
+    V --> D[Session dataset store]
     V --> P[Proposal store]
+    Human -->|upload and sample-sharing choice| D
+    D -->|generated local CSV path| N
     Human[Human review panel] -->|accept with revision check| P
     P --> N
     Human -->|separate execution approval| Q[Execution queue]
@@ -16,6 +19,8 @@ flowchart LR
     K --> O[Notebook output and execution records]
     O --> R[Experiments audit reports]
 ```
+
+Dataset files receive generated app-owned names and remain scoped to the open notebook session. The agent can discover bounded metadata and profiles. Raw sample rows are absent unless the human enables sharing for that dataset, and enabling samples does not grant edit or execution authority.
 
 ## ADR 001: Browser runtime
 

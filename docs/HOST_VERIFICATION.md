@@ -1,6 +1,6 @@
 # Native WebMCP verification gate
 
-Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked read, update-proposal and proposal-status tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. Native rejection and UI acceptance passed; execution remains unimplemented. Exact host/browser version and native teardown evidence remain to collect.
+Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked read, update-proposal and proposal-status tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. Native rejection and UI acceptance passed. Execution and dataset flows are implemented and browser-tested through a mocked registration transport with real Pyodide, but have not passed the native-host gate. Exact host/browser version and native teardown evidence remain to collect.
 
 ## Native update review — commit 87c6fec, 2026-10-24
 

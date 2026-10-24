@@ -190,6 +190,21 @@ export class DatasetStore {
     this.notify();
   }
 
+  async clearNotebook(notebookId: string): Promise<void> {
+    const records = [...this.records.entries()].filter(
+      ([, record]) => record.notebookId === notebookId,
+    );
+    if (records.length === 0) return;
+    for (const [datasetId, record] of records) {
+      this.records.delete(datasetId);
+      this.storedBytes -= record.bytes.byteLength;
+    }
+    this.notify();
+    await Promise.allSettled(
+      records.map(([, record]) => this.storage.remove(record.summary.fileName)),
+    );
+  }
+
   private lookup(notebookId: string, datasetId: string): DatasetRecord {
     const record = this.records.get(datasetId);
     if (!record || record.notebookId !== notebookId) {
