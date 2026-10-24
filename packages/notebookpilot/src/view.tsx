@@ -22,7 +22,7 @@ export function WorkspaceContent({
       <h3>Agent connection</h3>
       <p role="status">
         {connection === "available"
-          ? "Read-only notebook tools are registered with this browser."
+          ? "Notebook read and edit-proposal tools are registered with this browser."
           : connection === "connecting"
             ? "Checking browser tool support…"
             : connection === "failed"
@@ -31,8 +31,8 @@ export function WorkspaceContent({
       </p>
       <p>
         You can use your notebook normally. Tool registration does not mean an
-        agent is connected. Edit proposals and execution tools are still being
-        built.
+        agent is connected. Proposed edits need your acceptance. Execution tools
+        are still being built.
       </p>
     </section>
   );

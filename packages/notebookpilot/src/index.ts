@@ -1,11 +1,14 @@
 import type { JupyterFrontEndPlugin } from "@jupyterlab/application";
-import { INotebookTracker } from "@jupyterlab/notebook";
+import { INotebookTracker, type NotebookPanel } from "@jupyterlab/notebook";
 import { WorkspacePanel } from "./workspace";
 import { PolicyStore } from "./control/policy";
 import { NotebookReader } from "./notebook/reader";
 import { readLiveNotebook } from "./notebook/adapter";
 import { ToolRegistration } from "./webmcp/register";
 import { createReadTools, type NotebookContext } from "./webmcp/read-tools";
+import { createNotebookMutations } from "./notebook/mutations";
+import { UpdateProposals } from "./control/proposals";
+import { createUpdateTool } from "./webmcp/proposal-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -17,10 +20,32 @@ const plugin: JupyterFrontEndPlugin<void> = {
       (id) => readLiveNotebook(notebooks, id, policies),
       policies,
     );
-    notebooks.widgetAdded.connect((_, notebook) => {
-      notebook.disposed.connect(() => policies.forget(notebook.id));
-    });
-    const panel = new WorkspacePanel(notebooks, policies, reader);
+    const mutations = createNotebookMutations(notebooks, policies);
+    const proposals = new UpdateProposals(
+      policies,
+      mutations.read,
+      mutations.replace,
+    );
+    const trackNotebook = (notebook: NotebookPanel) => {
+      notebook.disposed.connect(() => {
+        proposals.cancelNotebook(notebook.id);
+        policies.forget(notebook.id);
+      });
+      notebook.sessionContext.kernelChanged.connect(() =>
+        proposals.cancelNotebook(notebook.id),
+      );
+      notebook.sessionContext.statusChanged.connect((_, status) => {
+        if (
+          status === "restarting" ||
+          status === "autorestarting" ||
+          status === "dead"
+        )
+          proposals.cancelNotebook(notebook.id);
+      });
+    };
+    notebooks.forEach(trackNotebook);
+    notebooks.widgetAdded.connect((_, notebook) => trackNotebook(notebook));
+    const panel = new WorkspacePanel(notebooks, policies, reader, proposals);
     const tools = createReadTools(reader, policies, () => {
       const notebook = notebooks.currentWidget;
       const status = notebook?.sessionContext.kernelDisplayStatus;
@@ -39,7 +64,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     });
     const registration = new ToolRegistration(
       (document as Document & { modelContext?: unknown }).modelContext,
-      tools,
+      [...tools, createUpdateTool(proposals)],
     );
     panel.disposed.connect(() => registration.dispose());
     void registration.start().then((status) => {

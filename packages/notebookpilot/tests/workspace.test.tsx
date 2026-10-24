@@ -7,7 +7,7 @@ test("registration status does not claim an agent is connected", () => {
     <WorkspaceContent notebookName={null} connection="available" />,
   );
   expect(markup).toContain(
-    "Read-only notebook tools are registered with this browser.",
+    "Notebook read and edit-proposal tools are registered with this browser.",
   );
   expect(markup).toContain(
     "Tool registration does not mean an agent is connected.",

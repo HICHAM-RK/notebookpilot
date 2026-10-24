@@ -90,3 +90,11 @@ Added an isolated update-proposal state machine, not yet exposed through tools o
 
 H2 remains incomplete: live notebook adapter, insertion proposals, lifecycle invalidation wiring, bounded storage, review UI and real browser approval tests remain. Current state checks cancel stale proposals when accessed; event-driven cancellation is not wired yet. No end-to-end proposal behavior is claimed.
 
+# Live update review checkpoint — 2026-10-24
+
+Update proposals are now connected to a synchronous Jupyter shared-model compare-and-swap adapter, a review panel and notebook_propose_update. The tool validates closed arguments, matches the checked-in schema, never exposes approval, and supports cancellation during hashing. Original and replacement source are each capped at 256 KiB; the session accepts at most 100 proposal records, including completed ones, pending a history-retention UI. Panel updates invalidate stale proposals; close/kernel replacement/restart cancel pending records.
+
+The real Chromium review test uses an explicitly mocked registration transport. It verifies tool-created proposals, rejection preserving source, keyboard acceptance changing the visible source without execution, and cancellation after a human edit. A fresh production build and all four browser tests passed after final lifecycle wiring. Unit suite has 54 passing tests plus five Python tests; typecheck and formatting pass. The first browser failure was an innerText/textContent newline mismatch in the assertion, corrected to compare rendered text consistently. Review checked source comparison, permission enforcement, inert source rendering, bounded storage and cancellation; no execution method is called by this flow.
+
+Remaining: native proposal journey, insertion proposals, proposal-status tool, fuller diff presentation, bounded history cleanup and complete execution approval. H2/W2/W3 remain unchecked.
+

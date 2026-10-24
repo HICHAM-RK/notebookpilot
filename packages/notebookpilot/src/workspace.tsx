@@ -10,6 +10,8 @@ import {
 } from "./notebook/reader";
 import { AccessControls } from "./ui/access";
 import type { RegistrationStatus } from "./webmcp/register";
+import { UpdateProposals } from "./control/proposals";
+import { ProposalReview } from "./ui/review";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -18,6 +20,8 @@ export class WorkspacePanel extends ReactWidget {
   private error: string | null = null;
   private request = 0;
   private connection: RegistrationStatus | "connecting" = "connecting";
+  private unsubscribe: () => void;
+  private expiryTimer: ReturnType<typeof setInterval>;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -28,6 +32,7 @@ export class WorkspacePanel extends ReactWidget {
     private readonly notebooks: INotebookTracker,
     private readonly policies: PolicyStore,
     private readonly reader: NotebookReader,
+    private readonly proposals: UpdateProposals,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -36,9 +41,12 @@ export class WorkspacePanel extends ReactWidget {
     this.addClass("np-workspace");
     this.notebooks.currentChanged.connect(this.selectNotebook, this);
     this.selectNotebook();
+    this.unsubscribe = proposals.subscribe(() => this.update());
+    this.expiryTimer = setInterval(() => this.update(), 1000);
   }
 
   private refresh(): void {
+    if (this.active) this.proposals.list(this.active.id);
     this.request++;
     this.result = null;
     this.pending = false;
@@ -87,6 +95,8 @@ export class WorkspacePanel extends ReactWidget {
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.request++;
+    this.unsubscribe();
+    clearInterval(this.expiryTimer);
     super.dispose();
   }
 
@@ -121,6 +131,17 @@ export class WorkspacePanel extends ReactWidget {
             }}
             onPreview={(offset) => {
               void this.preview(offset);
+            }}
+          />
+        )}
+        {notebook && (
+          <ProposalReview
+            proposals={this.proposals.list(notebook.id)}
+            onAccept={(id) => {
+              this.proposals.accept(id);
+            }}
+            onReject={(id) => {
+              this.proposals.reject(id);
             }}
           />
         )}

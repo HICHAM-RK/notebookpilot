@@ -14,6 +14,24 @@ export interface UpdateProposal {
 /** Human acceptance is intentionally separate from any exposed agent tool. */
 export class UpdateProposals {
   private readonly records = new Map<string, UpdateProposal>();
+  private readonly listeners = new Set<() => void>();
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private changed(): void {
+    for (const listener of this.listeners) listener();
+  }
+
+  list(notebookId: string): UpdateProposal[] {
+    return Array.from(this.records.values())
+      .filter((proposal) => proposal.notebookId === notebookId)
+      .map((proposal) => ({ ...this.current(proposal.proposalId) }));
+  }
 
   constructor(
     private readonly policies: PolicyStore,
@@ -36,7 +54,9 @@ export class UpdateProposals {
     cellId: string,
     expectedHash: string,
     source: string,
+    signal?: AbortSignal,
   ): Promise<UpdateProposal> {
+    if (signal?.aborted) throw new Error("CANCELLED");
     if (
       ![notebookId, cellId].every(
         (id) => typeof id === "string" && id.length > 0 && id.length <= 128,
@@ -51,8 +71,14 @@ export class UpdateProposals {
       throw new Error("ACCESS_DENIED");
     const original = this.read(notebookId, cellId);
     if (original === null) throw new Error("NOT_FOUND");
+    if (
+      new TextEncoder().encode(original).length > 256 * 1024 ||
+      this.records.size >= 100
+    )
+      throw new Error("LIMIT_EXCEEDED");
     const version = this.policies.version;
     const hash = await hashSource(original);
+    if (signal?.aborted) throw new Error("CANCELLED");
     if (
       version !== this.policies.version ||
       !this.policies.canWrite(notebookId, cellId)
@@ -60,6 +86,7 @@ export class UpdateProposals {
       throw new Error("ACCESS_DENIED");
     if (hash !== expectedHash || this.read(notebookId, cellId) !== original)
       throw new Error("STALE_CELL");
+    if (this.records.size >= 100) throw new Error("LIMIT_EXCEEDED");
     const proposal: UpdateProposal = {
       proposalId: crypto.randomUUID(),
       notebookId,
@@ -70,6 +97,7 @@ export class UpdateProposals {
       status: "pending",
     };
     this.records.set(proposal.proposalId, proposal);
+    this.changed();
     return { ...proposal };
   }
 
@@ -102,12 +130,14 @@ export class UpdateProposals {
       )
         proposal.status = "accepted";
     }
+    this.changed();
     return { ...proposal };
   }
 
   reject(id: string): UpdateProposal {
     const proposal = this.current(id);
     if (proposal.status === "pending") proposal.status = "denied";
+    this.changed();
     return { ...proposal };
   }
 
@@ -116,5 +146,6 @@ export class UpdateProposals {
       if (proposal.notebookId === notebookId && proposal.status === "pending")
         proposal.status = "cancelled";
     }
+    this.changed();
   }
 }
