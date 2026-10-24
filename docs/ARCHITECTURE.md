@@ -56,3 +56,9 @@ flowchart LR
   Review -->|Cancel run| Cancel[Cancelled request]
 ```
 
+## ADR 006: Shared-memory hosting for runtime interruption
+
+The local static server sends Cross-Origin-Opener-Policy: same-origin and Cross-Origin-Embedder-Policy: require-corp. These enable SharedArrayBuffer in the page and worker on localhost. The browser test executes Python to verify the worker's actual isolation and ability to allocate shared memory; it also preserves the sample CSV execution check. Production hosting must supply these headers over HTTPS and verify CDN/package compatibility again.
+
+This does not implement runtime cancellation by itself. The pinned LiteKernelClient interrupt only cancels queued messages. The remaining implementation needs an explicitly initialized Pyodide interrupt buffer shared with the main thread and scoped to the current kernel. Use Pyodide's setInterruptBuffer API, reset signal state at the execution boundary, and retain the ownership checks before signalling. Do not replace live interruption with an automatic restart, inject hidden Python, modify a global Worker constructor, or blindly rewrite minified third-party bundles. Prefer a small source-level kernel extension using upstream exported classes and a separately built worker; preserve upstream notices if source adaptation becomes necessary. Verify interruption, preserved variables, subsequent execution, disposal and kernel replacement.
+

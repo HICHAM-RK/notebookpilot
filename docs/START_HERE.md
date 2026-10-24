@@ -16,6 +16,8 @@ This repository contains the build package, a working JupyterLite sample and the
 
 Commands run from the repository root. `npm run serve` serves the already built site at http://127.0.0.1:8000/lab/index.html. Stop the manual server before browser tests, which own their server.
 
+Use the project server rather than bare `python -m http.server`: it sends COOP same-origin and COEP require-corp headers on pages and workers so Pyodide can use shared memory. Another local port is available with `npm run serve -- --port 8001`. This is static development hosting, not an application backend. A deployment must provide equivalent headers; shared memory alone does not implement interruption.
+
 ## File placement
 
 Existing site fixtures: content/. Existing foundation tests: tests/ and e2e/. Planned extension: packages/notebookpilot/ with src/, tests/ and package/build metadata. Paths in module specs beginning src/ or tests/ are relative to that future extension unless explicitly marked root. Browser tests remain root e2e/. Evaluation files live in root eval/.

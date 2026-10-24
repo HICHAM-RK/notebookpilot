@@ -150,3 +150,9 @@ Root-cause inspection of the pinned upstream source shows that [JupyterLite 0.8.
 
 Command: npm run test:e2e -- e2e/review.spec.ts. Result: one failed test, specifically the KeyboardInterrupt assertion after 20 seconds. Local diagnostic artifacts: /tmp/notebookpilot-cancel-e2e.log and test-results/review-mock-transport-requ-d3778-dit-and-execution-approvals/trace.zip (ignored). No production implementation changed in this checkpoint. N2 remains unfinished; do not merge or describe this revision as passing all gates.
 
+# Isolated local static hosting — 2026-10-24
+
+Added scripts/serve.py and wired npm run serve to it. It binds to loopback, serves only the built site directory, fails with an actionable error when no build exists, and sends COOP same-origin / COEP require-corp headers on success and error responses. The new server regression failed before implementation because the module was absent. A mutation changing COEP to unsafe-none was rejected, and the file was restored.
+
+Six Python checks and 74 Jest tests pass, as do typecheck and formatting. Focused browser checks passed: the page is cross-origin isolated; actual Python reads crossOriginIsolated=True and allocates a one-byte SharedArrayBuffer inside its worker; the sample CSV notebook still computes its expected results. No extension source changed, so these tests used the existing built extension. Review checked loopback binding, fixed serving directory, worker headers and teardown of the test server. This is a prerequisite for interrupt-buffer integration, not an interruption fix. The existing active-execution cancellation regression remains failing and was not weakened or skipped.
+
