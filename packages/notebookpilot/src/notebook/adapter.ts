@@ -30,6 +30,11 @@ export function readLiveNotebook(
           source: cell.sharedModel.getSource(),
           outputs:
             data.cell_type === "code" ? JSON.stringify(data.outputs) : "",
+          executionCount:
+            data.cell_type === "code" &&
+            typeof data.execution_count === "number"
+              ? data.execution_count
+              : null,
         };
       }),
   };

@@ -1,6 +1,6 @@
 # Specification: Evidence-based notebook review
 
-Status: implementation contract; not implemented. Module: notebook-audit.
+Status: A1 audit analyzer and permission-scoped coordinator implemented; A2 tool, navigation and sidebar UI remain planned. Module: notebook-audit.
 
 ## Dependencies
 notebook-core, dataset-intelligence.

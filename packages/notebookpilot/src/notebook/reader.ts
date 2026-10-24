@@ -6,6 +6,7 @@ export interface LiveCell {
   type: "code" | "markdown" | "raw";
   source: string;
   outputs: string;
+  executionCount?: number | null;
 }
 export interface LiveNotebook {
   id: string;
