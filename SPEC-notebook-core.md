@@ -10,6 +10,8 @@ Resolve open NotebookPanel through Jupyter APIs; never read saved bytes in place
 
 N1 implementation provides a local permission-aware preview using the same domain reader intended for WebMCP. Pagination uses visible-cell positions only. Full-source hashes survive truncation; byte limits include JSON escaping and duplicated envelope content. Source/type/order changes or permission revocation while awaiting hashing invalidate the response. Invalid or duplicate visible cell IDs fail before result construction.
 
+N2 domain checkpoint: execution requests capture 1–20 distinct code-cell sources and their kernel identity after validating SHA-256 revisions. Separate approval queues them by kernel. Source, type, identity and permission are checked again at dispatch and before each cell; the live adapter must perform a final synchronous check before sending the visible cell to its kernel. A 120-second timer aborts the request. The kernel lane remains occupied until the adapter settles so a slow cancellation cannot overlap another request. Cancellation cannot interrupt unrelated human work; adapter ownership enforcement and actual Pyodide execution remain to implement. Initial storage is capped at 100 requests and 256 KiB per source; output summaries are capped at 1 KiB per cell, with the tool envelope cap still required at exposure.
+
 ## Acceptance criteria
 1. Unsaved edit appears in read response
 2. accepted unchanged revision applies once

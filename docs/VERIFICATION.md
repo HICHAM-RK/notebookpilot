@@ -114,3 +114,9 @@ Implemented notebook_propose_insert, insertion review location, live Jupyter sha
 
 60 Jest tests and five Python tests pass, plus typecheck, formatting, production build and all four Chromium tests. The review browser test uses mocked transport and verifies no pre-approval insertion, accepted insertion at the beginning, accepted status and empty outputs. Domain tests verify once-only acceptance, reorder cancellation, hidden anchors, revoked access, missing anchors and isolation of returned order arrays. Native insertion remains unverified. H2 is still unchecked pending fuller review/lifecycle coverage; N2 execution is not implemented.
 
+# Execution queue domain checkpoint — 2026-10-24
+
+Added an isolated execution approval/queue module, not yet connected to a live kernel, UI or agent tools. Seven tests verify no dispatch before approval, duplicate approval once, cancellation/rejection, changed source, permission revocation, per-kernel serialization, request validation, timeout and cancellation while a runner is still settling. Timeout aborts the request but keeps the lane occupied until the adapter settles; late output is not recorded. This is adapter-contract evidence, not proof that Pyodide execution can be interrupted safely.
+
+67 Jest tests, five Python tests, typecheck and formatting pass. The focused test initially failed for the absent module. No browser rerun was needed for this unwired domain code. Remaining N2 work includes a live Jupyter execution adapter with ownership-safe interruption, human execution review/status UI, lifecycle wiring, tool validation/envelopes and real Python tests. The full product remains incomplete.
+
