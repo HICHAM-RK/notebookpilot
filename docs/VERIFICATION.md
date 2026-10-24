@@ -84,3 +84,9 @@ Implemented context/cell tools with closed argument validation, schema parity te
 
 Build, typecheck, formatting, five Python tests and three real Chromium tests passed. Initial native in-app discovery, actual cell reads and notebook hiding also passed; detailed observations and remaining limits are in HOST_VERIFICATION.md. W1/W2/W3 remain unchecked because native teardown, the full mutation surface and approved execution are unfinished.
 
+# Update proposal domain checkpoint — 2026-10-24
+
+Added an isolated update-proposal state machine, not yet exposed through tools or connected to the review UI. Tests cover no write on proposal creation, accept once, terminal rejection, changed/deleted targets, ten-minute expiry, permission revocation, source-hash mismatch, UTF-8 replacement limits, notebook closure cancellation, returned-object isolation, hashing races and compare-and-swap failure. The test first failed for the missing module. Acceptance uses synchronous compare-and-swap through an injected adapter and contains no execution path.
+
+H2 remains incomplete: live notebook adapter, insertion proposals, lifecycle invalidation wiring, bounded storage, review UI and real browser approval tests remain. Current state checks cancel stale proposals when accessed; event-driven cancellation is not wired yet. No end-to-end proposal behavior is claimed.
+

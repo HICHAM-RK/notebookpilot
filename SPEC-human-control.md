@@ -10,6 +10,8 @@ Permission defaults are read-only. Unknown/corrupt policies deny writes. Store u
 
 H1 uses session-only maps keyed by live notebook/cell IDs, never metadata. Notebook choices are read, write (allow proposals), or hidden; a hidden notebook overrides every cell choice, and a read-only notebook prevents cell-level write grants. Unset cell policy inherits the notebook mode. Unknown values become hidden. Closing a notebook forgets grants. Sidebar selectors are human controls and are not exposed as tools. Preview content is cleared whenever source or policy changes.
 
+H2 implementation checkpoint: the update-proposal domain captures original source after verifying its SHA-256 revision, rechecks policy/source after asynchronous hashing, and requires synchronous compare-and-swap at human acceptance. Duplicate acceptance is terminal and never writes twice. The domain is not connected to tools or the UI yet; insertion proposals and event-driven invalidation remain required.
+
 ## Acceptance criteria
 1. Accept/reject accessible by keyboard
 2. no execution before approval
