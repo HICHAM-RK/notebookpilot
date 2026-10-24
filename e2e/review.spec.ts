@@ -185,4 +185,28 @@ test("mock transport requires separate edit and execution approvals", async ({
     return call("notebook_get_execution", { requestId });
   }, execution.structuredContent.requestId);
   expect(outcome).toMatchObject({ structuredContent: { status: "succeeded" } });
+
+  // A finite busy loop makes a failed interrupt observable without hanging CI.
+  await page
+    .getByRole("textbox")
+    .first()
+    .fill(
+      "import time\nfinish = time.monotonic() + 15\nwhile time.monotonic() < finish:\n    pass\nprint('CANCELLATION_FAILED_FINISHED')",
+    );
+  const cancelled = await requestRun();
+  const runReview = panel.getByRole("article", {
+    name: `Run ${cancelled.structuredContent.requestId}`,
+    exact: true,
+  });
+  await runReview.getByRole("button", { name: "Approve run" }).click();
+  await expect(runReview.getByRole("status")).toHaveText("running");
+  await runReview.getByRole("button", { name: "Cancel run" }).click();
+  await expect(runReview.getByRole("status")).toHaveText("cancelled");
+  await expect(page.locator(".jp-OutputArea-output")).toContainText(
+    "KeyboardInterrupt",
+    { timeout: 20_000 },
+  );
+  await expect(page.locator(".jp-OutputArea-output")).not.toContainText(
+    "CANCELLATION_FAILED_FINISHED",
+  );
 });

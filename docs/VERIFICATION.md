@@ -142,3 +142,11 @@ The new regression failed before the fix (zero interrupts instead of one). Both 
 
 74 Jest tests, five Python tests, typecheck, formatting, production build and all four browser tests passed. Browser tests execute real Python through mocked WebMCP transport; the new timing regression uses a controlled kernel double. Actual long-running Pyodide interruption and restart coverage remain open N2 gates. No claim of a hard runtime termination guarantee follows from this fix.
 
+# Real runtime interruption regression (failing) — 2026-10-24
+
+Extended the real Chromium/Pyodide review scenario with a finite 15-second Python busy loop. The test waits for running, clicks Cancel run, verifies the request says cancelled, then requires KeyboardInterrupt and absence of the completion marker. The test failed: Python printed CANCELLATION_FAILED_FINISHED. This supersedes any interpretation of prior passing cancellation tests as proof that active Python stops. Prior domain tests prove queue bookkeeping only; the new browser test remains intentionally failing until the runtime behavior is fixed.
+
+Root-cause inspection of the pinned upstream source shows that [JupyterLite 0.8.5 LiteKernelClient.interrupt](https://github.com/jupyterlite/jupyterlite/blob/v0.8.5/packages/services/src/kernel/client.ts) cancels queued messages via its mutex but does not signal the active Python worker. [PyodideKernel 0.8.6](https://github.com/jupyterlite/pyodide-kernel/blob/v0.8.6/packages/pyodide-kernel/src/kernel.ts) does not supply an interrupt override. Merely enabling cross-origin isolation cannot fix that missing path. Pyodide's documented interrupt-buffer mechanism needs explicit worker integration, appropriate hosting headers and ownership checks. An automatic kernel restart is not equivalent because it destroys variables.
+
+Command: npm run test:e2e -- e2e/review.spec.ts. Result: one failed test, specifically the KeyboardInterrupt assertion after 20 seconds. Local diagnostic artifacts: /tmp/notebookpilot-cancel-e2e.log and test-results/review-mock-transport-requ-d3778-dit-and-execution-approvals/trace.zip (ignored). No production implementation changed in this checkpoint. N2 remains unfinished; do not merge or describe this revision as passing all gates.
+
