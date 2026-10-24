@@ -56,6 +56,10 @@ export class WorkspacePanel extends ReactWidget {
   private portabilityStatus: string | null = null;
   private experimentError: string | null = null;
   private experimentStatus: string | null = null;
+  private experimentDatasetId = "";
+  private experimentTarget = "";
+  private experimentFeatures: string[] = [];
+  private experimentModel: ExperimentModel = "logistic_regression";
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -105,6 +109,10 @@ export class WorkspacePanel extends ReactWidget {
     this.portabilityStatus = null;
     this.experimentError = null;
     this.experimentStatus = null;
+    this.experimentDatasetId = "";
+    this.experimentTarget = "";
+    this.experimentFeatures = [];
+    this.experimentModel = "logistic_regression";
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
@@ -372,6 +380,37 @@ export class WorkspacePanel extends ReactWidget {
             datasets={this.datasets.list(notebook.id)}
             error={this.experimentError}
             status={this.experimentStatus}
+            datasetId={this.experimentDatasetId}
+            target={this.experimentTarget}
+            features={this.experimentFeatures}
+            model={this.experimentModel}
+            onDataset={(datasetId) => {
+              this.experimentDatasetId = datasetId;
+              this.experimentTarget = "";
+              this.experimentFeatures = [];
+              this.experimentError = null;
+              this.experimentStatus = null;
+              this.update();
+            }}
+            onTarget={(target) => {
+              this.experimentTarget = target;
+              this.experimentFeatures = this.experimentFeatures.filter(
+                (feature) => feature !== target,
+              );
+              this.experimentError = null;
+              this.experimentStatus = null;
+              this.update();
+            }}
+            onFeature={(feature, enabled) => {
+              this.experimentFeatures = enabled
+                ? [...new Set([...this.experimentFeatures, feature])]
+                : this.experimentFeatures.filter((item) => item !== feature);
+              this.update();
+            }}
+            onModel={(model) => {
+              this.experimentModel = model;
+              this.update();
+            }}
             onCreate={(datasetId, target, features, model) =>
               this.createTrainingProposal(datasetId, target, features, model)
             }

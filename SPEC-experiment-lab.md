@@ -1,6 +1,6 @@
 # Specification: Reproducible model comparisons
 
-Status: implementation contract; X1 template and selection UI implemented, real Pyodide verification pending. Module: experiment-lab.
+Status: implementation contract; X1 reproducible training cells implemented and verified in real Pyodide. X2 persistence and comparison remain planned. Module: experiment-lab.
 
 ## Dependencies
 dataset-intelligence, human-control.

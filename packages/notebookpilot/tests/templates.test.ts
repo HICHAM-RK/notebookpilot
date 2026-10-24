@@ -75,6 +75,8 @@ test("splits raw rows before fitting preprocessing and records provenance", () =
   expect(source).toContain("classOrder");
   expect(source).toContain("sklearn.__version__");
   expect(source).toContain("pd.__version__");
+  expect(source).toContain("numeric_imputer.statistics_");
+  expect(source).toContain("categorical_imputer.statistics_");
 });
 
 test("emits explicit guards for class and split feasibility", () => {

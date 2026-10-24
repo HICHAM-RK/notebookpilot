@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { DatasetSummary } from "../data/store";
 import type { ExperimentModel } from "../experiments/templates";
 
@@ -6,11 +6,27 @@ export function ExperimentPanel({
   datasets,
   error,
   status,
+  datasetId,
+  target,
+  features,
+  model,
+  onDataset,
+  onTarget,
+  onFeature,
+  onModel,
   onCreate,
 }: {
   datasets: DatasetSummary[];
   error: string | null;
   status: string | null;
+  datasetId: string;
+  target: string;
+  features: string[];
+  model: ExperimentModel;
+  onDataset: (datasetId: string) => void;
+  onTarget: (target: string) => void;
+  onFeature: (feature: string, enabled: boolean) => void;
+  onModel: (model: ExperimentModel) => void;
   onCreate: (
     datasetId: string,
     target: string,
@@ -18,10 +34,6 @@ export function ExperimentPanel({
     model: ExperimentModel,
   ) => void;
 }): React.ReactElement {
-  const [datasetId, setDatasetId] = useState("");
-  const [target, setTarget] = useState("");
-  const [features, setFeatures] = useState<string[]>([]);
-  const [model, setModel] = useState<ExperimentModel>("logistic_regression");
   const dataset = datasets.find((item) => item.datasetId === datasetId);
 
   return (
@@ -39,11 +51,7 @@ export function ExperimentPanel({
         <select
           aria-label="Experiment dataset"
           value={datasetId}
-          onChange={(event) => {
-            setDatasetId(event.currentTarget.value);
-            setTarget("");
-            setFeatures([]);
-          }}
+          onChange={(event) => onDataset(event.currentTarget.value)}
         >
           <option value="">Choose a dataset</option>
           {datasets.map((item) => (
@@ -59,13 +67,7 @@ export function ExperimentPanel({
           aria-label="Experiment target"
           value={target}
           disabled={!dataset}
-          onChange={(event) => {
-            const selected = event.currentTarget.value;
-            setTarget(selected);
-            setFeatures((current) =>
-              current.filter((feature) => feature !== selected),
-            );
-          }}
+          onChange={(event) => onTarget(event.currentTarget.value)}
         >
           <option value="">Choose the target</option>
           {dataset?.columns.map((column) => (
@@ -85,11 +87,7 @@ export function ExperimentPanel({
                 type="checkbox"
                 checked={features.includes(column.name)}
                 onChange={(event) =>
-                  setFeatures((current) =>
-                    event.currentTarget.checked
-                      ? [...current, column.name]
-                      : current.filter((feature) => feature !== column.name),
-                  )
+                  onFeature(column.name, event.currentTarget.checked)
                 }
               />{" "}
               {column.name}
@@ -102,7 +100,7 @@ export function ExperimentPanel({
           aria-label="Experiment model"
           value={model}
           onChange={(event) =>
-            setModel(event.currentTarget.value as ExperimentModel)
+            onModel(event.currentTarget.value as ExperimentModel)
           }
         >
           <option value="logistic_regression">Logistic regression</option>

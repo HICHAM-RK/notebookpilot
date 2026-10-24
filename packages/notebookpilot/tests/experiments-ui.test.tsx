@@ -18,12 +18,24 @@ const dataset: DatasetSummary = {
   shareSamples: false,
 };
 
+const selection = {
+  datasetId: "",
+  target: "",
+  features: [] as string[],
+  model: "logistic_regression" as const,
+  onDataset: (_datasetId: string) => {},
+  onTarget: (_target: string) => {},
+  onFeature: (_feature: string, _enabled: boolean) => {},
+  onModel: (_model: "logistic_regression" | "random_forest") => {},
+};
+
 test("requires explicit dataset, target and features", () => {
   const markup = renderToStaticMarkup(
     <ExperimentPanel
       datasets={[dataset]}
       error={null}
       status={null}
+      {...selection}
       onCreate={() => {}}
     />,
   );
@@ -42,6 +54,7 @@ test("renders dataset names and errors as inert text", () => {
       datasets={[{ ...dataset, displayName: "<script>x</script>.csv" }]}
       error="Training proposal could not be created."
       status={null}
+      {...selection}
       onCreate={() => {}}
     />,
   );
