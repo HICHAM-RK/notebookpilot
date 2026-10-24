@@ -36,6 +36,10 @@ import {
   type ExperimentComparison,
 } from "./experiments/store";
 import { ExperimentHistory } from "./ui/experiment-history";
+import { NotebookAuditor, AuditError } from "./audit/auditor";
+import type { AuditCell, AuditFinding, AuditResult } from "./audit/model";
+import { refreshStaleness } from "./audit/rules";
+import { AuditPanel } from "./ui/audit";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -69,6 +73,10 @@ export class WorkspacePanel extends ReactWidget {
   private experimentSelection: string[] = [];
   private experimentComparison: ExperimentComparison | null = null;
   private unsubscribeExperiments: () => void;
+  private auditPending = false;
+  private auditResult: AuditResult | null = null;
+  private auditError: string | null = null;
+  private auditRequest = 0;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -85,6 +93,7 @@ export class WorkspacePanel extends ReactWidget {
     private readonly experimentRegistry: ExperimentRegistry,
     private readonly experimentRecorder: ExperimentRecorder,
     private readonly experiments: ExperimentStore,
+    private readonly auditor: NotebookAuditor,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -106,6 +115,7 @@ export class WorkspacePanel extends ReactWidget {
     this.result = null;
     this.pending = false;
     this.error = null;
+    void this.refreshAuditFindings();
     this.update();
   }
 
@@ -128,6 +138,10 @@ export class WorkspacePanel extends ReactWidget {
     this.experimentModel = "logistic_regression";
     this.experimentSelection = [];
     this.experimentComparison = null;
+    this.auditRequest++;
+    this.auditPending = false;
+    this.auditResult = null;
+    this.auditError = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
@@ -303,6 +317,81 @@ export class WorkspacePanel extends ReactWidget {
     this.update();
   }
 
+  private async runAudit(): Promise<void> {
+    const notebook = this.active;
+    if (!notebook || this.auditPending) return;
+    const request = ++this.auditRequest;
+    this.auditPending = true;
+    this.auditError = null;
+    this.update();
+    try {
+      const result = await this.auditor.audit(notebook.id);
+      if (request === this.auditRequest && notebook === this.active)
+        this.auditResult = result;
+    } catch (error) {
+      if (request !== this.auditRequest) return;
+      this.auditError =
+        error instanceof AuditError && error.code === "STALE_CELL"
+          ? "Notebook changed during the audit. Run it again."
+          : "Audit could not read the current visible cells.";
+    } finally {
+      if (request === this.auditRequest) {
+        this.auditPending = false;
+        this.update();
+      }
+    }
+  }
+
+  private async refreshAuditFindings(): Promise<void> {
+    const notebook = this.active;
+    const result = this.auditResult;
+    if (!notebook || !result) return;
+    const request = ++this.auditRequest;
+    const cells = notebook.content.model
+      ? Array.from(notebook.content.model.cells)
+          .filter((cell) => this.policies.canRead(notebook.id, cell.id))
+          .map((cell) => {
+            const type: AuditCell["type"] =
+              cell.type === "code" ||
+              cell.type === "markdown" ||
+              cell.type === "raw"
+                ? cell.type
+                : "raw";
+            const data = cell.toJSON();
+            return {
+              cellId: cell.id,
+              type,
+              source: cell.sharedModel.getSource(),
+              executionCount:
+                data.cell_type === "code" &&
+                typeof data.execution_count === "number"
+                  ? data.execution_count
+                  : null,
+            };
+          })
+      : [];
+    const findings = await refreshStaleness(result.findings, cells);
+    if (request === this.auditRequest && notebook === this.active) {
+      this.auditResult = { ...result, findings };
+      this.update();
+    }
+  }
+
+  private navigateToFinding(finding: AuditFinding): void {
+    const notebook = this.active?.content;
+    if (!notebook) return;
+    const index = notebook.widgets.findIndex(
+      (cell) => cell.model.id === finding.cellId,
+    );
+    if (index < 0) return;
+    notebook.activeCellIndex = index;
+    const cell = notebook.widgets[index];
+    void notebook.scrollToCell(cell, "center").then(() => {
+      notebook.activate();
+      cell.node.focus();
+    });
+  }
+
   private async upload(file: File): Promise<void> {
     const notebook = this.active;
     if (!notebook || this.uploadController) return;
@@ -375,6 +464,7 @@ export class WorkspacePanel extends ReactWidget {
     this.active?.title.changed.disconnect(this.refresh, this);
     this.request++;
     this.portabilityRequest++;
+    this.auditRequest++;
     this.uploadController?.abort();
     this.unsubscribeProposals();
     this.unsubscribeDatasets();
@@ -531,6 +621,17 @@ export class WorkspacePanel extends ReactWidget {
           />
         )}
         {notebook && (
+          <AuditPanel
+            pending={this.auditPending}
+            result={this.auditResult}
+            error={this.auditError}
+            onRun={() => {
+              void this.runAudit();
+            }}
+            onNavigate={(finding) => this.navigateToFinding(finding)}
+          />
+        )}
+        {notebook && (
           <AccessControls
             notebookMode={this.policies.notebookMode(notebook.id)}
             cells={cells.map((cell) => ({
@@ -543,10 +644,12 @@ export class WorkspacePanel extends ReactWidget {
             error={this.error}
             onNotebook={(value) => {
               this.policies.setNotebook(notebook.id, value);
+              this.auditResult = null;
               this.refresh();
             }}
             onCell={(id, value) => {
               this.policies.setCell(notebook.id, id, value);
+              this.auditResult = null;
               this.refresh();
             }}
             onPreview={(offset) => {

@@ -1,6 +1,6 @@
 # Architecture decisions and trust boundaries
 
-Status: evolving product architecture. Notebook control, approved execution, dataset profiling and reproducible training cells are implemented; persisted experiment comparisons, audits and reports remain planned.
+Status: evolving product architecture. Notebook control, approved execution, dataset profiling, reproducible training, persisted experiment comparisons and evidence-based audits are implemented; reports remain planned.
 
 ```mermaid
 flowchart LR

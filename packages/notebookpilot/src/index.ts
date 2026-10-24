@@ -32,6 +32,8 @@ import {
 } from "./experiments/store";
 import { ExperimentRecorder, ExperimentRegistry } from "./experiments/record";
 import { createExperimentTools } from "./webmcp/experiment-tools";
+import { NotebookAuditor } from "./audit/auditor";
+import { createAuditTool } from "./webmcp/audit-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -76,6 +78,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
       createExecutionAdapter(notebooks, policies, CodeCell.execute),
     );
     const reader = new NotebookReader(
+      (id) => readLiveNotebook(notebooks, id, policies),
+      policies,
+    );
+    const auditor = new NotebookAuditor(
       (id) => readLiveNotebook(notebooks, id, policies),
       policies,
     );
@@ -135,6 +141,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       experimentRegistry,
       experimentRecorder,
       experiments,
+      auditor,
     );
     const tools = createReadTools(reader, policies, () => {
       const notebook = notebooks.currentWidget;
@@ -173,6 +180,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               : null;
           },
         ),
+        createAuditTool(auditor),
       ],
     );
     panel.disposed.connect(() => {

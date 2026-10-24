@@ -49,7 +49,10 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 - [x] A1: Audit rules. Depends N1,H1,D1; SPEC-notebook-audit. Files: ext/src/audit/rules.ts, ext/src/audit/model.ts, ext/tests/audit.test.ts. Acceptance: fixed documented penalties, evidence spans, hidden cells excluded, stale findings invalidated, unsupported syntax not evaluated. Verify positive/negative cases for every rule.
   - [x] A1a: Pure audit analyzer. Implement the seven fixed rules, one-based evidence spans, execution coverage, deterministic scoring, unsupported-syntax `notEvaluated` entries and source-hash staleness checks.
   - [x] A1b: Permission-scoped audit integration. Feed only visible live cells into the analyzer and prove hidden content is neither inspected nor returned.
-- [ ] A2: Audit UI/tool. Depends A1,W2. Files: ext/src/ui/audit.tsx, ext/src/webmcp/audit-tools.ts, e2e/audit.spec.ts. Acceptance: scope/heuristic limitations visible, keyboard navigation to cells, empty/error states. Verify changed-source warning and keyboard flow.
+- [x] A2: Audit UI/tool. Depends A1,W2. Files: ext/src/ui/audit.tsx, ext/src/webmcp/audit-tools.ts, e2e/audit.spec.ts. Acceptance: scope/heuristic limitations visible, keyboard navigation to cells, empty/error states. Verify changed-source warning and keyboard flow.
+  - [x] A2a: Register the closed, bounded `notebook_audit` tool and cover validation, cancellation, scope and hidden-content behavior.
+  - [x] A2b: Render audit score, coverage, findings, limitations and empty/error/not-evaluated states in the sidebar.
+  - [x] A2c: Navigate fresh findings to their cells, disable navigation for changed evidence and verify the complete flow in Chromium.
 - [ ] R1: Portable report rendering. Depends X2,A2; SPEC-reporting. Files: ext/src/reports/model.ts, ext/src/reports/export.ts, ext/tests/reports.test.ts. Acceptance: exact metrics/provenance, failed/missing runs labelled, HTML/Markdown escaped, no scripts/external requests, 5MiB cap. Verify hostile strings, size limits and report contents.
 - [ ] R2: Export UI/tools. Depends R1,W2. Files: ext/src/ui/reports.tsx, ext/src/webmcp/report-tools.ts, e2e/report.spec.ts. Acceptance: explicit local download, scope visible, raw rows excluded by default, standalone report works offline. Verify downloads and rendering without external requests.
 

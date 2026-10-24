@@ -1,6 +1,6 @@
 # Specification: Evidence-based notebook review
 
-Status: A1 audit analyzer and permission-scoped coordinator implemented; A2 tool, navigation and sidebar UI remain planned. Module: notebook-audit.
+Status: implemented. Module: notebook-audit.
 
 ## Dependencies
 notebook-core, dataset-intelligence.
@@ -20,7 +20,7 @@ Score is null if there are no visible code cells or the analyzer cannot evaluate
 4. unsupported syntax is not reported as safe.
 
 ## Files and interfaces
-Planned extension-relative files: src/audit/rules.ts, src/audit/model.ts, tests/audit.test.ts. Tool interfaces are defined in docs/TOOL_CONTRACTS.md. Keep domain logic independent of the WebMCP adapter.
+Extension-relative files: src/audit/rules.ts, src/audit/model.ts, src/audit/auditor.ts, src/ui/audit.tsx, src/webmcp/audit-tools.ts and their tests. Tool interfaces are defined in docs/TOOL_CONTRACTS.md. Domain logic remains independent of the WebMCP adapter.
 
 ## Verification
 Write failing behavioral tests for each acceptance criterion, then implement. Use npm test for unit contracts, npm run typecheck and npm run lint:check; add relevant npm run test:e2e cases. Native browser-agent compatibility must be recorded independently of mocked protocol tests.
