@@ -120,3 +120,9 @@ Added an isolated execution approval/queue module, not yet connected to a live k
 
 67 Jest tests, five Python tests, typecheck and formatting pass. The focused test initially failed for the absent module. No browser rerun was needed for this unwired domain code. Remaining N2 work includes a live Jupyter execution adapter with ownership-safe interruption, human execution review/status UI, lifecycle wiring, tool validation/envelopes and real Python tests. The full product remains incomplete.
 
+# Jupyter execution adapter checkpoint — 2026-10-24
+
+Added an unwired live-model adapter for ExecutionQueue. It resolves exactly one visible code-cell widget, checks source/kernel identity and write permission, refuses busy kernels, and delegates execution to an injected CodeCell.execute-compatible function. Inspection of the installed JupyterLab 4.6.4 source confirmed that CodeCell.execute uses visible source and attaches the execution future to the cell's output area synchronously. Exact installed cells/services versions are now explicit dependencies.
+
+Four mock-adapter tests cover source mismatch, visible-cell dispatch, busy/aborted denial, owned-work interruption and declining interruption after observing a foreign execute request. Listeners are removed when the runner settles. 71 Jest tests, five Python tests, typecheck and formatting pass. This is not real Pyodide execution evidence. The production plugin has not connected this adapter yet; execution controls/tools and real browser tests remain required. Interrupt ownership is based on messages observable on the local kernel connection, not a general guarantee for multi-client remote kernels. If ownership is uncertain, no interrupt is sent and the queue must wait for settlement.
+
