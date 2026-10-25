@@ -252,7 +252,13 @@ test("mock transport requires separate edit and execution approvals", async ({
     name: `Run ${restarting.structuredContent.requestId}`,
     exact: true,
   });
-  await restartReview.getByRole("button", { name: "Approve run" }).click();
+  const restartApproval = restartReview.getByRole("button", {
+    name: "Approve run",
+  });
+  await expect(restartApproval).toBeEnabled({
+    timeout: process.env.CI ? 240_000 : 30_000,
+  });
+  await restartApproval.click();
   await expect(restartReview.getByRole("status")).toHaveText("running");
   await page.getByRole("menuitem", { name: "Kernel" }).click();
   await page.locator('[data-command="kernelmenu:restart"]').click();

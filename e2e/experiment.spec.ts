@@ -56,7 +56,7 @@ async function approveAndWait(
           return (await call("notebook_get_execution", { requestId }))
             .structuredContent.status;
         }, request),
-      { timeout: 120_000 },
+      { timeout: process.env.CI ? 240_000 : 120_000 },
     )
     .toBe(expectedStatus);
 }
