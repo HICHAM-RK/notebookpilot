@@ -63,3 +63,41 @@ test("disposal during registration never activates remaining tools", async () =>
   expect(await pending).toBe("disposed");
   expect(registerTool).toHaveBeenCalledTimes(1);
 });
+
+test("duplicate activation shares tools until the last owner disposes", async () => {
+  const active = new Set<string>();
+  const registerTool = jest.fn(
+    async (registered: typeof tool, options: { signal: AbortSignal }) => {
+      active.add(registered.name);
+      options.signal.addEventListener("abort", () =>
+        active.delete(registered.name),
+      );
+    },
+  );
+  const api = { registerTool };
+  const first = new ToolRegistration(api, [tool]);
+  const second = new ToolRegistration(api, [tool]);
+  expect(await Promise.all([first.start(), second.start()])).toEqual([
+    "available",
+    "available",
+  ]);
+  expect(registerTool).toHaveBeenCalledTimes(1);
+  expect(active).toEqual(new Set(["read"]));
+  first.dispose();
+  expect(active).toEqual(new Set(["read"]));
+  second.dispose();
+  expect(active).toEqual(new Set());
+});
+
+test("duplicate names with different contracts fail closed", async () => {
+  const registerTool = jest.fn(async () => undefined);
+  const api = { registerTool };
+  const first = new ToolRegistration(api, [tool]);
+  expect(await first.start()).toBe("available");
+  const conflict = new ToolRegistration(api, [
+    { ...tool, description: "Different contract" },
+  ]);
+  expect(await conflict.start()).toBe("failed");
+  expect(registerTool).toHaveBeenCalledTimes(1);
+  first.dispose();
+});
