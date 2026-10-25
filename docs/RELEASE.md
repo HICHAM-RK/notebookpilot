@@ -45,7 +45,7 @@ The workflow does not publish, configure a host, request credentials or change r
 Before deployment:
 
 1. Fill in the decision record and confirm the commit is the intended release.
-2. Re-run the dependency audits documented in `docs/REVIEW.md`; triage every new high/critical result and re-evaluate the tracked moderate renderer advisories.
+2. Run `npm audit --omit=dev` and a locked Python dependency audit; triage every new high/critical result and re-evaluate the tracked moderate renderer advisories.
 3. Confirm the artifact workflow completed all checks for the same commit SHA.
 4. Inspect the artifact for secrets and private data.
 5. Keep `LICENSE` and `THIRD_PARTY_NOTICES.md` available from the repository linked by the demo.
@@ -54,12 +54,12 @@ After deployment, verify against the public URL—not a local substitute:
 
 1. Record the deployed commit and response headers.
 2. Load the application in a fresh browser profile over HTTPS and confirm the extension, Pyodide worker, sample notebook and static assets work without console errors.
-3. Run the full native-host journey in `docs/HOST_VERIFICATION.md`: discover exactly 13 tools, read an unsaved allowed cell, deny one proposal with no mutation, accept another proposal without execution, separately approve execution and observe real Python output.
+3. Run the full native-host journey: discover exactly 13 tools, read an unsaved allowed cell, deny one proposal with no mutation, accept another proposal without execution, separately approve execution and observe real Python output.
 4. Confirm hidden notebook/cell content is absent, default execution is denied and malformed approval fields are rejected.
 5. Upload the repository-owned CSV fixture, profile it, prepare and explicitly download a report, and verify no dataset rows are sent by default.
 6. Re-run the hosted browser smoke tests against the deployed base URL if the hosting configuration differs from local root hosting.
 
-E3 is complete only when this evidence is recorded in `docs/VERIFICATION.md` and `tasks/todo.md` for the exact deployed commit.
+The hosted release is complete only when this evidence is retained for the exact deployed commit.
 
 ## Backup and rollback
 

@@ -184,15 +184,26 @@ test("mock transport requires separate edit and execution approvals", async ({
   await expect(page.locator(".jp-OutputArea-output")).toContainText(
     "inserted without running",
   );
-  const outcome = await page.evaluate(async (requestId) => {
-    const call = (
-      window as unknown as {
-        callTestTool: (name: string, input: unknown) => Promise<unknown>;
-      }
-    ).callTestTool;
-    return call("notebook_get_execution", { requestId });
-  }, execution.structuredContent.requestId);
-  expect(outcome).toMatchObject({ structuredContent: { status: "succeeded" } });
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(async (requestId) => {
+          const call = (
+            window as unknown as {
+              callTestTool: (
+                name: string,
+                input: unknown,
+              ) => Promise<{
+                structuredContent: { status: string };
+              }>;
+            }
+          ).callTestTool;
+          return (await call("notebook_get_execution", { requestId }))
+            .structuredContent.status;
+        }, execution.structuredContent.requestId),
+      { timeout: 15_000 },
+    )
+    .toBe("succeeded");
 
   // A finite busy loop makes a failed interrupt observable without hanging CI.
   await page

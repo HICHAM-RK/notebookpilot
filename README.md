@@ -2,17 +2,15 @@
 
 NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebMCP site tools to inspect datasets, propose safe notebook changes, execute approved cells, and produce reproducible analysis.
 
-The project contains a complete agent build package, a tested JupyterLite application and an original NotebookPilot sidebar extension. The implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments, persistent comparison history, notebook audits and portable reports. Start with:
+NotebookPilot is a tested JupyterLite application with an original sidebar extension. The implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments, persistent comparison history, notebook audits and portable reports. Project documentation:
 
-- [`AGENTS.md`](AGENTS.md)
-- [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
-- [`docs/START_HERE.md`](docs/START_HERE.md) — next-agent setup and starting task
-- [`docs/VERIFICATION.md`](docs/VERIFICATION.md) — evidence and limitations
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — application architecture and trust boundaries
+- [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md) — dependency and compatibility notes
 - [`docs/RELEASE.md`](docs/RELEASE.md) — hosting decision, deployment and rollback checklist
-- [`docs/GRAPHIFY.md`](docs/GRAPHIFY.md) — actual extracted architecture graph
+- [`docs/TOOL_CONTRACTS.md`](docs/TOOL_CONTRACTS.md) — WebMCP tool behavior
 
-Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md). Every local implementation, evaluation, security and accessibility task is complete. Publishing a hosted demo remains deliberately open until the owner approves its host and public/private visibility.
+Every local implementation, evaluation, security and accessibility task is complete. Publishing a hosted demo remains deliberately open until the owner approves its host and public/private visibility. Internal agent instructions, specifications, planning trackers and generated development evidence are retained locally and excluded from the published repository.
 
 Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. Upload a CSV to profile it locally, choose whether the agent may receive up to five sample rows, and review proposed notebook edits before separately approving execution. The experiment panel can generate reviewed logistic-regression or random-forest cells with a fixed split, training-only preprocessing and recorded metrics.
 

@@ -17,3 +17,18 @@ test-results/
 .DS_Store
 *.log
 
+# Local agent build instructions and generated planning evidence.
+# These files stay available to local agents but are not published.
+AGENTS.md
+CAPABILITY_MAP.md
+SPEC*.md
+tasks/
+docs/START_HERE.md
+docs/SKILLS.md
+docs/GRAPHIFY.md
+docs/HOST_VERIFICATION.md
+docs/REVIEW.md
+docs/VERIFICATION.md
+graphify-out/
+scripts/graphify_rebuild.py
+

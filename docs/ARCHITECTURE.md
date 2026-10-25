@@ -32,7 +32,7 @@ Use JupyterLite/Pyodide with a prebuilt JupyterLab extension. This preserves a r
 
 ## ADR 002: Keep protocol out of domain logic
 
-Notebook operations, policy, proposals and execution records do not import host APIs. The WebMCP adapter validates input and translates results. Human-control and data modules depend on domain interfaces; registration composes their handlers after initialization. CAPABILITY_MAP.md arrows describe delivery order, not TypeScript import requirements. This avoids a WebMCP ↔ permissions dependency cycle.
+Notebook operations, policy, proposals and execution records do not import host APIs. The WebMCP adapter validates input and translates results. Human-control and data modules depend on domain interfaces; registration composes their handlers after initialization. Delivery dependencies are intentionally separate from TypeScript import requirements, avoiding a WebMCP ↔ permissions dependency cycle.
 
 ## ADR 003: Human actions own authority
 
