@@ -754,6 +754,7 @@ export class WorkspacePanel extends ReactWidget {
             onReject={(id) => {
               this.experimentRegistry.settle(this.proposals.reject(id));
             }}
+            onDismiss={(id) => this.proposals.dismiss(id)}
           />
         )}
         {notebook && (

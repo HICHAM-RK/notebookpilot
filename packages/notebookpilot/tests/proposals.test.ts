@@ -137,3 +137,15 @@ test("adapter compare-and-swap failure cancels acceptance", async () => {
   expect(state.store.accept(proposal.proposalId).status).toBe("cancelled");
   expect(state.source()).toBe("before");
 });
+
+test("terminal proposals can be dismissed but pending review cannot", async () => {
+  const state = setup();
+  const proposal = await propose(state);
+  expect(() => state.store.dismiss(proposal.proposalId)).toThrow(
+    "INVALID_STATE",
+  );
+  state.store.reject(proposal.proposalId);
+  state.store.dismiss(proposal.proposalId);
+  expect(state.store.list("n")).toEqual([]);
+  expect(() => state.store.dismiss(proposal.proposalId)).toThrow("NOT_FOUND");
+});

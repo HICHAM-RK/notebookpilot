@@ -249,6 +249,14 @@ export class UpdateProposals {
     return structuredClone(proposal);
   }
 
+  dismiss(id: string): void {
+    const proposal = this.records.get(id);
+    if (!proposal) throw new Error("NOT_FOUND");
+    if (this.current(id).status === "pending") throw new Error("INVALID_STATE");
+    this.records.delete(id);
+    this.changed();
+  }
+
   cancelNotebook(notebookId: string): void {
     for (const proposal of this.records.values()) {
       if (proposal.notebookId === notebookId && proposal.status === "pending")

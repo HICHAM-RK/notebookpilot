@@ -92,6 +92,10 @@ test("mock transport requires separate edit and execution approvals", async ({
   expect(await status(rejected.structuredContent.proposalId)).toMatchObject({
     structuredContent: { status: "denied" },
   });
+  await panel.getByRole("button", { name: "Dismiss proposal" }).click();
+  await expect(
+    panel.getByRole("button", { name: "Dismiss proposal" }),
+  ).toHaveCount(0);
   await expect(page.getByRole("textbox")).toHaveText(before, {
     useInnerText: true,
   });

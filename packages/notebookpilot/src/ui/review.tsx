@@ -5,10 +5,12 @@ export function ProposalReview({
   proposals,
   onAccept,
   onReject,
+  onDismiss,
 }: {
   proposals: UpdateProposal[];
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
+  onDismiss: (id: string) => void;
 }): React.ReactElement {
   return (
     <section aria-label="Review proposed edits" data-lm-suppress-shortcuts="">
@@ -59,6 +61,14 @@ export function ProposalReview({
                 Reject edit
               </button>
             </>
+          )}
+          {proposal.status !== "pending" && (
+            <button
+              type="button"
+              onClick={() => onDismiss(proposal.proposalId)}
+            >
+              Dismiss proposal
+            </button>
           )}
         </article>
       ))}
