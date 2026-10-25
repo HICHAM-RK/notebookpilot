@@ -2,6 +2,12 @@
 
 Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphify snapshot and JupyterLite foundation. This is not a product-completion report.
 
+## Security and accessibility review — 2026-10-25
+
+Added `e2e/accessibility.spec.ts` and pinned `@axe-core/playwright@4.14.0`. In a fresh Chromium context the NotebookPilot panel has zero axe violations before and after expanding its permission/preview state. Keyboard-only controls select proposal access, expand cell permissions and activate preview; the focused action has a visible non-zero outline. A direct execution request in the default read-only state returns `ACCESS_DENIED` and creates no request. A hidden cell disappears from scoped reads, a hidden notebook returns content-free `NOT_FOUND`, and a hostile CSV filename/value stays inert text without creating script/image elements or changing the execution sentinel.
+
+The focused three-case accessibility/security file and the complete 15-scenario Chromium suite pass. The final gate also passes 201 Jest tests, six Python checks, typecheck, formatting and a fresh production build; the build retains the four documented third-party license-discovery warnings. Existing import and report cases cover non-executing hostile notebook HTML plus offline script-free reports with zero external requests. The tracked-source credential scan found no credential assignment. `uvx pip-audit` found no known issue in the 64-package locked Python export. `npm audit --omit=dev` reports no critical/high findings, 23 moderate and three low propagated findings in the pinned Jupyter graph; a dry-run offers no safe update and forced suggestions are incompatible downgrades. Exact root packages, exposure analysis and follow-up are recorded in `docs/REVIEW.md` rather than concealed or auto-fixed unsafely.
+
 ## Evaluation runner and native matrix — 2026-10-25
 
 Implemented the fixed six-case catalog in `eval/cases.json`, the transport-independent recording/scoring runner in `eval/run.ts`, and deterministic summary/Markdown rendering in `eval/report.ts`. Every catalog case is required exactly once in the documented order and is repeated three times. The runner records host/model/transport identity, prompt, actual tool calls and arguments, argument validity, responses or transport errors, call/run latency, optional usage, evidence-derived success and all failure codes. Usage is omitted when unavailable and no cost field is invented.

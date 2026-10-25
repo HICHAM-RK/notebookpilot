@@ -20,6 +20,7 @@
     "serve": "uv run python scripts/serve.py"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@jupyterlab/builder": "4.5.11",
     "@playwright/test": "1.64.1",
     "@types/jest": "30.0.0",
