@@ -1,5 +1,4 @@
 // Adapted from @jupyterlite/pyodide-kernel 0.8.6 (BSD-3-Clause).
-// See THIRD_PARTY_NOTICES.md.
 import coincident from "coincident";
 import { PyodideRemoteKernel } from "@jupyterlite/pyodide-kernel/lib/worker";
 import {

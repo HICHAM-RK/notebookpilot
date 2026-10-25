@@ -48,7 +48,7 @@ Before deployment:
 2. Run `npm audit --omit=dev` and a locked Python dependency audit; triage every new high/critical result and re-evaluate the tracked moderate renderer advisories.
 3. Confirm the artifact workflow completed all checks for the same commit SHA.
 4. Inspect the artifact for secrets and private data.
-5. Keep `LICENSE` and `THIRD_PARTY_NOTICES.md` available from the repository linked by the demo.
+5. Keep the project license available from the repository linked by the demo.
 
 After deployment, verify against the public URL—not a local substitute:
 
@@ -78,4 +78,4 @@ Changing the site origin is not a transparent rollback: browser-local state is o
 
 ## Attribution
 
-Preserve the project license, copyright notices and `THIRD_PARTY_NOTICES.md`. A hosted demo should link to the repository and identify NotebookPilot as the project name. Do not imply endorsement by Jupyter, Pyodide, OpenAI, ChatGPT, Google Colab or other upstream projects.
+Preserve the project license and copyright notices. A hosted demo should link to the repository and identify NotebookPilot as the project name. Do not imply endorsement by Jupyter, Pyodide, OpenAI, ChatGPT, Google Colab or other upstream projects.

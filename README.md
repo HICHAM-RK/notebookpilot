@@ -4,7 +4,6 @@ NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebM
 
 NotebookPilot is a tested JupyterLite application with an original sidebar extension. The implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments, persistent comparison history, notebook audits and portable reports. Project documentation:
 
-- [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — application architecture and trust boundaries
 - [`docs/DEPENDENCIES.md`](docs/DEPENDENCIES.md) — dependency and compatibility notes
 - [`docs/RELEASE.md`](docs/RELEASE.md) — hosting decision, deployment and rollback checklist

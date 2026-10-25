@@ -1,5 +1,4 @@
 // Adapted from @jupyterlite/pyodide-kernel 0.8.6 (BSD-3-Clause).
-// See THIRD_PARTY_NOTICES.md.
 import { PyodideKernel } from "@jupyterlite/pyodide-kernel";
 import type { KernelMessage } from "@jupyterlab/services";
 import { DriveContentsProcessor } from "@jupyterlite/services";
