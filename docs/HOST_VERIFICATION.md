@@ -1,6 +1,18 @@
 # Native WebMCP verification gate
 
-Status: W1 NATIVE PASS / W3 PARTIAL NATIVE PASS (2026-10-25). The ChatGPT in-app browser discovered all 13 tools and invoked `notebook_get_context` on the freshly built local app without a shim. Host and embedded Chromium versions are recorded below. Closing the test document invalidated its bound native tool handle, while mocked lifecycle tests separately prove AbortSignal teardown and reference-counted duplicate activation. Native rejection and UI acceptance passed previously. The complete native execution and dataset journeys remain W3 work.
+Status: W1/W3 NATIVE PASS (2026-10-25). The ChatGPT in-app browser discovered all 13 tools, read an unsaved cell, delivered rejected and accepted proposals through the human UI, kept edit acceptance separate from execution approval, ran the approved cell in real Pyodide and returned its output. No shim or injected registration transport was present. Host and embedded Chromium versions are recorded below. Hosted-site verification remains E3.
+
+## W3 native approval and execution journey — product commit c4afb89, test commit 6adcb8f, 2026-10-25
+
+Host: ChatGPT macOS app `26.1021.31345` (build 21828), in-app browser with embedded Chromium `156.0.8078.48`. Site: freshly built local app at `http://127.0.0.1:8001/lab/index.html?native-w3=1`. Test data was the repository-owned `welcome.ipynb` stored in the browser. The tester used direct native WebMCP calls rather than a natural-language host prompt so exact arguments and results could be recorded; the tester operated the visible human controls. No shim, `document.modelContext` injection or mocked transport was installed.
+
+1. Native discovery returned all 13 registered tools and their closed schemas. `notebook_get_context({})` returned the open notebook, active cell, idle kernel and `webmcpStatus: available`.
+2. The visible `analysis` cell was edited without saving to `print('W3 unsaved native read')`. Native `notebook_get_cells` returned that exact live source with hash `d76a392c0638312f582cf66878e25b86af7963c747bef45f9d5804c159a31230`.
+3. After the tester selected **Allow proposals**, native `notebook_propose_update` proposed `print('W3 proposal should be rejected')`. The visible review showed before/replacement text. The tester clicked **Reject edit**; `notebook_get_proposal` returned `denied`, and a fresh native cell read returned the original unsaved source and hash unchanged.
+4. A second native proposal requested `print('W3 native execution output: 84')`. The tester clicked **Accept edit**. Proposal status became `accepted`; a fresh native read returned hash `3115b00551dd7891ff902d285fdee1e06b6efca0e43b5c7327b5899f10343e59` and outputs remained `[]`, proving acceptance did not execute Python.
+5. Native `notebook_run_cells` with that exact cell/hash returned request `89e17c8d-95e7-4df4-91fa-0ec634e0e5ec` as `pending`. `notebook_get_execution` returned `pending` with no cell output, while the UI displayed a separate **Approve run** action. Only after the tester clicked it did real Pyodide execute. The native status call then returned `succeeded` and the exact stream summary `W3 native execution output: 84\n`.
+
+The added Chromium regression `e2e/webmcp.spec.ts` independently verifies exact 13-tool registration, absence of approval/accept/reject tools, rejection of an injected `approved` field and UTF-8 oversize refusal. It uses an explicitly mocked registration transport and is not counted as native evidence. All 12 Chromium scenarios pass together. The native test was local, not hosted; deployment verification remains E3. A dataset-specific native profiling walkthrough is optional additional compatibility evidence, not a substitute for the completed D2 browser journey or this W3 approval gate.
 
 ## W1 native lifecycle — commit 9c40064, 2026-10-25
 
@@ -21,13 +33,13 @@ Host: ChatGPT in-app browser surfaced by Codex computer-use tools, local site on
 3. Native propose_update returned pending and the sidebar displayed original/replacement source. The tester clicked Reject edit. Native get_proposal returned denied; get_cells returned the unchanged original hash.
 4. A second native proposal requested `print('Native review verified; not executed')`. The tester clicked Accept edit. Native get_proposal returned accepted; the visible editor and native get_cells both contained the replacement. The new source hash was `678ada17d8d5f6be2a2b5886040d74509be906faec629a2a1135b776f4a2e72b`; outputs remained `[]` and the UI execution prompt remained `[ ]`.
 
-This verifies native proposal delivery, permission denial, UI rejection/acceptance, status retrieval and readback of the accepted source. It does not prove execution approval, insertion, native stale-edit handling, full host/version compatibility or teardown. Those gates remain open.
+At this 2026-10-24 checkpoint, native proposal delivery, permission denial, UI rejection/acceptance, status retrieval and readback of the accepted source were verified. Execution approval and teardown were completed later in the W3 and W1 evidence above. Insertion and stale-edit handling remain covered by the browser and unit suites rather than separate native-host evidence.
 
 ## Native read checkpoint — 2026-10-24
 
 Extension activation now registers notebook_get_context and notebook_get_cells. Actual host discovery returned both schemas and readOnlyHint/untrustedContentHint annotations. An initial context call returned null notebook identity. After opening the repository-owned welcome.ipynb, context returned the active notebook ID, intro cell ID and idle kernel. The cells call returned the actual two cells, complete source hashes and no truncation.
 
-Changing Notebook access to Hidden from agent through the UI caused a subsequent native cells call to return NOT_FOUND without content. The native context call then returned null notebook/cell IDs and unavailable kernel status. This proves discovery, read invocation and notebook hiding on this host session, not the full W3 journey. Native unsaved-edit reads, per-cell hiding, cancellation and teardown still need dedicated evidence.
+Changing Notebook access to Hidden from agent through the UI caused a subsequent native cells call to return NOT_FOUND without content. The native context call then returned null notebook/cell IDs and unavailable kernel status. At this checkpoint, that proved discovery, read invocation and notebook hiding. The later W3 evidence above completes native unsaved-edit reading and approved execution, while per-cell hiding and cancellation remain covered by the browser/unit suites and teardown by W1.
 
 ## Registration implementation checkpoint — 2026-10-24
 

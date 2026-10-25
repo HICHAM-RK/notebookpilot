@@ -6,7 +6,7 @@ Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphi
 
 Completed W1 on implementation commit `9c40064`. Registrations are shared by host API and tool name with reference-counted ownership. Matching duplicate activations register once and stay active until the final owner disposes; conflicting contracts fail closed. Existing missing-API, asynchronous disposal and partial-failure behavior remains covered.
 
-The full local gate passed with 163 Jest tests, six Python checks, typecheck, formatting, a fresh production build and 11 Chromium scenarios. Independently, ChatGPT macOS `26.1021.31345` (build 21828), with embedded Chromium `156.0.8078.48`, natively discovered all 13 tools from the fresh build and invoked `notebook_get_context` successfully. No shim or mocked transport was present. Closing the document invalidated its native tool handle. Detailed names, API shape and limitations are recorded in `docs/HOST_VERIFICATION.md`. W2 was completed in the following checkpoint; the complete W3 native journey remains open.
+The full local gate passed with 163 Jest tests, six Python checks, typecheck, formatting, a fresh production build and 11 Chromium scenarios. Independently, ChatGPT macOS `26.1021.31345` (build 21828), with embedded Chromium `156.0.8078.48`, natively discovered all 13 tools from the fresh build and invoked `notebook_get_context` successfully. No shim or mocked transport was present. Closing the document invalidated its native tool handle. Detailed names, API shape and limitations are recorded in `docs/HOST_VERIFICATION.md`. W2 and the complete W3 native journey were completed in the following checkpoints.
 
 ## Closed WebMCP validation and routing — 2026-10-25
 
@@ -14,7 +14,13 @@ Completed W2 on implementation commits `39603d2`, `602c735` and `3e286a8`. A sch
 
 A final routing guard measures the complete serialized result, including duplicated text and structured content, and replaces responses above 50 KiB with a bounded `LIMIT_EXCEEDED` envelope. Unexpected adapter exceptions become `INTERNAL_ERROR` without their message or payload. Adversarial tests cover every checked-in schema with an injected `approved` property, malformed types, integer and collection bounds, regexes, duplicate values, Unicode byte overflow, oversized results, thrown private details and invalid surface composition. Runtime-only opaque-ID restrictions were removed from experiment and report adapters so valid contract inputs are no longer rejected more strictly than advertised.
 
-Final W2 gates pass: 195 Jest tests, six Python checks, typecheck, formatting, a fresh production build and all 11 Chromium scenarios. The build retains the four documented third-party license-discovery warnings. W3 remains open because its complete native host read/propose/reject/accept/execute journey must be recorded separately from mocked browser transport.
+Final W2 gates pass: 195 Jest tests, six Python checks, typecheck, formatting, a fresh production build and all 11 Chromium scenarios. The build retains the four documented third-party license-discovery warnings. The complete native host read/propose/reject/accept/execute journey was then recorded in the W3 checkpoint below, separately from mocked browser transport.
+
+## Native human-control journey — 2026-10-25
+
+Completed W3 against product commit `c4afb89`; reproducible browser surface coverage was added in `6adcb8f`. ChatGPT macOS `26.1021.31345` with Chromium `156.0.8078.48` natively discovered all 13 tools from the local build without a shim. It read a human's unsaved source, submitted one edit that the visible UI rejected without mutation, submitted a second edit that the UI accepted without execution, created a separate pending run request and returned real Pyodide output only after the visible **Approve run** action.
+
+Exact calls, hashes, statuses, output and limitations are recorded in `docs/HOST_VERIFICATION.md`. The new `e2e/webmcp.spec.ts` is deliberately labelled mocked evidence and covers exact surface registration plus approval-field and oversized-input rejection. The full 12-case Chromium suite passes together; typecheck and formatting also pass after the new test. The preceding fresh W2 build, 195 Jest tests and six Python checks cover the unchanged product artifact. Hosted native verification remains E3.
 
 ## Implementation checkpoint: F3/F4
 
@@ -83,9 +89,9 @@ The only Python `exec` in the foundation test runs the repository-owned fixture.
 
 GitHub API verified HICHAM-RK/notebookpilot remains private with default branch main. Build-package branch codex/agent-build-package was pushed and opened as [draft PR #1](https://github.com/HICHAM-RK/notebookpilot/pull/1). [Foundation checks run 39968654567](https://github.com/HICHAM-RK/notebookpilot/actions/runs/39968654567) completed successfully on commit `904762750185b2c9cab863b86ad7ea5f3a48e41f`, including Linux clean installation, build and real Chromium Python execution. This evidence paragraph is a documentation-only follow-up to that tested commit. No deployment or branch-protection configuration is claimed.
 
-## Product gates still open
+## Product gates still open at the build-package baseline
 
-H2, N2 and the remaining WebMCP journey gates in tasks/todo.md still include open implementation work. Native ChatGPT discovery/approval/execution evidence is tracked in docs/HOST_VERIFICATION.md. Colab round-trip, dataset upload/tool wiring, classification, audits, reports, full accessibility and hosted release are not implemented or passed by the current checks. No paid services, public deployment or production credentials were added.
+At this historical baseline, H2, N2 and the remaining WebMCP journey gates in tasks/todo.md still included open implementation work. Those product capabilities were completed in the later checkpoints in this document; the current task status is authoritative in tasks/todo.md. No paid services, public deployment or production credentials were added at this stage.
 
 # Registration lifecycle checkpoint — 2026-10-24
 
