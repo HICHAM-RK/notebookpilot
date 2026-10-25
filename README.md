@@ -76,7 +76,3 @@ NotebookPilot is designed around explicit access and approval:
 ## Status
 
 The static JupyterLite foundation and sample notebook are available on `main`. The full NotebookPilot extension, automated tests, WebMCP tool surface, experiment workflow, and release documentation are in active review in PR #1.
-
-## License and attribution
-
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for dependency attribution and third-party notices.
