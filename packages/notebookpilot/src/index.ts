@@ -34,6 +34,8 @@ import { ExperimentRecorder, ExperimentRegistry } from "./experiments/record";
 import { createExperimentTools } from "./webmcp/experiment-tools";
 import { NotebookAuditor } from "./audit/auditor";
 import { createAuditTool } from "./webmcp/audit-tools";
+import { ReportManager } from "./reports/manager";
+import { createReportTool } from "./webmcp/report-tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -93,6 +95,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
       Date.now,
       createNotebookInsertion(notebooks, policies),
     );
+    const notebookKey = (notebookId: string) => {
+      const notebook = notebooks.find(
+        (candidate) => candidate.id === notebookId && !candidate.isDisposed,
+      );
+      return notebook?.context.path ?? null;
+    };
+    const reports = new ReportManager(experiments, auditor, notebookKey);
     const trackNotebook = (notebook: NotebookPanel) => {
       notebook.disposed.connect(() => {
         proposals.cancelNotebook(notebook.id);
@@ -100,6 +109,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         policies.forget(notebook.id);
         void datasets.clearNotebook(notebook.id);
         experimentRegistry.forgetNotebook(notebook.id);
+        reports.clearNotebook(notebook.id);
       });
       notebook.sessionContext.kernelChanged.connect(() => {
         proposals.cancelNotebook(notebook.id);
@@ -118,12 +128,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
     notebooks.forEach(trackNotebook);
     notebooks.widgetAdded.connect((_, notebook) => trackNotebook(notebook));
-    const notebookKey = (notebookId: string) => {
-      const notebook = notebooks.find(
-        (candidate) => candidate.id === notebookId && !candidate.isDisposed,
-      );
-      return notebook?.context.path ?? null;
-    };
     const experimentRecorder = new ExperimentRecorder(
       executions,
       experimentRegistry,
@@ -142,6 +146,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       experimentRecorder,
       experiments,
       auditor,
+      reports,
     );
     const tools = createReadTools(reader, policies, () => {
       const notebook = notebooks.currentWidget;
@@ -181,6 +186,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
           },
         ),
         createAuditTool(auditor),
+        createReportTool(reports),
       ],
     );
     panel.disposed.connect(() => {

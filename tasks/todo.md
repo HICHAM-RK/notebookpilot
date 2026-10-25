@@ -54,7 +54,10 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
   - [x] A2b: Render audit score, coverage, findings, limitations and empty/error/not-evaluated states in the sidebar.
   - [x] A2c: Navigate fresh findings to their cells, disable navigation for changed evidence and verify the complete flow in Chromium.
 - [x] R1: Portable report rendering. Depends X2,A2; SPEC-reporting. Files: ext/src/reports/model.ts, ext/src/reports/export.ts, ext/tests/reports.test.ts. Acceptance: exact metrics/provenance, failed/missing runs labelled, HTML/Markdown escaped, no scripts/external requests, 5MiB cap. Verify hostile strings, size limits and report contents.
-- [ ] R2: Export UI/tools. Depends R1,W2. Files: ext/src/ui/reports.tsx, ext/src/webmcp/report-tools.ts, e2e/report.spec.ts. Acceptance: explicit local download, scope visible, raw rows excluded by default, standalone report works offline. Verify downloads and rendering without external requests.
+- [x] R2: Export UI/tools. Depends R1,W2. Files: ext/src/ui/reports.tsx, ext/src/webmcp/report-tools.ts, e2e/report.spec.ts. Acceptance: explicit local download, scope visible, raw rows excluded by default, standalone report works offline. Verify downloads and rendering without external requests.
+  - [x] R2a: Prepare session-scoped reports through a closed tool that returns metadata only and never initiates a download.
+  - [x] R2b: Let the human select runs and format, explicitly download or remove prepared reports, and clear reports when their notebook closes.
+  - [x] R2c: Verify the downloaded HTML renders offline without scripts or external requests and the Markdown path remains available.
 
 ## Evaluation and release
 

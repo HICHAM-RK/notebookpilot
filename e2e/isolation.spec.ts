@@ -11,8 +11,9 @@ test("page and Python worker run with shared-memory isolation", async ({
     "from js import crossOriginIsolated, SharedArrayBuffer\nprint('WORKER_ISOLATED', bool(crossOriginIsolated), SharedArrayBuffer.new(1).byteLength)",
   );
   await codeCell.press("Shift+Enter");
-  await expect(page.locator(".jp-OutputArea-output")).toContainText(
-    "WORKER_ISOLATED True 1",
-    { timeout: 60_000 },
-  );
+  await expect(
+    page
+      .locator(".jp-OutputArea-output")
+      .filter({ hasText: "WORKER_ISOLATED" }),
+  ).toContainText("WORKER_ISOLATED True 1", { timeout: 60_000 });
 });

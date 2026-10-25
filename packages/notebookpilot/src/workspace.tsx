@@ -40,6 +40,12 @@ import { NotebookAuditor, AuditError } from "./audit/auditor";
 import type { AuditCell, AuditFinding, AuditResult } from "./audit/model";
 import { refreshStaleness } from "./audit/rules";
 import { AuditPanel } from "./ui/audit";
+import {
+  ReportManager,
+  type PreparedReport,
+  type ReportFormat,
+} from "./reports/manager";
+import { ReportPanel } from "./ui/reports";
 
 export class WorkspacePanel extends ReactWidget {
   private active: NotebookPanel | null = null;
@@ -77,6 +83,12 @@ export class WorkspacePanel extends ReactWidget {
   private auditResult: AuditResult | null = null;
   private auditError: string | null = null;
   private auditRequest = 0;
+  private reportSelection: string[] = [];
+  private reportFormat: ReportFormat = "html";
+  private reportPending = false;
+  private reportError: string | null = null;
+  private reportRequest = 0;
+  private unsubscribeReports: () => void;
 
   setConnectionStatus(status: RegistrationStatus): void {
     this.connection = status;
@@ -94,6 +106,7 @@ export class WorkspacePanel extends ReactWidget {
     private readonly experimentRecorder: ExperimentRecorder,
     private readonly experiments: ExperimentStore,
     private readonly auditor: NotebookAuditor,
+    private readonly reports: ReportManager,
   ) {
     super();
     this.id = "notebookpilot-workspace";
@@ -105,6 +118,7 @@ export class WorkspacePanel extends ReactWidget {
     this.unsubscribeProposals = proposals.subscribe(() => this.update());
     this.unsubscribeDatasets = datasets.subscribe(() => this.update());
     this.unsubscribeExperiments = experiments.subscribe(() => this.update());
+    this.unsubscribeReports = reports.subscribe(() => this.update());
     this.expiryTimer = setInterval(() => this.update(), 1000);
   }
 
@@ -142,6 +156,11 @@ export class WorkspacePanel extends ReactWidget {
     this.auditPending = false;
     this.auditResult = null;
     this.auditError = null;
+    this.reportRequest++;
+    this.reportSelection = [];
+    this.reportFormat = "html";
+    this.reportPending = false;
+    this.reportError = null;
     this.active?.content.model?.contentChanged.disconnect(this.refresh, this);
     this.active?.title.changed.disconnect(this.refresh, this);
     this.active = this.notebooks.currentWidget;
@@ -392,6 +411,48 @@ export class WorkspacePanel extends ReactWidget {
     });
   }
 
+  private async prepareReport(): Promise<void> {
+    const notebook = this.active;
+    if (!notebook || this.reportPending) return;
+    const request = ++this.reportRequest;
+    this.reportPending = true;
+    this.reportError = null;
+    this.update();
+    try {
+      await this.reports.prepare(
+        notebook.id,
+        this.reportSelection,
+        this.reportFormat,
+      );
+    } catch {
+      if (request === this.reportRequest)
+        this.reportError =
+          "Report could not be prepared from current evidence.";
+    } finally {
+      if (request === this.reportRequest) {
+        this.reportPending = false;
+        this.update();
+      }
+    }
+  }
+
+  private downloadReport(report: PreparedReport): void {
+    const blob = new Blob([report.content], {
+      type:
+        report.format === "html"
+          ? "text/html;charset=utf-8"
+          : "text/markdown;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = report.fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
   private async upload(file: File): Promise<void> {
     const notebook = this.active;
     if (!notebook || this.uploadController) return;
@@ -465,10 +526,12 @@ export class WorkspacePanel extends ReactWidget {
     this.request++;
     this.portabilityRequest++;
     this.auditRequest++;
+    this.reportRequest++;
     this.uploadController?.abort();
     this.unsubscribeProposals();
     this.unsubscribeDatasets();
     this.unsubscribeExperiments();
+    this.unsubscribeReports();
     clearInterval(this.expiryTimer);
     super.dispose();
   }
@@ -629,6 +692,31 @@ export class WorkspacePanel extends ReactWidget {
               void this.runAudit();
             }}
             onNavigate={(finding) => this.navigateToFinding(finding)}
+          />
+        )}
+        {notebook && (
+          <ReportPanel
+            runs={experimentRuns}
+            selected={this.reportSelection}
+            format={this.reportFormat}
+            pending={this.reportPending}
+            error={this.reportError}
+            reports={this.reports.list(notebook.id)}
+            onSelect={(runId, enabled) => {
+              this.reportSelection = enabled
+                ? [...new Set([...this.reportSelection, runId])]
+                : this.reportSelection.filter((id) => id !== runId);
+              this.update();
+            }}
+            onFormat={(format) => {
+              this.reportFormat = format;
+              this.update();
+            }}
+            onPrepare={() => {
+              void this.prepareReport();
+            }}
+            onDownload={(report) => this.downloadReport(report)}
+            onRemove={(exportId) => this.reports.remove(exportId)}
           />
         )}
         {notebook && (

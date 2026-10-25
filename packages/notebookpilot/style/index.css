@@ -92,7 +92,8 @@
 .np-portability,
 .np-datasets,
 .np-experiments,
-.np-audit {
+.np-audit,
+.np-reports {
   padding-bottom: 12px;
   border-bottom: 1px solid var(--jp-border-color2);
 }
@@ -125,6 +126,34 @@
 }
 .np-audit h4 {
   margin: 0 0 4px;
+}
+.np-reports > label,
+.np-reports fieldset label {
+  display: block;
+  margin: 12px 0;
+}
+.np-reports select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+.np-reports button,
+.np-reports select {
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color1);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 2px;
+}
+.np-reports button {
+  margin: 8px 8px 8px 0;
+  cursor: pointer;
+}
+.np-reports article {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--jp-border-color2);
 }
 .np-experiments fieldset {
   margin: 12px 0;
