@@ -73,14 +73,6 @@ test.each([
   },
   {
     id: "item",
-    source: "😀x",
-    count: 1,
-    choice: "a",
-    anchor: null,
-    ids: ["one"],
-  },
-  {
-    id: "item",
     source: "x",
     count: 0.5,
     choice: "a",
@@ -125,6 +117,22 @@ test.each([
   expect(() => validateInput(input, schema)).toThrow(
     new ToolValidationError("INVALID_ARGUMENT"),
   );
+});
+
+test("classifies UTF-8 resource bounds separately from malformed input", () => {
+  expect(() =>
+    validateInput(
+      {
+        id: "item",
+        source: "😀x",
+        count: 1,
+        choice: "a",
+        anchor: null,
+        ids: ["one"],
+      },
+      schema,
+    ),
+  ).toThrow(new ToolValidationError("LIMIT_EXCEEDED"));
 });
 
 test("measures the complete duplicated host envelope in UTF-8 bytes", () => {

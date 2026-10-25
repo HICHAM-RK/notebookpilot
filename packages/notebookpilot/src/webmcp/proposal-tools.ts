@@ -1,36 +1,67 @@
 import { UpdateProposals } from "../control/proposals";
 import type { SiteTool } from "./register";
+import { boundedEnvelope, validateInput } from "./validation";
+
+const statusSchema = {
+  type: "object",
+  properties: {
+    proposalId: { type: "string", minLength: 1, maxLength: 128 },
+  },
+  required: ["proposalId"],
+  additionalProperties: false,
+};
+
+const insertSchema = {
+  type: "object",
+  properties: {
+    notebookId: { type: "string", minLength: 1, maxLength: 128 },
+    afterCellId: {
+      anyOf: [
+        { type: "string", minLength: 1, maxLength: 128 },
+        { type: "null" },
+      ],
+    },
+    cellType: { enum: ["code", "markdown"] },
+    source: {
+      type: "string",
+      maxLength: 262144,
+      "x-maxUtf8Bytes": 262144,
+    },
+  },
+  required: ["notebookId", "afterCellId", "cellType", "source"],
+  additionalProperties: false,
+};
+
+const updateSchema = {
+  type: "object",
+  properties: {
+    notebookId: { type: "string", minLength: 1, maxLength: 128 },
+    cellId: { type: "string", minLength: 1, maxLength: 128 },
+    expectedSourceHash: { type: "string", pattern: "^[a-f0-9]{64}$" },
+    source: {
+      type: "string",
+      maxLength: 262144,
+      "x-maxUtf8Bytes": 262144,
+    },
+  },
+  required: ["notebookId", "cellId", "expectedSourceHash", "source"],
+  additionalProperties: false,
+};
 
 export function createProposalStatusTool(proposals: UpdateProposals): SiteTool {
   return {
     name: "notebook_get_proposal",
     description:
       "Read a proposal outcome. This cannot approve, reject, edit or execute anything. Hidden or closed targets are unavailable.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        proposalId: { type: "string", minLength: 1, maxLength: 128 },
-      },
-      required: ["proposalId"],
-      additionalProperties: false,
-    },
+    inputSchema: statusSchema,
     annotations: { readOnlyHint: true, untrustedContentHint: false },
     execute: async (input, { signal }) => {
       let payload: unknown;
       let isError = false;
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        if (
-          !input ||
-          typeof input !== "object" ||
-          Array.isArray(input) ||
-          Object.keys(input).some((key) => key !== "proposalId")
-        )
-          throw new Error("INVALID_ARGUMENT");
-        const id = (input as Record<string, unknown>).proposalId;
-        if (typeof id !== "string" || id.length < 1 || id.length > 128)
-          throw new Error("INVALID_ARGUMENT");
-        payload = proposals.status(id);
+        const args = validateInput<{ proposalId: string }>(input, statusSchema);
+        payload = proposals.status(args.proposalId);
       } catch (error) {
         const code =
           error instanceof Error &&
@@ -40,11 +71,7 @@ export function createProposalStatusTool(proposals: UpdateProposals): SiteTool {
         payload = { error: { code, message: code, retryable: false } };
         isError = true;
       }
-      return {
-        content: [{ type: "text", text: JSON.stringify(payload) }],
-        structuredContent: payload,
-        ...(isError ? { isError: true } : {}),
-      };
+      return boundedEnvelope(payload, isError);
     },
   };
 }
@@ -63,42 +90,7 @@ function createEditTool(proposals: UpdateProposals, insert: boolean): SiteTool {
     description: insert
       ? "Propose a new visible notebook cell. Human acceptance is required before insertion. This does not execute code."
       : "Propose a replacement for a visible writable cell. The human must review and accept it. This never executes code and cannot approve itself.",
-    inputSchema: insert
-      ? {
-          type: "object",
-          properties: {
-            notebookId: { type: "string", minLength: 1, maxLength: 128 },
-            afterCellId: {
-              anyOf: [
-                { type: "string", minLength: 1, maxLength: 128 },
-                { type: "null" },
-              ],
-            },
-            cellType: { enum: ["code", "markdown"] },
-            source: {
-              type: "string",
-              maxLength: 262144,
-              "x-maxUtf8Bytes": 262144,
-            },
-          },
-          required: ["notebookId", "afterCellId", "cellType", "source"],
-          additionalProperties: false,
-        }
-      : {
-          type: "object",
-          properties: {
-            notebookId: { type: "string", minLength: 1, maxLength: 128 },
-            cellId: { type: "string", minLength: 1, maxLength: 128 },
-            expectedSourceHash: { type: "string", pattern: "^[a-f0-9]{64}$" },
-            source: {
-              type: "string",
-              maxLength: 262144,
-              "x-maxUtf8Bytes": 262144,
-            },
-          },
-          required: ["notebookId", "cellId", "expectedSourceHash", "source"],
-          additionalProperties: false,
-        },
+    inputSchema: insert ? insertSchema : updateSchema,
     annotations: {
       readOnlyHint: false,
       untrustedContentHint: true,
@@ -109,25 +101,10 @@ function createEditTool(proposals: UpdateProposals, insert: boolean): SiteTool {
       let isError = false;
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        const keys = insert
-          ? ["notebookId", "afterCellId", "cellType", "source"]
-          : ["notebookId", "cellId", "expectedSourceHash", "source"];
-        if (
-          !input ||
-          typeof input !== "object" ||
-          Array.isArray(input) ||
-          Object.keys(input).some((key) => !keys.includes(key))
-        )
-          throw new Error("INVALID_ARGUMENT");
-        const args = input as Record<string, unknown>;
-        if (
-          keys.some(
-            (key) =>
-              !(insert && key === "afterCellId" && args[key] === null) &&
-              typeof args[key] !== "string",
-          )
-        )
-          throw new Error("INVALID_ARGUMENT");
+        const args = validateInput<Record<string, unknown>>(
+          input,
+          insert ? insertSchema : updateSchema,
+        );
         const proposal = insert
           ? proposals.proposeInsert(
               args.notebookId as string,
@@ -161,11 +138,7 @@ function createEditTool(proposals: UpdateProposals, insert: boolean): SiteTool {
         };
         isError = true;
       }
-      return {
-        content: [{ type: "text", text: JSON.stringify(payload) }],
-        structuredContent: payload,
-        ...(isError ? { isError: true } : {}),
-      };
+      return boundedEnvelope(payload, isError);
     },
   };
 }

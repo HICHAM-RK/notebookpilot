@@ -1,6 +1,11 @@
 import { PolicyStore } from "../control/policy";
 import { NotebookError, NotebookReader } from "../notebook/reader";
 import type { SiteTool } from "./register";
+import {
+  ToolValidationError,
+  boundedEnvelope,
+  validateInput,
+} from "./validation";
 
 export interface NotebookContext {
   notebookId: string | null;
@@ -9,30 +14,11 @@ export interface NotebookContext {
     "unknown" | "starting" | "idle" | "busy" | "dead" | "unavailable";
 }
 
-function envelope(payload: unknown, isError = false) {
-  return {
-    content: [{ type: "text", text: JSON.stringify(payload) }],
-    structuredContent: payload,
-    ...(isError ? { isError: true } : {}),
-  };
-}
-
 function failure(code: string) {
-  return envelope(
+  return boundedEnvelope(
     { error: { code, message: code, retryable: code === "STALE_CELL" } },
     true,
   );
-}
-
-function object(input: unknown, keys: string[]): Record<string, unknown> {
-  if (
-    !input ||
-    typeof input !== "object" ||
-    Array.isArray(input) ||
-    Object.keys(input).some((key) => !keys.includes(key))
-  )
-    throw new NotebookError("INVALID_ARGUMENT");
-  return input as Record<string, unknown>;
 }
 
 export function createReadTools(
@@ -54,20 +40,18 @@ export function createReadTools(
       execute: async (input: unknown, { signal }: { signal: AbortSignal }) => {
         try {
           if (signal.aborted) return failure("CANCELLED");
+          validateInput(input, inputSchema);
           const version = policies.version;
           const payload = await run(input);
           if (signal.aborted) return failure("CANCELLED");
           if (policies.version !== version) return failure("NOT_FOUND");
-          const result = envelope(payload);
-          if (
-            new TextEncoder().encode(JSON.stringify(result)).length >
-            50 * 1024
-          )
-            return failure("LIMIT_EXCEEDED");
-          return result;
+          return boundedEnvelope(payload);
         } catch (error) {
           return failure(
-            error instanceof NotebookError ? error.code : "INTERNAL_ERROR",
+            error instanceof NotebookError ||
+              error instanceof ToolValidationError
+              ? error.message
+              : "INTERNAL_ERROR",
           );
         }
       },
@@ -84,7 +68,6 @@ export function createReadTools(
         additionalProperties: false,
       },
       (input) => {
-        object(input, []);
         const current = context();
         if (!current.notebookId || !policies.canRead(current.notebookId))
           return {
@@ -118,27 +101,12 @@ export function createReadTools(
         additionalProperties: false,
       },
       (input) => {
-        const args = object(input, ["notebookId", "offset", "limit"]);
-        if (
-          typeof args.notebookId !== "string" ||
-          !args.notebookId ||
-          args.notebookId.length > 128 ||
-          ("offset" in args &&
-            (typeof args.offset !== "number" ||
-              !Number.isSafeInteger(args.offset) ||
-              args.offset < 0)) ||
-          ("limit" in args &&
-            (typeof args.limit !== "number" ||
-              !Number.isInteger(args.limit) ||
-              args.limit < 1 ||
-              args.limit > 100))
-        )
-          throw new NotebookError("INVALID_ARGUMENT");
-        return reader.getCells(
-          args.notebookId,
-          args.offset as number | undefined,
-          args.limit as number | undefined,
-        );
+        const args = input as {
+          notebookId: string;
+          offset?: number;
+          limit?: number;
+        };
+        return reader.getCells(args.notebookId, args.offset, args.limit);
       },
     ),
   ];

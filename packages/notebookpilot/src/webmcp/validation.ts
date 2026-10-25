@@ -51,7 +51,7 @@ function validate(value: unknown, schema: Schema): void {
         typeof schema["x-maxUtf8Bytes"] === "number" &&
         utf8.encode(value).length > schema["x-maxUtf8Bytes"]
       )
-        invalid();
+        throw new ToolValidationError("LIMIT_EXCEEDED");
       return;
     }
     case "integer":
