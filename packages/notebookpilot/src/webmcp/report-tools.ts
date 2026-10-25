@@ -1,6 +1,6 @@
-import { ReportError } from "../reports/model";
 import { ReportManager } from "../reports/manager";
 import type { SiteTool } from "./register";
+import { boundedEnvelope, validateInput } from "./validation";
 
 const schema = {
   type: "object",
@@ -19,8 +19,6 @@ const schema = {
   additionalProperties: false,
 };
 
-const opaqueId = /^[A-Za-z0-9_-]{1,128}$/;
-
 export function createReportTool(reports: ReportManager): SiteTool {
   return {
     name: "report_generate",
@@ -33,28 +31,14 @@ export function createReportTool(reports: ReportManager): SiteTool {
       let isError = false;
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        if (!input || typeof input !== "object" || Array.isArray(input))
-          throw new ReportError("INVALID_ARGUMENT");
-        const value = input as Record<string, unknown>;
-        if (
-          Object.keys(value).some(
-            (key) => !["notebookId", "runIds", "format"].includes(key),
-          ) ||
-          !opaqueId.test(value.notebookId as string) ||
-          (value.format !== "html" && value.format !== "markdown") ||
-          (value.runIds !== undefined &&
-            (!Array.isArray(value.runIds) ||
-              value.runIds.length > 10 ||
-              new Set(value.runIds).size !== value.runIds.length ||
-              !value.runIds.every((id) =>
-                opaqueId.test(typeof id === "string" ? id : ""),
-              )))
-        ) {
-          throw new ReportError("INVALID_ARGUMENT");
-        }
+        const value = validateInput<{
+          notebookId: string;
+          runIds?: string[];
+          format: "html" | "markdown";
+        }>(input, schema);
         const report = await reports.prepare(
-          value.notebookId as string,
-          value.runIds as string[] | undefined,
+          value.notebookId,
+          value.runIds,
           value.format,
         );
         if (signal.aborted) {
@@ -66,6 +50,7 @@ export function createReportTool(reports: ReportManager): SiteTool {
           fileName: report.fileName,
           bytes: report.bytes,
         };
+        return boundedEnvelope(payload);
       } catch (error) {
         const allowed = [
           "INVALID_ARGUMENT",
@@ -83,11 +68,7 @@ export function createReportTool(reports: ReportManager): SiteTool {
         };
         isError = true;
       }
-      return {
-        content: [{ type: "text", text: JSON.stringify(payload) }],
-        structuredContent: payload,
-        ...(isError ? { isError: true } : {}),
-      };
+      return boundedEnvelope(payload, isError);
     },
   };
 }

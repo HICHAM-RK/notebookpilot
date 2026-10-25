@@ -126,3 +126,14 @@ export function boundedEnvelope(
     throw new ToolValidationError("LIMIT_EXCEEDED");
   return result;
 }
+
+export function boundedResult<T>(result: T, maxBytes = 50 * 1024): T {
+  let bytes: number;
+  try {
+    bytes = utf8.encode(JSON.stringify(result)).length;
+  } catch {
+    throw new ToolValidationError("LIMIT_EXCEEDED");
+  }
+  if (bytes > maxBytes) throw new ToolValidationError("LIMIT_EXCEEDED");
+  return result;
+}

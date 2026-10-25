@@ -1,5 +1,6 @@
-import { AuditError, NotebookAuditor } from "../audit/auditor";
+import { NotebookAuditor } from "../audit/auditor";
 import type { SiteTool } from "./register";
+import { boundedEnvelope, validateInput } from "./validation";
 
 const schema = {
   type: "object",
@@ -22,30 +23,13 @@ export function createAuditTool(auditor: NotebookAuditor): SiteTool {
       let isError = false;
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        if (
-          !input ||
-          typeof input !== "object" ||
-          Array.isArray(input) ||
-          Object.keys(input).some((key) => key !== "notebookId") ||
-          !Object.hasOwn(input, "notebookId")
-        )
-          throw new AuditError("INVALID_ARGUMENT");
-        const notebookId = (input as Record<string, unknown>).notebookId;
-        if (
-          typeof notebookId !== "string" ||
-          !notebookId ||
-          notebookId.length > 128
-        )
-          throw new AuditError("INVALID_ARGUMENT");
+        const { notebookId } = validateInput<{ notebookId: string }>(
+          input,
+          schema,
+        );
         payload = await auditor.audit(notebookId);
         if (signal.aborted) throw new Error("CANCELLED");
-        const resultBytes = new TextEncoder().encode(
-          JSON.stringify({
-            content: [{ type: "text", text: JSON.stringify(payload) }],
-            structuredContent: payload,
-          }),
-        ).length;
-        if (resultBytes > 50 * 1024) throw new Error("LIMIT_EXCEEDED");
+        return boundedEnvelope(payload);
       } catch (error) {
         const allowed = [
           "INVALID_ARGUMENT",
@@ -67,11 +51,7 @@ export function createAuditTool(auditor: NotebookAuditor): SiteTool {
         };
         isError = true;
       }
-      return {
-        content: [{ type: "text", text: JSON.stringify(payload) }],
-        structuredContent: payload,
-        ...(isError ? { isError: true } : {}),
-      };
+      return boundedEnvelope(payload, isError);
     },
   };
 }

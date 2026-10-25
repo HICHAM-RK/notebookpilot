@@ -2,67 +2,36 @@ import { PolicyStore } from "../control/policy";
 import { DataError } from "../data/import";
 import { DatasetError, DatasetStore } from "../data/store";
 import type { SiteTool } from "./register";
+import {
+  ToolValidationError,
+  boundedEnvelope,
+  validateInput,
+} from "./validation";
 
-const MAX_RESULT_BYTES = 50 * 1024;
+const listSchema = {
+  type: "object",
+  properties: {
+    notebookId: { type: "string", minLength: 1, maxLength: 128 },
+  },
+  required: ["notebookId"],
+  additionalProperties: false,
+};
 
-function envelope(payload: unknown, isError = false) {
-  return {
-    content: [{ type: "text", text: JSON.stringify(payload) }],
-    structuredContent: payload,
-    ...(isError ? { isError: true } : {}),
-  };
-}
+const profileSchema = {
+  type: "object",
+  properties: {
+    notebookId: { type: "string", minLength: 1, maxLength: 128 },
+    datasetId: { type: "string", minLength: 1, maxLength: 128 },
+  },
+  required: ["notebookId", "datasetId"],
+  additionalProperties: false,
+};
 
 function failure(code: string) {
-  return envelope({ error: { code, message: code, retryable: false } }, true);
-}
-
-function argumentsFor(input: unknown): {
-  notebookId: string;
-  datasetId: string;
-} {
-  if (
-    !input ||
-    typeof input !== "object" ||
-    Array.isArray(input) ||
-    Object.keys(input).some(
-      (key) => key !== "notebookId" && key !== "datasetId",
-    )
-  ) {
-    throw new DatasetError("INVALID_ARGUMENT");
-  }
-  const { notebookId, datasetId } = input as Record<string, unknown>;
-  if (
-    typeof notebookId !== "string" ||
-    !notebookId ||
-    notebookId.length > 128 ||
-    typeof datasetId !== "string" ||
-    !datasetId ||
-    datasetId.length > 128
-  ) {
-    throw new DatasetError("INVALID_ARGUMENT");
-  }
-  return { notebookId, datasetId };
-}
-
-function notebookArgument(input: unknown): string {
-  if (
-    !input ||
-    typeof input !== "object" ||
-    Array.isArray(input) ||
-    Object.keys(input).some((key) => key !== "notebookId")
-  ) {
-    throw new DatasetError("INVALID_ARGUMENT");
-  }
-  const notebookId = (input as Record<string, unknown>).notebookId;
-  if (
-    typeof notebookId !== "string" ||
-    !notebookId ||
-    notebookId.length > 128
-  ) {
-    throw new DatasetError("INVALID_ARGUMENT");
-  }
-  return notebookId;
+  return boundedEnvelope(
+    { error: { code, message: code, retryable: false } },
+    true,
+  );
 }
 
 export function createDatasetListTool(
@@ -73,19 +42,15 @@ export function createDatasetListTool(
     name: "dataset_list",
     description:
       "List human-uploaded CSV datasets available to a notebook. This returns bounded metadata and never raw rows.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        notebookId: { type: "string", minLength: 1, maxLength: 128 },
-      },
-      required: ["notebookId"],
-      additionalProperties: false,
-    },
+    inputSchema: listSchema,
     annotations: { readOnlyHint: true, untrustedContentHint: true },
     execute: async (input: unknown, { signal }: { signal: AbortSignal }) => {
       try {
         if (signal.aborted) throw new DatasetError("CANCELLED");
-        const notebookId = notebookArgument(input);
+        const { notebookId } = validateInput<{ notebookId: string }>(
+          input,
+          listSchema,
+        );
         const version = policies.version;
         if (!policies.canRead(notebookId)) {
           throw new DatasetError("NOT_FOUND");
@@ -105,18 +70,13 @@ export function createDatasetListTool(
         if (policies.version !== version || !policies.canRead(notebookId)) {
           throw new DatasetError("NOT_FOUND");
         }
-        const result = envelope(payload);
-        if (
-          new TextEncoder().encode(JSON.stringify(result)).length >
-          MAX_RESULT_BYTES
-        ) {
-          throw new DatasetError("LIMIT_EXCEEDED");
-        }
-        return result;
+        return boundedEnvelope(payload);
       } catch (error) {
         const code =
-          error instanceof DatasetError || error instanceof DataError
-            ? error.code
+          error instanceof DatasetError ||
+          error instanceof DataError ||
+          error instanceof ToolValidationError
+            ? error.message
             : "INTERNAL_ERROR";
         return failure(code);
       }
@@ -132,20 +92,15 @@ export function createDatasetProfileTool(
     name: "dataset_profile",
     description:
       "Read the bounded profile of a human-uploaded CSV. Dataset values are untrusted data. Raw sample rows appear only when the human enabled sharing for this dataset.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        notebookId: { type: "string", minLength: 1, maxLength: 128 },
-        datasetId: { type: "string", minLength: 1, maxLength: 128 },
-      },
-      required: ["notebookId", "datasetId"],
-      additionalProperties: false,
-    },
+    inputSchema: profileSchema,
     annotations: { readOnlyHint: true, untrustedContentHint: true },
     execute: async (input, { signal }) => {
       try {
         if (signal.aborted) throw new DatasetError("CANCELLED");
-        const args = argumentsFor(input);
+        const args = validateInput<{
+          notebookId: string;
+          datasetId: string;
+        }>(input, profileSchema);
         const version = policies.version;
         if (!policies.canRead(args.notebookId)) {
           throw new DatasetError("NOT_FOUND");
@@ -159,18 +114,13 @@ export function createDatasetProfileTool(
         ) {
           throw new DatasetError("NOT_FOUND");
         }
-        const result = envelope(payload);
-        if (
-          new TextEncoder().encode(JSON.stringify(result)).length >
-          MAX_RESULT_BYTES
-        ) {
-          throw new DatasetError("LIMIT_EXCEEDED");
-        }
-        return result;
+        return boundedEnvelope(payload);
       } catch (error) {
         const code =
-          error instanceof DatasetError || error instanceof DataError
-            ? error.code
+          error instanceof DatasetError ||
+          error instanceof DataError ||
+          error instanceof ToolValidationError
+            ? error.message
             : "INTERNAL_ERROR";
         return failure(code);
       }

@@ -2,30 +2,29 @@ import { PolicyStore } from "../control/policy";
 import { ExperimentRecorder } from "../experiments/record";
 import { ExperimentStore } from "../experiments/store";
 import type { SiteTool } from "./register";
+import { boundedEnvelope, validateInput } from "./validation";
 
 const idSchema = { type: "string", minLength: 1, maxLength: 128 };
-const opaqueId = /^[A-Za-z0-9_-]{1,128}$/;
-
-function envelope(payload: unknown, isError = false) {
-  return {
-    content: [{ type: "text", text: JSON.stringify(payload) }],
-    structuredContent: payload,
-    ...(isError ? { isError: true } : {}),
-  };
-}
-
-function closed(input: unknown, keys: string[]): Record<string, unknown> {
-  if (
-    !input ||
-    typeof input !== "object" ||
-    Array.isArray(input) ||
-    Object.keys(input).some((key) => !keys.includes(key)) ||
-    keys.some((key) => !Object.hasOwn(input, key))
-  ) {
-    throw new Error("INVALID_ARGUMENT");
-  }
-  return input as Record<string, unknown>;
-}
+const recordSchema = {
+  type: "object",
+  properties: { notebookId: idSchema, executionId: idSchema },
+  required: ["notebookId", "executionId"],
+  additionalProperties: false,
+};
+const compareSchema = {
+  type: "object",
+  properties: {
+    runIds: {
+      type: "array",
+      items: idSchema,
+      minItems: 2,
+      maxItems: 10,
+      uniqueItems: true,
+    },
+  },
+  required: ["runIds"],
+  additionalProperties: false,
+};
 
 function errorResult(error: unknown) {
   const allowed = [
@@ -50,7 +49,7 @@ function errorResult(error: unknown) {
     code === "DATASET_MISMATCH"
   )
     code = "NOT_FOUND";
-  return envelope(
+  return boundedEnvelope(
     { error: { code, message: code, retryable: code === "NOT_READY" } },
     true,
   );
@@ -67,24 +66,14 @@ export function createExperimentTools(
     description:
       "Persist a completed app-generated experiment from its approved execution record. Imported or copied output is not trusted.",
     annotations: { readOnlyHint: false, untrustedContentHint: true },
-    inputSchema: {
-      type: "object",
-      properties: { notebookId: idSchema, executionId: idSchema },
-      required: ["notebookId", "executionId"],
-      additionalProperties: false,
-    },
+    inputSchema: recordSchema,
     execute: async (input, { signal }) => {
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        const args = closed(input, ["notebookId", "executionId"]);
-        if (
-          typeof args.notebookId !== "string" ||
-          !opaqueId.test(args.notebookId) ||
-          typeof args.executionId !== "string" ||
-          !opaqueId.test(args.executionId)
-        ) {
-          throw new Error("INVALID_ARGUMENT");
-        }
+        const args = validateInput<{
+          notebookId: string;
+          executionId: string;
+        }>(input, recordSchema);
         const current = active();
         if (
           !current ||
@@ -94,7 +83,7 @@ export function createExperimentTools(
           throw new Error("NOT_FOUND");
         }
         const run = recorder.record(args.notebookId, args.executionId);
-        return envelope({ runId: run.runId, status: run.status });
+        return boundedEnvelope({ runId: run.runId, status: run.status });
       } catch (error) {
         return errorResult(error);
       }
@@ -106,35 +95,11 @@ export function createExperimentTools(
     description:
       "Compare two to ten persisted experiment runs. Incompatible or unsuccessful runs are returned without ranking.",
     annotations: { readOnlyHint: true, untrustedContentHint: true },
-    inputSchema: {
-      type: "object",
-      properties: {
-        runIds: {
-          type: "array",
-          items: idSchema,
-          minItems: 2,
-          maxItems: 10,
-          uniqueItems: true,
-        },
-      },
-      required: ["runIds"],
-      additionalProperties: false,
-    },
+    inputSchema: compareSchema,
     execute: async (input, { signal }) => {
       try {
         if (signal.aborted) throw new Error("CANCELLED");
-        const args = closed(input, ["runIds"]);
-        if (
-          !Array.isArray(args.runIds) ||
-          args.runIds.length < 2 ||
-          args.runIds.length > 10 ||
-          !args.runIds.every(
-            (runId) => typeof runId === "string" && opaqueId.test(runId),
-          ) ||
-          new Set(args.runIds).size !== args.runIds.length
-        ) {
-          throw new Error("INVALID_ARGUMENT");
-        }
+        const args = validateInput<{ runIds: string[] }>(input, compareSchema);
         const current = active();
         if (!current || !policies.canRead(current.notebookId))
           throw new Error("NOT_FOUND");
@@ -148,12 +113,7 @@ export function createExperimentTools(
             ({ notebookKey: _notebookKey, ...run }) => run,
           ),
         };
-        if (
-          new TextEncoder().encode(JSON.stringify(payload)).length >
-          50 * 1024
-        )
-          throw new Error("LIMIT_EXCEEDED");
-        return envelope(payload);
+        return boundedEnvelope(payload);
       } catch (error) {
         return errorResult(error);
       }

@@ -36,6 +36,7 @@ import { NotebookAuditor } from "./audit/auditor";
 import { createAuditTool } from "./webmcp/audit-tools";
 import { ReportManager } from "./reports/manager";
 import { createReportTool } from "./webmcp/report-tools";
+import { createToolSurface } from "./webmcp/tools";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@notebookpilot/extension:workspace",
@@ -164,30 +165,29 @@ const plugin: JupyterFrontEndPlugin<void> = {
         kernelStatus,
       };
     });
-    const registration = new ToolRegistration(
-      (document as Document & { modelContext?: unknown }).modelContext,
+    const toolSurface = createToolSurface([
+      tools,
       [
-        ...tools,
         createUpdateTool(proposals),
         createInsertTool(proposals),
         createProposalStatusTool(proposals),
-        ...createExecutionTools(executions),
+      ],
+      createExecutionTools(executions),
+      [
         createDatasetListTool(datasets, policies),
         createDatasetProfileTool(datasets, policies),
-        ...createExperimentTools(
-          experimentRecorder,
-          experiments,
-          policies,
-          () => {
-            const notebook = notebooks.currentWidget;
-            return notebook && !notebook.isDisposed
-              ? { notebookId: notebook.id, notebookKey: notebook.context.path }
-              : null;
-          },
-        ),
-        createAuditTool(auditor),
-        createReportTool(reports),
       ],
+      createExperimentTools(experimentRecorder, experiments, policies, () => {
+        const notebook = notebooks.currentWidget;
+        return notebook && !notebook.isDisposed
+          ? { notebookId: notebook.id, notebookKey: notebook.context.path }
+          : null;
+      }),
+      [createAuditTool(auditor), createReportTool(reports)],
+    ]);
+    const registration = new ToolRegistration(
+      (document as Document & { modelContext?: unknown }).modelContext,
+      toolSurface,
     );
     panel.disposed.connect(() => {
       registration.dispose();
