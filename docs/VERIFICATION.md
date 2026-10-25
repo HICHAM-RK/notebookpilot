@@ -2,6 +2,12 @@
 
 Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphify snapshot and JupyterLite foundation. This is not a product-completion report.
 
+## Native WebMCP lifecycle — 2026-10-25
+
+Completed W1 on implementation commit `9c40064`. Registrations are shared by host API and tool name with reference-counted ownership. Matching duplicate activations register once and stay active until the final owner disposes; conflicting contracts fail closed. Existing missing-API, asynchronous disposal and partial-failure behavior remains covered.
+
+The full local gate passed with 163 Jest tests, six Python checks, typecheck, formatting, a fresh production build and 11 Chromium scenarios. Independently, ChatGPT macOS `26.1021.31345` (build 21828), with embedded Chromium `156.0.8078.48`, natively discovered all 13 tools from the fresh build and invoked `notebook_get_context` successfully. No shim or mocked transport was present. Closing the document invalidated its native tool handle. Detailed names, API shape and limitations are recorded in `docs/HOST_VERIFICATION.md`. W2 contract hardening and the complete W3 native journey remain open.
+
 ## Implementation checkpoint: F3/F4
 
 The original @notebookpilot/extension now builds as a prebuilt federated extension and is included in the JupyterLite site. Its React sidebar shows the selected notebook and a truthful disconnected-agent state. It handles notebook opening and closing without breaking ordinary Python execution. The UI uses Jupyter theme tokens and contains no agent mutation/execution path yet.

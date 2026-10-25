@@ -1,12 +1,12 @@
 # Specification: Browser tool adapter
 
-Status: implementation contract; not implemented. Module: webmcp-surface.
+Status: implemented through W1; routing hardening and the full native journey remain W2/W3. Module: webmcp-surface.
 
 ## Dependencies
 notebook-core.
 
 ## Behavior and boundaries
-Register tools once at activation only when document.modelContext exists. Read current workspace at invocation. Validate unknown properties, bounds and enums at runtime. Catch errors into documented envelopes. Dispose registration on extension teardown. No polyfill is presented as native support.
+Register tools once at activation only when document.modelContext exists. Registrations with the same host API and contract share reference-counted ownership, so duplicate extension activation does not duplicate native tools and one owner's teardown cannot remove another owner's tools. Read current workspace at invocation. Validate unknown properties, bounds and enums at runtime. Catch errors into documented envelopes. Dispose registration on extension teardown. No polyfill is presented as native support.
 
 ## Acceptance criteria
 1. Missing API leaves notebook functional
@@ -15,10 +15,10 @@ Register tools once at activation only when document.modelContext exists. Read c
 4. native host lists and invokes tools.
 
 ## Files and interfaces
-Planned extension-relative files: src/webmcp/register.ts, src/webmcp/tools.ts, src/webmcp/validation.ts, tests/webmcp.test.ts. Tool interfaces are defined in docs/TOOL_CONTRACTS.md. Keep domain logic independent of the WebMCP adapter.
+Extension-relative files: src/webmcp/register.ts and the domain-specific tool adapters under src/webmcp/, with registration coverage in tests/registration.test.ts and routing coverage in the corresponding tool tests. Tool interfaces are defined in docs/TOOL_CONTRACTS.md and contracts/tools.json. Domain logic remains independent of the WebMCP adapter.
 
 ## Verification
-Write failing behavioral tests for each acceptance criterion, then implement. Use npm test for unit contracts, npm run typecheck and npm run lint:check; add relevant npm run test:e2e cases. Native browser-agent compatibility must be recorded independently of mocked protocol tests.
+Behavioral registration tests cover missing APIs, duplicate activation, conflicting contracts, partial failure and teardown. Use npm test for unit contracts, npm run typecheck and npm run lint:check; add relevant npm run test:e2e cases. Native browser-agent compatibility is recorded independently of mocked protocol tests in docs/HOST_VERIFICATION.md.
 
 ## Completion evidence
 Record commands, results, commit and screenshots where relevant in docs/VERIFICATION.md. Update tasks/todo.md only after the corresponding criterion is demonstrated.

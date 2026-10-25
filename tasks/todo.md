@@ -20,7 +20,7 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 
 ## WebMCP
 
-- [ ] W1: Native API and lifecycle. Depends N1,H1; SPEC-webmcp-surface. Files: ext/src/webmcp/register.ts, ext/src/webmcp/types.ts, ext/tests/registration.test.ts, docs/HOST_VERIFICATION.md. Acceptance: host API/version recorded, feature detection, teardown, no duplicate registration, unsupported browser still usable. Verify native discovery separately from mocked lifecycle tests.
+- [x] W1: Native API and lifecycle. Depends N1,H1; SPEC-webmcp-surface. Files: ext/src/webmcp/register.ts, ext/src/webmcp/types.ts, ext/tests/registration.test.ts, docs/HOST_VERIFICATION.md. Acceptance: host API/version recorded, feature detection, teardown, no duplicate registration, unsupported browser still usable. Verify native discovery separately from mocked lifecycle tests.
 - [ ] W2: Notebook tool validation/routing. Depends W1,N2. Files: ext/src/webmcp/validation.ts, ext/src/webmcp/tools.ts, ext/tests/webmcp.test.ts, contracts/tools.json. Acceptance: contract parity, unknown fields/bounds rejected, scoped errors, result byte limits, no approval tool. Verify adversarial fixtures and adapter integration.
 - [ ] W3: Native host journey. Depends W2. Files: docs/HOST_VERIFICATION.md, e2e/webmcp.spec.ts. Acceptance: host discovers tools, reads unsaved cell, proposes edit, human accepts and separately approves execution, real output returned; denial leaves state unchanged. Record host/version/prompts/calls/outcomes. A shim never passes this gate.
 

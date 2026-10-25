@@ -1,6 +1,16 @@
 # Native WebMCP verification gate
 
-Status: PARTIAL NATIVE PASS (2026-10-24). The in-app browser discovered and invoked read, update-proposal and proposal-status tools on the local build at http://127.0.0.1:8001/lab/index.html. No shim was installed. Native rejection and UI acceptance passed. Execution and dataset flows are implemented and browser-tested through a mocked registration transport with real Pyodide, but have not passed the native-host gate. Exact host/browser version and native teardown evidence remain to collect.
+Status: W1 NATIVE PASS / W3 PARTIAL NATIVE PASS (2026-10-25). The ChatGPT in-app browser discovered all 13 tools and invoked `notebook_get_context` on the freshly built local app without a shim. Host and embedded Chromium versions are recorded below. Closing the test document invalidated its bound native tool handle, while mocked lifecycle tests separately prove AbortSignal teardown and reference-counted duplicate activation. Native rejection and UI acceptance passed previously. The complete native execution and dataset journeys remain W3 work.
+
+## W1 native lifecycle — commit 9c40064, 2026-10-25
+
+Host: ChatGPT macOS app `26.1021.31345` (`CFBundleVersion` 21828) using its in-app browser capability. Embedded browser: Chromium `156.0.8078.48` (`ChromiumBaseBundleVersion` 8078.48). Site: the freshly rebuilt local app at `http://127.0.0.1:8001/lab/index.html?native-w1-built=1`. API shape: the host discovered page tools registered through `document.modelContext.registerTool(tool, { signal })`; no shim, injected registration object or test transport was present.
+
+The native host listed these 13 base tool names with their closed schemas and annotations: `dataset_list`, `dataset_profile`, `experiment_compare`, `experiment_record`, `notebook_audit`, `notebook_get_cells`, `notebook_get_context`, `notebook_get_execution`, `notebook_get_proposal`, `notebook_propose_insert`, `notebook_propose_update`, `notebook_run_cells` and `report_generate`. Native invocation of `notebook_get_context` returned the open fixture notebook ID, active cell ID, idle kernel and `webmcpStatus: available`.
+
+Closing that browser document removed it from the host session; attempting to call its previously bound native tool handle failed because the tab no longer belonged to the browser session. Registration tests provide the complementary extension-level teardown evidence: the last owner aborts each registration signal, one of two owners may dispose without removing the shared tool, conflicts fail closed, partial failures clean up and disposal during registration prevents later tools from activating. Missing or malformed APIs return `unavailable`; the ordinary JupyterLite browser suite remains usable without native support.
+
+Fresh W1 verification passed: 163 Jest tests, six Python checks, typecheck, formatting, production build and all 11 Chromium scenarios. The build retained the four previously documented third-party license-discovery warnings. This evidence completes W1 only; it does not substitute for W2 adversarial routing or the W3 end-to-end native human approval/execution journey.
 
 ## Native update review — commit 87c6fec, 2026-10-24
 
