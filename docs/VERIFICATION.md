@@ -6,7 +6,15 @@ Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphi
 
 Completed W1 on implementation commit `9c40064`. Registrations are shared by host API and tool name with reference-counted ownership. Matching duplicate activations register once and stay active until the final owner disposes; conflicting contracts fail closed. Existing missing-API, asynchronous disposal and partial-failure behavior remains covered.
 
-The full local gate passed with 163 Jest tests, six Python checks, typecheck, formatting, a fresh production build and 11 Chromium scenarios. Independently, ChatGPT macOS `26.1021.31345` (build 21828), with embedded Chromium `156.0.8078.48`, natively discovered all 13 tools from the fresh build and invoked `notebook_get_context` successfully. No shim or mocked transport was present. Closing the document invalidated its native tool handle. Detailed names, API shape and limitations are recorded in `docs/HOST_VERIFICATION.md`. W2 contract hardening and the complete W3 native journey remain open.
+The full local gate passed with 163 Jest tests, six Python checks, typecheck, formatting, a fresh production build and 11 Chromium scenarios. Independently, ChatGPT macOS `26.1021.31345` (build 21828), with embedded Chromium `156.0.8078.48`, natively discovered all 13 tools from the fresh build and invoked `notebook_get_context` successfully. No shim or mocked transport was present. Closing the document invalidated its native tool handle. Detailed names, API shape and limitations are recorded in `docs/HOST_VERIFICATION.md`. W2 was completed in the following checkpoint; the complete W3 native journey remains open.
+
+## Closed WebMCP validation and routing — 2026-10-25
+
+Completed W2 on implementation commits `39603d2`, `602c735` and `3e286a8`. A schema-driven validator now enforces the same closed object shapes, required fields, strings, integers, arrays, enums, patterns, uniqueness and UTF-8 limits that each tool publishes. All 13 tools use it directly. The exact tool surface is allowlisted at composition time, rejects missing, duplicate or unknown tools and contains no approval/accept/reject capability; those actions remain human-only UI commands.
+
+A final routing guard measures the complete serialized result, including duplicated text and structured content, and replaces responses above 50 KiB with a bounded `LIMIT_EXCEEDED` envelope. Unexpected adapter exceptions become `INTERNAL_ERROR` without their message or payload. Adversarial tests cover every checked-in schema with an injected `approved` property, malformed types, integer and collection bounds, regexes, duplicate values, Unicode byte overflow, oversized results, thrown private details and invalid surface composition. Runtime-only opaque-ID restrictions were removed from experiment and report adapters so valid contract inputs are no longer rejected more strictly than advertised.
+
+Final W2 gates pass: 195 Jest tests, six Python checks, typecheck, formatting, a fresh production build and all 11 Chromium scenarios. The build retains the four documented third-party license-discovery warnings. W3 remains open because its complete native host read/propose/reject/accept/execute journey must be recorded separately from mocked browser transport.
 
 ## Implementation checkpoint: F3/F4
 

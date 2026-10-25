@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "status": "planned-contract",
+  "status": "implemented-contract",
   "schemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "tools": [
     {

@@ -1,4 +1,4 @@
-# WebMCP contract v0.1 (planned)
+# WebMCP contract v0.1
 
 All inputs are closed JSON objects: reject unknown fields, wrong types, non-finite numbers and invalid IDs. notebookId/cellId/datasetId/runId/proposalId are opaque strings, max 128 characters; never interpret them as paths. Every lookup checks the current permission before reading data. Version this document with schema changes.
 

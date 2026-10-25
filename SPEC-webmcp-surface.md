@@ -1,6 +1,6 @@
 # Specification: Browser tool adapter
 
-Status: implemented through W1; routing hardening and the full native journey remain W2/W3. Module: webmcp-surface.
+Status: implemented through W2; the full native journey remains W3. Module: webmcp-surface.
 
 ## Dependencies
 notebook-core.
