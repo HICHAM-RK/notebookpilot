@@ -5,11 +5,13 @@ export function ExecutionReview({
   requests,
   onApprove,
   onCancel,
+  onDismiss,
   canRun,
 }: {
   requests: ReturnType<ExecutionQueue["review"]>;
   onApprove: (id: string) => void;
   onCancel: (id: string) => void;
+  onDismiss: (id: string) => void;
   canRun: boolean;
 }) {
   return (
@@ -56,6 +58,11 @@ export function ExecutionReview({
           {(request.status === "pending" || request.status === "running") && (
             <button type="button" onClick={() => onCancel(request.requestId)}>
               Cancel run
+            </button>
+          )}
+          {request.status !== "pending" && request.status !== "running" && (
+            <button type="button" onClick={() => onDismiss(request.requestId)}>
+              Dismiss run
             </button>
           )}
         </article>

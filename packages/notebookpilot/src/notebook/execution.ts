@@ -202,6 +202,17 @@ export class ExecutionQueue {
         this.cancel(pending.record.requestId);
   }
 
+  dismiss(requestId: string): void {
+    const pending = this.records.get(requestId);
+    if (!pending) throw new Error("NOT_FOUND");
+    if (
+      pending.record.status === "pending" ||
+      pending.record.status === "running"
+    )
+      throw new Error("INVALID_STATE");
+    this.records.delete(requestId);
+  }
+
   private async dispatch(pending: PendingRun): Promise<void> {
     const { record, targets, controller } = pending;
     if (controller.signal.aborted) return;

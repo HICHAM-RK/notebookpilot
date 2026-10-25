@@ -175,6 +175,10 @@ test("mock transport requires separate edit and execution approvals", async ({
   await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
   await panel.getByRole("button", { name: "Cancel run" }).click();
   await expect(page.locator(".jp-OutputArea-output")).toHaveCount(0);
+  await panel.getByRole("button", { name: "Dismiss run" }).click();
+  await expect(panel.getByRole("button", { name: "Dismiss run" })).toHaveCount(
+    0,
+  );
   const execution = await requestRun();
   await panel.getByRole("button", { name: "Approve run" }).click();
   await expect(page.locator(".jp-OutputArea-output")).toContainText(

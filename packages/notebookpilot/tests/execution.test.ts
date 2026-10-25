@@ -150,3 +150,13 @@ test("cancellation stays cancelled while an uncooperative runner is settling", a
     jest.useRealTimers();
   }
 });
+
+test("terminal run records can be dismissed but active requests cannot", async () => {
+  const s = await setup();
+  const request = await s.queue.request("n", s.cells);
+  expect(() => s.queue.dismiss(request.requestId)).toThrow("INVALID_STATE");
+  s.queue.cancel(request.requestId);
+  s.queue.dismiss(request.requestId);
+  expect(() => s.queue.get(request.requestId)).toThrow("NOT_FOUND");
+  expect(() => s.queue.dismiss(request.requestId)).toThrow("NOT_FOUND");
+});

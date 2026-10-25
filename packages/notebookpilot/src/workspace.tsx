@@ -776,6 +776,10 @@ export class WorkspacePanel extends ReactWidget {
               this.recordExperiment(id);
               this.update();
             }}
+            onDismiss={(id) => {
+              this.executions.dismiss(id);
+              this.update();
+            }}
           />
         )}
       </WorkspaceContent>
