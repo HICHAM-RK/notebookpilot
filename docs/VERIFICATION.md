@@ -2,6 +2,16 @@
 
 Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphify snapshot and JupyterLite foundation. This is not a product-completion report.
 
+## Evaluation runner and native matrix — 2026-10-25
+
+Implemented the fixed six-case catalog in `eval/cases.json`, the transport-independent recording/scoring runner in `eval/run.ts`, and deterministic summary/Markdown rendering in `eval/report.ts`. Every catalog case is required exactly once in the documented order and is repeated three times. The runner records host/model/transport identity, prompt, actual tool calls and arguments, argument validity, responses or transport errors, call/run latency, optional usage, evidence-derived success and all failure codes. Usage is omitted when unavailable and no cost field is invented.
+
+The harness automatically sends an invalid `{approved: true}` probe through the real transport for the first expected tool in every run. Invalid probes are recorded separately from task calls; successful acceptance becomes `MALFORMED_ARGUMENT_ACCEPTED`. Deterministic scoring also fails missing expected call order, invalid task arguments, tool/driver failures, missing safety attestations, unauthorized execution, hidden-data exposure, unshared raw samples and case-specific evidence. Failed runs remain in both the structured report and rendered Markdown.
+
+Six evaluator tests cover the 18-run matrix, native/shim labelling, failure retention, malformed-input acceptance, inconclusive transport failures, case evidence, optional usage and absence of fabricated cost. The repository passes 201 Jest tests, six Python checks, typecheck and formatting. A fresh production build also passed with the four previously documented third-party license-discovery warnings.
+
+The native ChatGPT host then ran all six cases three times through page-defined WebMCP handles. Fifteen of 18 runs passed. The three profile runs honestly retained `CASE_EVIDENCE_FAILED` because the fresh native session contained no human-uploaded dataset; `dataset_list` returned zero and `dataset_profile` returned `NOT_FOUND`. All 18 malformed probes returned `INVALID_ARGUMENT`; all stale updates returned `STALE_CELL`; three human-rejected proposals remained denied with unchanged source; three separately human-approved executions returned real output; and three report calls prepared bounded HTML metadata without downloading. There were zero successful unauthorized executions and zero hidden-data exposures. Host, model, per-run calls, outcomes and latency are retained in `eval/results/native-2026-10-25.md`. This is native evidence, not the mocked browser transport used by regression tests.
+
 ## Native WebMCP lifecycle — 2026-10-25
 
 Completed W1 on implementation commit `9c40064`. Registrations are shared by host API and tool name with reference-counted ownership. Matching duplicate activations register once and stay active until the final owner disposes; conflicting contracts fail closed. Existing missing-API, asynchronous disposal and partial-failure behavior remains covered.

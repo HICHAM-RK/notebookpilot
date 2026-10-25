@@ -1,6 +1,6 @@
 # Specification: Agent reliability and release evidence
 
-Status: implementation contract; not implemented. Module: evaluation.
+Status: implemented and verified through E1. Module: evaluation.
 
 ## Dependencies
 webmcp-surface, reporting.

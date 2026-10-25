@@ -61,7 +61,7 @@ Checked tasks require evidence in docs/VERIFICATION.md. Preparing a task does no
 
 ## Evaluation and release
 
-- [ ] E1: Evaluation runner. Depends W3,R2; SPEC-evaluation. Files: eval/cases.json, eval/run.ts, eval/report.ts, ext/tests/evaluation.test.ts. Acceptance: read/profile/stale edit/deny/run/export cases three times each; actual calls, validity/success/latency, native/shim labels, failures retained. Verify deterministic scorer fixtures and native run. Never invent costs.
+- [x] E1: Evaluation runner. Depends W3,R2; SPEC-evaluation. Files: eval/cases.json, eval/run.ts, eval/report.ts, ext/tests/evaluation.test.ts. Acceptance: read/profile/stale edit/deny/run/export cases three times each; actual calls, validity/success/latency, native/shim labels, failures retained. Verify deterministic scorer fixtures and native run. Never invent costs.
 - [ ] E2: Security/accessibility review. Depends E1. Files: docs/REVIEW.md, docs/VERIFICATION.md, e2e/accessibility.spec.ts. Acceptance: zero successful unauthorized execution/hidden-data access, keyboard flows, no secrets, render/upload boundary tests, dependency audit triage. Verify fresh browser profile and complete checks; record findings.
 - [ ] E3: Hosted demo. Depends E2. Files: deployment workflow/config, README.md, docs/RELEASE.md. Acceptance: approved host/privacy choice, HTTPS/assets/worker behavior verified, native journey on hosted URL, rollback/backup instructions and attribution. No new paid service or credentials without authorization. Verify deployed commit and complete journey.
 

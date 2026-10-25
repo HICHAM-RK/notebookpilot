@@ -3,10 +3,16 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "rootDir": ".",
+    "rootDir": "../..",
     "declaration": false,
     "noEmit": true,
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "../../eval/**/*.ts"
+  ]
 }
