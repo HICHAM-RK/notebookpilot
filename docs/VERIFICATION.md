@@ -2,6 +2,12 @@
 
 Date: 2026-10-23. Scope: agent-ready specifications, contracts, workflow, Graphify snapshot and JupyterLite foundation. This is not a product-completion report.
 
+## Host-neutral release preparation — 2026-10-25
+
+Prepared, but did not publish, the E3 release handoff. `docs/RELEASE.md` now records the required owner decision, privacy model, hosting headers and worker requirements, exact hosted native journey, attribution, browser-local backup caveat and rollback procedure. The README now distinguishes the completed local/native gates from the still-open hosted verification gate.
+
+The manual `Release artifact` workflow performs frozen installs, lint, typecheck, unit checks, production build, the high-severity dependency gate and full Chromium suite before uploading the exact `_output/` directory for its commit. It has read-only repository permission and no deployment step, environment, secret, credential or repository-visibility mutation. Local validation confirms formatting, a clean diff and valid workflow YAML. E3 remains open because no host or public/private visibility has been owner-approved and no hosted URL has been verified.
+
 ## Security and accessibility review — 2026-10-25
 
 Added `e2e/accessibility.spec.ts` and pinned `@axe-core/playwright@4.14.0`. In a fresh Chromium context the NotebookPilot panel has zero axe violations before and after expanding its permission/preview state. Keyboard-only controls select proposal access, expand cell permissions and activate preview; the focused action has a visible non-zero outline. A direct execution request in the default read-only state returns `ACCESS_DENIED` and creates no request. A hidden cell disappears from scoped reads, a hidden notebook returns content-free `NOT_FOUND`, and a hostile CSV filename/value stays inert text without creating script/image elements or changing the execution sentinel.

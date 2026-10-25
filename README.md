@@ -2,16 +2,17 @@
 
 NotebookPilot is a browser-native data-science workspace where ChatGPT uses WebMCP site tools to inspect datasets, propose safe notebook changes, execute approved cells, and produce reproducible analysis.
 
-The project contains an agent build package, a tested JupyterLite foundation and an original NotebookPilot sidebar extension. The current implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments and persistent comparison history. Start with:
+The project contains a complete agent build package, a tested JupyterLite application and an original NotebookPilot sidebar extension. The implementation includes permission-aware notebook tools, human-reviewed edits, separately approved execution, private-by-default CSV profiling, reproducible browser-local classification experiments, persistent comparison history, notebook audits and portable reports. Start with:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`CAPABILITY_MAP.md`](CAPABILITY_MAP.md)
 - [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
 - [`docs/START_HERE.md`](docs/START_HERE.md) — next-agent setup and starting task
 - [`docs/VERIFICATION.md`](docs/VERIFICATION.md) — evidence and limitations
+- [`docs/RELEASE.md`](docs/RELEASE.md) — hosting decision, deployment and rollback checklist
 - [`docs/GRAPHIFY.md`](docs/GRAPHIFY.md) — actual extracted architecture graph
 
-The initial static JupyterLite build and sample notebook are implemented. Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md).
+Product requirements live in [SPEC.md](SPEC.md), build phases in [tasks/plan.md](tasks/plan.md), and completion tracking in [tasks/todo.md](tasks/todo.md). Every local implementation, evaluation, security and accessibility task is complete. Publishing a hosted demo remains deliberately open until the owner approves its host and public/private visibility.
 
 Open the NotebookPilot sidebar to choose notebook/cell permissions and preview exactly which live cell sources an agent reader may receive. Unsaved edits are included; hidden cells are excluded. Permission choices last for the current session. Upload a CSV to profile it locally, choose whether the agent may receive up to five sample rows, and review proposed notebook edits before separately approving execution. The experiment panel can generate reviewed logistic-regression or random-forest cells with a fixed split, training-only preprocessing and recorded metrics.
 
@@ -27,7 +28,7 @@ uv run python -m http.server 8000 --bind 127.0.0.1 --directory _output
 ```
 
 Open http://localhost:8000/lab/index.html and run welcome.ipynb.
-Build, extension activation, human approval controls and actual Pyodide output were checked locally. Some WebMCP tools have native host evidence; the complete native journey remains an open release gate. Colab-compatible `.ipynb` import/export is implemented with review, compatibility warnings and no automatic execution. NotebookPilot does not connect to a live Colab runtime.
+Build, extension activation, human approval controls and actual Pyodide output were checked locally. The complete WebMCP journey passed in the native ChatGPT host: tool discovery, an unsaved-cell read, denied and accepted edits, separate execution approval and real Python output. Hosted-site verification remains a separate release gate. Colab-compatible `.ipynb` import/export is implemented with review, compatibility warnings and no automatic execution. NotebookPilot does not connect to a live Colab runtime.
 
 ## Development checks
 
@@ -43,5 +44,5 @@ npm run build
 npm run test:e2e
 ```
 
-Port 8000 must be free for browser tests. First-use Python runtime downloads require internet. TypeScript and formatting checks include extension sources and tests. `npm test` runs Python fixture/contract tests and extension Jest tests. GitHub Actions runs these commands on pushes and pull requests. See docs/DEPENDENCIES.md for dependency compatibility and open rendering-advisory release gates.
+Port 8000 must be free for browser tests. First-use Python runtime downloads require internet. TypeScript and formatting checks include extension sources and tests. `npm test` runs Python fixture/contract tests and extension Jest tests. GitHub Actions runs these commands on pushes and pull requests. The manual release-artifact workflow creates a tested static bundle but never publishes it. See [docs/RELEASE.md](docs/RELEASE.md) for the remaining hosting decision and [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) for dependency compatibility and tracked rendering advisories.
 
