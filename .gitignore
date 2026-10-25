@@ -16,3 +16,9 @@ test-results/
 .DS_Store
 *.log
 
+# Local agent instructions and planning files.
+AGENTS.md
+CAPABILITY_MAP.md
+SPEC*.md
+tasks/
+
