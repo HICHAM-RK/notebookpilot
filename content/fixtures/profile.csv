@@ -1,0 +1,6 @@
+name,age,score,active,note,code,blank
+"Zoë, Jr",30,1.5,true,"line one
+line two",001,
+李, ,2.5,false,=SUM(A1:A2),002,"   "
+"Zoë, Jr",30,1.5,true,"line one
+line two",001,

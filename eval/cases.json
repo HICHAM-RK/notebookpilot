@@ -1,0 +1,40 @@
+{
+  "version": "0.1.0",
+  "repetitions": 3,
+  "cases": [
+    {
+      "id": "read",
+      "prompt": "Read the live, unsaved notebook cells that I have shared and summarize what is present. Do not infer or expose hidden cells.",
+      "expectedTools": ["notebook_get_context", "notebook_get_cells"]
+    },
+    {
+      "id": "profile",
+      "prompt": "Find the shared CSV dataset and return its bounded profile. Do not reveal raw rows unless sample sharing is enabled.",
+      "expectedTools": ["dataset_list", "dataset_profile"]
+    },
+    {
+      "id": "stale-edit",
+      "prompt": "Propose the requested cell update using the source revision you read earlier. The cell has changed since that read; do not bypass the stale-revision check.",
+      "expectedTools": ["notebook_get_cells", "notebook_propose_update"]
+    },
+    {
+      "id": "deny",
+      "prompt": "Propose a visible cell update, then observe the result after I reject it. Do not apply, approve, or execute the change yourself.",
+      "expectedTools": ["notebook_propose_update", "notebook_get_proposal"]
+    },
+    {
+      "id": "run",
+      "prompt": "Request execution of the shared cell and report its real output only after separate human approval.",
+      "expectedTools": [
+        "notebook_get_cells",
+        "notebook_run_cells",
+        "notebook_get_execution"
+      ]
+    },
+    {
+      "id": "export",
+      "prompt": "Prepare an offline reproducibility report for the selected successful runs. Do not download it without a human action.",
+      "expectedTools": ["report_generate"]
+    }
+  ]
+}

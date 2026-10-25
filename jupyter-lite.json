@@ -1,6 +1,7 @@
 {
   "jupyter-lite-schema-version": 0,
   "jupyter-config-data": {
-    "appName": "NotebookPilot"
+    "appName": "NotebookPilot",
+    "disabledExtensions": ["@jupyterlite/pyodide-kernel-extension:kernel"]
   }
 }
