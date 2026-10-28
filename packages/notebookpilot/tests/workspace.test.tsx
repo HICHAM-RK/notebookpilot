@@ -26,3 +26,14 @@ test("shows the selected notebook without promising an agent connection", () => 
   expect(selected).not.toContain("Open a notebook to get started.");
   expect(selected).toContain("Agent tools are not connected.");
 });
+
+test("presents notebook and connection state as a workspace overview", () => {
+  const markup = renderToStaticMarkup(
+    <WorkspaceContent notebookName="analysis.ipynb" connection="available" />,
+  );
+
+  expect(markup).toContain('aria-label="Workspace overview"');
+  expect(markup).toContain('class="np-notebook-name"');
+  expect(markup).toContain('class="np-status-dot np-status-available"');
+  expect(markup).toContain("Human review stays in control");
+});
